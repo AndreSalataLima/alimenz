@@ -1,0 +1,57 @@
+<h1>Novo Usuário</h1>
+
+<%= form_for [:admin, @usuario] do |f| %>
+  <div>
+    <%= f.label :nome %>
+    <%= f.text_field :nome %>
+  </div>
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email %>
+  </div>
+  <div>
+    <%= f.label :papel %>
+    <%= f.select :papel, options_for_select([['Cliente', 'cliente'], ['Fornecedor', 'fornecedor'], ['Admin', 'admin']]) %>
+  </div>
+  <div>
+    <%= f.label :cnpj %>
+    <%= f.text_field :cnpj %>
+  </div>
+  <div>
+    <%= f.label :responsavel %>
+    <%= f.text_field :responsavel %>
+  </div>
+  <div>
+    <%= f.label :endereco %>
+    <%= f.text_area :endereco %>
+  </div>
+  <div>
+    <%= f.label :logo %>
+    <%= f.text_field :logo %>
+  </div>
+  <div>
+    <%= f.label :company_stamp %>
+    <%= f.text_field :company_stamp %>
+  </div>
+  <div>
+    <%= f.label :commission_percentage %>
+    <%= f.number_field :commission_percentage, step: 0.01 %>
+  </div>
+  <div>
+    <%= f.label :telefone %>
+    <%= f.text_field :telefone %>
+  </div>
+  <div>
+    <%= f.label :password %>
+    <%= f.password_field :password %>
+  </div>
+  <div>
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation %>
+  </div>
+  <div>
+    <%= f.submit "Criar Usuário" %>
+  </div>
+<% end %>
+
+<%= link_to 'Voltar', admin_usuarios_path %>

@@ -1,0 +1,10 @@
+<h1>Bem-vindo ao Dashboard do Admin</h1>
+
+<p>Escolha uma das opções:</p>
+<ul>
+  <li><%= link_to "Criar novo usuário", new_admin_usuario_path %></li>
+  <li>
+    <!-- O link de logout do Devise, para destruir a sessão -->
+    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
+  </li>
+</ul>
