@@ -1,0 +1,29 @@
+<h1>Editar Produto</h1>
+
+<%= form_for @produto do |f| %>
+  <div>
+    <%= f.label :nome %>
+    <%= f.text_field :nome %>
+  </div>
+  <div>
+    <%= f.label :nome_generico %>
+    <%= f.text_field :nome_generico %>
+  </div>
+  <div>
+    <%= f.label :marca %>
+    <%= f.text_field :marca %>
+  </div>
+  <div>
+    <%= f.label :unidade_sugerida %>
+    <%= f.text_field :unidade_sugerida %>
+  </div>
+  <div>
+    <%= f.label :commission_percentage %>
+    <%= f.number_field :commission_percentage, step: 0.01 %>
+  </div>
+  <div>
+    <%= f.submit "Atualizar Produto" %>
+  </div>
+<% end %>
+
+<%= link_to "Voltar", produtos_path %>

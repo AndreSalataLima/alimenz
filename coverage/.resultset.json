@@ -103,8 +103,10 @@
           null,
           null,
           0,
+          0,
           null,
           null,
+          0,
           0,
           0,
           0,
@@ -121,6 +123,11 @@
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/controllers/clientes_controller.rb": {
         "lines": [
           0,
+          0,
+          null,
+          0,
+          null,
+          0,
           0
         ],
         "branches": {}
@@ -128,6 +135,82 @@
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/controllers/fornecedores_controller.rb": {
         "lines": [
           0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/controllers/produto_customizados_controller.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/controllers/produtos_controller.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
           0
         ],
         "branches": {}
@@ -167,6 +250,13 @@
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/helpers/application_helper.rb": {
         "lines": [
           0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
           0
         ],
         "branches": {}
@@ -179,6 +269,20 @@
         "branches": {}
       },
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/helpers/fornecedores_helper.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/helpers/produto_customizados_helper.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/helpers/produtos_helper.rb": {
         "lines": [
           0,
           0
@@ -221,6 +325,28 @@
         ],
         "branches": {}
       },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/produto.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0,
+          null,
+          0
+        ],
+        "branches": {}
+      },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/produto_customizado.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          null,
+          0,
+          0
+        ],
+        "branches": {}
+      },
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/usuario.rb": {
         "lines": [
           0,
@@ -241,6 +367,6 @@
         "branches": {}
       }
     },
-    "timestamp": 1739801021
+    "timestamp": 1739804229
   }
 }

@@ -23,6 +23,13 @@ Rails.application.routes.draw do
   get 'cliente_home', to: 'clientes#home'
 
 
+  resources :produtos
+
+  resources :produtos do
+    resources :produto_customizados, only: [:create]
+  end
+  
+
   get "up" => "rails/health#show", as: :rails_health_check
 
 

@@ -10,9 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_17_001032) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_17_141825) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "produto_customizados", force: :cascade do |t|
+    t.integer "cliente_id"
+    t.integer "produto_id"
+    t.string "nome_customizado"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "produtos", force: :cascade do |t|
+    t.string "nome"
+    t.integer "categoria_id"
+    t.integer "subcategoria_id"
+    t.string "marca"
+    t.string "unidade_sugerida"
+    t.string "nome_generico"
+    t.decimal "commission_percentage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "usuarios", force: :cascade do |t|
     t.string "email", default: "", null: false
