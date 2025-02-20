@@ -1,0 +1,20 @@
+<h1>Detalhes da Cotação</h1>
+<p><strong>Data de Validade:</strong> <%= @cotacao.data_validade %></p>
+
+<h2>Itens de Cotação</h2>
+<ul>
+  <% @cotacao.itens_de_cotacao.each do |item| %>
+    <li>
+      Produto: <%= item.produto.nome_generico %> – Quantidade: <%= item.quantidade %> – Unidade: <%= item.unidade_selecionada %>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Respostas de Cotação</h2>
+<ul>
+  <% @cotacao.respostas_de_cotacao.each do |resposta| %>
+    <li>
+      Fornecedor: <%= resposta.fornecedor.nome %> – Status: <%= resposta.status %>
+    </li>
+  <% end %>
+</ul>

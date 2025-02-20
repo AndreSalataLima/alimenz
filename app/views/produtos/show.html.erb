@@ -1,16 +1,12 @@
 <h1>Detalhes do Produto</h1>
 
-<p>
-  <strong>Nome:</strong> <%= @produto.nome %>
-</p>
-<p>
   <strong>Nome Genérico:</strong> <%= @produto.nome_generico %>
 </p>
 <p>
   <strong>Marca:</strong> <%= @produto.marca %>
 </p>
 <p>
-  <strong>Unidade Sugerida:</strong> <%= @produto.unidade_sugerida %>
+  <strong>Unidade Sugerida:</strong> <%= @produto.opcoes_unidades %>
 </p>
 
 <% if current_usuario&.papel == 'cliente' %>

@@ -1,5 +1,7 @@
 <h1>Bem-vindo ao Dashboard do Cliente</h1>
-  <li>
-    <!-- O link de logout do Devise, para destruir a sessão -->
-    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
-  </li>
+
+<!-- Botão de logout -->
+<%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
+
+<!-- Renderiza o formulário de nova cotação -->
+<%= render 'cotacoes/form', cotacao: @cotacao %>

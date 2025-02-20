@@ -3,7 +3,7 @@ class ProdutosController < ApplicationController
   before_action :verificar_admin, except: [:index, :show]
 
   def index
-    @produtos = Produto.all
+    @produtos = Produto.order(:nome_generico)
     # Se for um cliente logado, vamos buscar nomes customizados e mesclar na exibição
   end
 
@@ -46,7 +46,7 @@ class ProdutosController < ApplicationController
   private
 
   def produto_params
-    params.require(:produto).permit(:nome, :categoria_id, :subcategoria_id, :marca, :unidade_sugerida, :nome_generico, :commission_percentage)
+    params.require(:produto).permit( :categoria_id, :subcategoria_id, :marca, :opcoes_unidades, :nome_generico, :commission_percentage)
   end
 
   def verificar_admin
@@ -55,5 +55,5 @@ class ProdutosController < ApplicationController
       redirect_to root_path, alert: "Acesso negado."
     end
   end
-  
+
 end

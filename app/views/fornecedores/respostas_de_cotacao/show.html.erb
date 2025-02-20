@@ -1,0 +1,23 @@
+<h1>Detalhes da Resposta de Cotação</h1>
+
+<p>
+  <strong>Cotação:</strong>
+  <%= link_to "Cotação ##{@resposta.cotacao.id}", cotacao_path(@resposta.cotacao) %>
+</p>
+
+<p>
+  <strong>Data de Validade:</strong>
+  <%= @resposta.cotacao.data_validade.strftime("%d/%m/%Y") if @resposta.cotacao.data_validade %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @resposta.status %>
+</p>
+
+<p>
+  <strong>Fornecedor:</strong>
+  <%= @resposta.fornecedor.nome %>
+</p>
+
+<%= link_to "Voltar", fornecedores_respostas_de_cotacao_path %>

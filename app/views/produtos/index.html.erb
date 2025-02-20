@@ -8,7 +8,6 @@
   <thead>
     <tr>
       <th>Nome (exibido)</th>
-      <th>Nome Genérico</th>
       <th>Marca</th>
       <th>Unidade Sugerida</th>
       <th>Ações</th>
@@ -16,7 +15,7 @@
   </thead>
   <tbody>
     <% @produtos.each do |produto| %>
-      <% nome_exibido = produto.nome %>
+      <% nome_exibido = produto.nome_generico %>
       <% if current_usuario&.papel == 'cliente' %>
         <% # Checar se existe um nome customizado para este produto %>
         <% custom = ProdutoCustomizado.find_by(cliente_id: current_usuario.id, produto_id: produto.id) %>
@@ -26,9 +25,8 @@
       <tr>
         <td><%= nome_para_exibir(produto) %></td>
         <%#= nome_exibido %>
-        <td><%= produto.nome_generico %></td>
         <td><%= produto.marca %></td>
-        <td><%= produto.unidade_sugerida %></td>
+        <td><%= produto.opcoes_unidades %></td>
         <td>
           <%= link_to "Mostrar", produto_path(produto) %>
           <% if current_usuario&.papel == 'admin' %>

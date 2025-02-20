@@ -1,0 +1,34 @@
+<h1>Respostas de Cotação</h1>
+
+<% if @respostas.any? %>
+  <table class="table-auto w-full border-collapse">
+    <thead>
+      <tr class="bg-gray-100 border-b">
+        <th class="px-2 py-2">Cotação</th>
+        <th class="px-2 py-2">Data de Validade</th>
+        <th class="px-2 py-2">Status</th>
+        <th class="px-2 py-2">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @respostas.each do |resposta| %>
+        <tr class="border-b">
+          <td class="px-2 py-2">
+            <%= link_to "Cotação ##{resposta.cotacao.id}", cotacao_path(resposta.cotacao) %>
+          </td>
+          <td class="px-2 py-2">
+            <% if resposta.cotacao.data_validade.present? %>
+              <%= resposta.cotacao.data_validade.strftime("%d/%m/%Y") %>
+            <% end %>
+          </td>
+          <td class="px-2 py-2"><%= resposta.status %></td>
+          <td class="px-2 py-2">
+            <%= link_to "Ver Detalhes", fornecedores_resposta_de_cotacao_path(resposta) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>Não há respostas de cotação disponíveis.</p>
+<% end %>

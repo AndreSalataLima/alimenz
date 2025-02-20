@@ -2,10 +2,6 @@
 
 <%= form_for @produto do |f| %>
   <div>
-    <%= f.label :nome %>
-    <%= f.text_field :nome %>
-  </div>
-  <div>
     <%= f.label :nome_generico %>
     <%= f.text_field :nome_generico %>
   </div>
@@ -14,8 +10,8 @@
     <%= f.text_field :marca %>
   </div>
   <div>
-    <%= f.label :unidade_sugerida %>
-    <%= f.text_field :unidade_sugerida %>
+    <%= f.label :opcoes_unidades %>
+    <%= f.text_field :opcoes_unidades %>
   </div>
   <div>
     <%= f.label :commission_percentage %>

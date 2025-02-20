@@ -1,6 +1,9 @@
 class Produto < ApplicationRecord
-  validates :nome, presence: true
+  # belongs_to :categoria
+  # belongs_to :subcategoria, optional: true
+  has_many :itens_de_cotacao
+
   validates :nome_generico, presence: true
-  validates :unidade_sugerida, presence: true
-  
+  validates :opcoes_unidades, presence: true
+
 end

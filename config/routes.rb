@@ -23,12 +23,18 @@ Rails.application.routes.draw do
   get 'cliente_home', to: 'clientes#home'
 
 
-  resources :produtos
 
   resources :produtos do
     resources :produto_customizados, only: [:create]
   end
-  
+
+  resources :cotacoes, only: [:index, :new, :create, :show]
+
+  namespace :fornecedores do
+    resources :respostas_de_cotacao, only: [:index, :show]
+  end
+
+
 
   get "up" => "rails/health#show", as: :rails_health_check
 

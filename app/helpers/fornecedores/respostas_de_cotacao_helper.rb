@@ -1,0 +1,2 @@
+module Fornecedores::RespostasDeCotacaoHelper
+end
