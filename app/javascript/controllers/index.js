@@ -5,6 +5,7 @@ import DatePickerController from "controllers/date_picker_controller"
 import ProductSearchController from "controllers/product_search_controller"
 import AvailabilityController from "controllers/availability_controller"
 import PriceAlertController from "controllers/price_alert_controller"
+import UploadModalController from "controllers/upload_modal_controller"
 
 const application = Application.start()
 
@@ -13,3 +14,4 @@ application.register("date-picker", DatePickerController)
 application.register("product-search", ProductSearchController)
 application.register("availability", AvailabilityController)
 application.register("price-alert", PriceAlertController)
+application.register("upload-modal", UploadModalController)

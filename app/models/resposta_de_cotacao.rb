@@ -9,5 +9,7 @@ class RespostaDeCotacao < ApplicationRecord
 
   accepts_nested_attributes_for :resposta_de_cotacao_items, allow_destroy: true
 
-  validates :status, inclusion: { in: ["pendente", "finalizado"] }
+  has_one_attached :documento_assinado
+
+  validates :status, inclusion: { in: ["pendente", "finalizado", "aguardando assinatura"] }
 end

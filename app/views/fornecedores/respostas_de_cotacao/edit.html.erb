@@ -13,7 +13,6 @@
     </thead>
     <tbody>
       <%= f.fields_for :resposta_de_cotacao_items do |item_fields| %>
-        <!-- Campo oculto para manter a associação -->
         <%= item_fields.hidden_field :item_de_cotacao_id, value: item_fields.object.item_de_cotacao_id %>
         <% produto = (item_fields.object.item_de_cotacao || ItemDeCotacao.find(item_fields.object.item_de_cotacao_id)).produto %>
         <tr class="border-b" data-controller="availability">
@@ -27,25 +26,19 @@
             <%= item_fields.object.item_de_cotacao.quantidade %>
           </td>
           <td class="px-2 py-2">
-<%= item_fields.number_field :preco, step: 0.01, class: "border rounded px-2 py-1", data: {
-      price_alert_target: "priceInput",
-      product_name: produto.nome_generico,
-      availability_target: "price"
-    } %>
-
+            <%= item_fields.number_field :preco, step: 0.01, class: "border rounded px-2 py-1", data: {
+              price_alert_target: "priceInput",
+              product_name: produto.nome_generico,
+              availability_target: "price"
+            } %>
           </td>
           <td class="px-2 py-2 text-center">
             <%= item_fields.check_box :disponivel, data: { availability_target: "checkbox", action: "change->availability#toggle" } %>
-
           </td>
         </tr>
       <% end %>
     </tbody>
-
-
-
   </table>
-
 
   <div class="mt-4">
     <%= f.label :data_validade, "Validade da Resposta" %>
@@ -53,11 +46,13 @@
     <p class="text-sm text-gray-600">Esta data indica até quando os valores informados permanecerão válidos (ex: 5 dias).</p>
   </div>
 
-  <div class="mt-4">
-    <%= f.label :usar_assinatura_pre_cadastrada, "Utilizar assinatura pré-cadastrada?" %>
-    <%= f.check_box :usar_assinatura_pre_cadastrada %>
-    <p class="text-sm text-gray-600">Se marcado, o PDF será gerado com a sua assinatura já cadastrada.</p>
-  </div>
+  <% if current_usuario.assinaturas.any? %>
+    <div class="mt-4">
+      <%= f.label :usar_assinatura_pre_cadastrada, "Utilizar assinatura pré-cadastrada?" %>
+      <%= f.check_box :usar_assinatura_pre_cadastrada %>
+      <p class="text-sm text-gray-600">Se marcado, o PDF será gerado com a sua assinatura já cadastrada.</p>
+    </div>
+  <% end %>
 
   <div class="mt-4">
     <%= f.submit "Responder Cotação", class: "bg-blue-500 text-white px-4 py-2 rounded" %>
@@ -76,6 +71,4 @@
       </div>
     </div>
   </div>
-
-
 <% end %>

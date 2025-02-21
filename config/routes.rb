@@ -34,6 +34,8 @@ Rails.application.routes.draw do
     resources :respostas_de_cotacao, only: [:index, :show, :edit, :update] do
       member do
         get "pdf", to: "respostas_de_cotacao#pdf"
+        get "upload_documento", to: "respostas_de_cotacao#upload_documento"
+        post "confirmar_upload", to: "respostas_de_cotacao#confirmar_upload"
       end
     end
   end

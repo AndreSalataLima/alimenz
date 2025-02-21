@@ -1,36 +1,48 @@
-<h1>Detalhes da Resposta de Cotação</h1>
+<h1>Bem-vindo ao Dashboard do Fornecedor</h1>
 
-<div class="mb-4">
-  <p><strong>Cotação:</strong> Cotação #<%= @resposta.cotacao.id %></p>
-  <p><strong>Data de Validade da Cotação:</strong> <%= @resposta.cotacao.data_validade.strftime("%d/%m/%Y") if @resposta.cotacao.data_validade %></p>
-  <p><strong>Status:</strong> <%= @resposta.status.capitalize %></p>
-  <p><strong>Data de Validade da Resposta:</strong> <%= @resposta.data_validade.strftime("%d/%m/%Y") if @resposta.data_validade %></p>
-</div>
+<ul>
+  <li>
+    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
+  </li>
+</ul>
 
-<h2>Itens da Resposta</h2>
-<table class="table-auto w-full border-collapse">
-  <thead>
-    <tr class="bg-gray-100 border-b">
-      <th class="px-2 py-2">Produto</th>
-      <th class="px-2 py-2">Unidade</th>
-      <th class="px-2 py-2">Quantidade</th>
-      <th class="px-2 py-2">Preço (R$)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @resposta.resposta_de_cotacao_items.each do |item| %>
-      <tr class="border-b">
-        <td class="px-2 py-2"><%= item.item_de_cotacao.produto.nome_generico %></td>
-        <td class="px-2 py-2"><%= item.item_de_cotacao.unidade_selecionada %></td>
-        <td class="px-2 py-2"><%= item.item_de_cotacao.quantidade %></td>
-        <td class="px-2 py-2">
-          <%= item.preco.present? ? number_to_currency(item.preco, unit: "R$") : "-" %>
-        </td>
+<h2>Cotações Disponíveis</h2>
+<% if @respostas.any? %>
+  <table class="table-auto w-full border-collapse">
+    <thead>
+      <tr class="bg-gray-100 border-b">
+        <th class="px-2 py-2">Cotação</th>
+        <th class="px-2 py-2">Data de Validade da Cotação</th>
+        <th class="px-2 py-2">Status</th>
+        <th class="px-2 py-2">Ações</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<% if @resposta.status == "pendente" %>
-  <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(@resposta), class: "bg-green-500 text-white px-4 py-2 rounded mt-4 inline-block" %>
+    </thead>
+    <tbody>
+      <% @respostas.each do |resposta| %>
+        <tr class="border-b">
+          <td class="px-2 py-2">
+            <%= "Cotação ##{resposta.cotacao.id}" %>
+          </td>
+          <td class="px-2 py-2">
+            <% if resposta.cotacao.data_validade.present? %>
+              <%= resposta.cotacao.data_validade.strftime("%d/%m/%Y") %>
+            <% end %>
+          </td>
+          <td class="px-2 py-2"><%= resposta.status.capitalize %></td>
+          <td class="px-2 py-2">
+            <% if resposta.status == "aguardando assinatura" %>
+              <%= link_to "Imprimir PDF", pdf_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
+              <%= link_to "Upload do Documento Assinado", upload_documento_fornecedores_resposta_de_cotacao_path(resposta), class: "ml-4 text-green-600" %>
+            <% elsif resposta.status == "finalizado" %>
+              <%= link_to "Imprimir PDF", pdf_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
+            <% else %>
+              <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>Não há respostas de cotação disponíveis.</p>
 <% end %>

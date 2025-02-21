@@ -29,9 +29,17 @@
             <% end %>
           </td>
           <td class="px-2 py-2"><%= resposta.status.capitalize %></td>
-          <td class="px-2 py-2">
-          <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
-          </td>
+            <td class="px-2 py-2">
+              <% if resposta.status == "aguardando assinatura" %>
+                <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
+                <%= link_to "Upload do Documento Assinado", upload_documento_fornecedores_resposta_de_cotacao_path(resposta), class: "ml-4 text-green-600" %>
+              <% elsif resposta.status == "finalizado" %>
+                <%= link_to "Baixar Cotação Enviada", rails_blob_path(resposta.documento_assinado, disposition: "attachment"), class: "text-blue-600" %>
+                <%#= link_to "Visualizar Cotação", resposta.documento_assinado.representable? ? rails_blob_path(resposta.documento_assinado, disposition: "inline") : "#", class: "ml-4 text-green-600" %>
+              <% else %>
+                <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
+              <% end %>
+            </td>
         </tr>
       <% end %>
     </tbody>
