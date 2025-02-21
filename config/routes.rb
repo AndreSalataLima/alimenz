@@ -31,7 +31,11 @@ Rails.application.routes.draw do
   resources :cotacoes, only: [:index, :new, :create, :show]
 
   namespace :fornecedores do
-    resources :respostas_de_cotacao, only: [:index, :show]
+    resources :respostas_de_cotacao, only: [:index, :show, :edit, :update] do
+      member do
+        get "pdf", to: "respostas_de_cotacao#pdf"
+      end
+    end
   end
 
 

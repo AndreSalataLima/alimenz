@@ -122,11 +122,21 @@
       },
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/controllers/clientes_controller.rb": {
         "lines": [
+          null,
+          0,
           0,
           0,
           null,
           0,
           null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
           0,
           0
         ],
@@ -182,7 +192,21 @@
           0,
           0,
           0,
+          0,
           null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
           0,
           0,
           0
@@ -196,8 +220,15 @@
           0,
           null,
           0,
+          0,
+          0,
           null,
           0,
+          null,
+          0,
+          0,
+          0,
+          null,
           0
         ],
         "branches": {}
@@ -470,6 +501,8 @@
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/fornecedor_categoria.rb": {
         "lines": [
           0,
+          0,
+          0,
           0
         ],
         "branches": {}
@@ -526,10 +559,21 @@
         ],
         "branches": {}
       },
+      "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/resposta_de_cotacao_item.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
       "/home/andresalatalima/code/AndreSalataLima/Alimenz/app/models/usuario.rb": {
         "lines": [
           0,
           0,
+          0,
+          0,
+          0,
+          null,
           null,
           0,
           null,
@@ -548,6 +592,6 @@
         "branches": {}
       }
     },
-    "timestamp": 1739978656
+    "timestamp": 1740084111
   }
 }

@@ -46,6 +46,8 @@ gem "devise"
 gem "pundit"
 
 gem "prawn", "~> 2.4"
+gem 'prawn-table'
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -61,7 +63,7 @@ group :development, :test do
   gem "rspec-rails", "~> 6.0"
 
   gem 'simplecov', require: false, group: :test
-  
+
 end
 
 

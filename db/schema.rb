@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_19_162431) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_20_212709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,6 +69,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_19_162431) do
     t.string "opcoes_unidades", default: [], array: true
   end
 
+  create_table "resposta_de_cotacao_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "resposta_de_cotacao_id", null: false
+    t.integer "item_de_cotacao_id", null: false
+    t.decimal "preco", precision: 10, scale: 2, default: "0.0", null: false
+    t.boolean "disponivel", default: true, null: false
+    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_item_de_cotacao_id"
+    t.index ["resposta_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_resposta_de_cotacao_id"
+  end
+
   create_table "resposta_de_cotacaos", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -105,6 +116,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_19_162431) do
   add_foreign_key "fornecedor_categorias", "usuarios", column: "fornecedor_id"
   add_foreign_key "item_de_cotacaos", "cotacaos"
   add_foreign_key "item_de_cotacaos", "produtos"
+  add_foreign_key "resposta_de_cotacao_items", "item_de_cotacaos"
+  add_foreign_key "resposta_de_cotacao_items", "resposta_de_cotacaos"
   add_foreign_key "resposta_de_cotacaos", "cotacaos"
   add_foreign_key "resposta_de_cotacaos", "usuarios", column: "fornecedor_id"
 end

@@ -12,7 +12,7 @@
     <thead>
       <tr class="bg-gray-100 border-b">
         <th class="px-2 py-2">Cotação</th>
-        <th class="px-2 py-2">Data de Validade</th>
+        <th class="px-2 py-2">Data de Validade da Cotação</th>
         <th class="px-2 py-2">Status</th>
         <th class="px-2 py-2">Ações</th>
       </tr>
@@ -28,9 +28,9 @@
               <%= resposta.cotacao.data_validade.strftime("%d/%m/%Y") %>
             <% end %>
           </td>
-          <td class="px-2 py-2"><%= resposta.status %></td>
+          <td class="px-2 py-2"><%= resposta.status.capitalize %></td>
           <td class="px-2 py-2">
-            <%= link_to "Ver Detalhes", fornecedores_resposta_de_cotacao_path(resposta) %>
+          <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600" %>
           </td>
         </tr>
       <% end %>
