@@ -6,6 +6,8 @@ class Usuario < ApplicationRecord
   has_many :categorias, through: :fornecedor_categorias
 
 
+  accepts_nested_attributes_for :assinatura
+
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
   # Crie scopes para filtrar por papel, se necessário:

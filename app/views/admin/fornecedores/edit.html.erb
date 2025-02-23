@@ -1,22 +1,32 @@
 <h1>Editar Fornecedor: <%= @fornecedor.nome %></h1>
 
-<%= form_with model: @fornecedor, local: true, method: :patch do |f| %>
+<%= form_with model: [:admin, @fornecedor], local: true, multipart: true do |f| %>
   <div>
     <%= f.label :telefone, "Telefone" %><br>
     <%= f.text_field :telefone %>
   </div>
 
+  <!-- Assinatura -->
   <div>
-    <%= f.label :logo, "Logo" %><br>
-    <%= f.text_field :logo %>
+    <h2>Assinatura</h2>
+    <% assinatura = @fornecedor.assinatura || @fornecedor.build_assinatura %>
+
+    <% if assinatura.imagem_assinatura.attached? %>
+      <p>Assinatura atual:</p>
+      <%= image_tag assinatura.imagem_assinatura, width: 200 %>
+    <% else %>
+      <p>Nenhuma assinatura cadastrada.</p>
+    <% end %>
+
+    <%= f.fields_for :assinatura_attributes, assinatura do |af| %>
+      <div>
+        <%= af.label :imagem_assinatura, "Upload de nova assinatura (imagem)" %><br>
+        <%= af.file_field :imagem_assinatura %>
+      </div>
+    <% end %>
   </div>
 
   <div>
-    <%= f.label :company_stamp, "Carimbo (URL ou Caminho da Imagem)" %><br>
-    <%= f.text_field :company_stamp %>
-  </div>
-
-  <div>
-    <%= f.submit "Atualizar Fornecedor" %>
+    <%= f.submit "Atualizar Fornecedor", class: "btn btn-primary" %>
   </div>
 <% end %>

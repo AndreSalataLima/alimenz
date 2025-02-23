@@ -46,13 +46,14 @@
     <p class="text-sm text-gray-600">Esta data indica até quando os valores informados permanecerão válidos (ex: 5 dias).</p>
   </div>
 
-  <% if current_usuario.assinaturas.any? %>
+  <% if current_usuario.assinatura.present? %>
     <div class="mt-4">
       <%= f.label :usar_assinatura_pre_cadastrada, "Utilizar assinatura pré-cadastrada?" %>
       <%= f.check_box :usar_assinatura_pre_cadastrada %>
       <p class="text-sm text-gray-600">Se marcado, o PDF será gerado com a sua assinatura já cadastrada.</p>
     </div>
   <% end %>
+
 
   <div class="mt-4">
     <%= f.submit "Responder Cotação", class: "bg-blue-500 text-white px-4 py-2 rounded" %>

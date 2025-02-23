@@ -23,29 +23,33 @@ module Fornecedores
     end
 
     def update
-      # Permitir que o fornecedor edite a cotação enquanto estiver "aguardando assinatura"
-      if @resposta.status == "aguardando assinatura"
-        if @resposta.update(resposta_de_cotacao_params)
-          redirect_to fornecedor_home_path, notice: "Cotação atualizada com sucesso!"
-        else
-          render :edit, status: :unprocessable_entity
-        end
-        return # Encerra aqui para evitar sobrescrever o status
-      end
+      # Verifica se o fornecedor marcou a assinatura pré-cadastrada
+      usar_assinatura = (params[:resposta_de_cotacao][:usar_assinatura_pre_cadastrada] == "1")
 
-      # Se estiver finalizando a cotação, verifica se há assinatura pré-cadastrada
-      if current_usuario.assinaturas.any? && params[:resposta_de_cotacao][:usar_assinatura_pre_cadastrada] == "1"
+      if usar_assinatura && current_usuario.assinatura&.imagem_assinatura&.attached?
         novo_status = "finalizado"
+        pdf_content = PdfGeneratorService.new(@resposta, usar_assinatura: true).generate
+        @resposta.documento_assinado.attach(
+          io: StringIO.new(pdf_content),
+          filename: "resposta_cotacao_#{@resposta.id}.pdf",
+          content_type: "application/pdf"
+        )
       else
         novo_status = "aguardando assinatura"
       end
 
-      if @resposta.update(resposta_de_cotacao_params.merge(status: novo_status))
+      # Atualiza status e status_analise
+      atualizar_status_analise = (novo_status == "finalizado") ? { status_analise: "pendente_de_analise" } : {}
+
+      if @resposta.update(resposta_de_cotacao_params.merge(status: novo_status).merge(atualizar_status_analise))
         redirect_to fornecedor_home_path, notice: "Cotação respondida com sucesso! Status: #{novo_status.capitalize}"
       else
         render :edit, status: :unprocessable_entity
       end
     end
+
+
+
 
 
     def confirmar_upload
@@ -61,12 +65,15 @@ module Fornecedores
           content_type: "application/pdf"
         )
 
-        @resposta.update(status: "finalizado")
+        # Atualiza status e reseta status_analise para pendente_de_analise
+        @resposta.update(status: "finalizado", status_analise: "pendente_de_analise")
+
         redirect_to fornecedor_home_path, notice: "Cotação enviada com sucesso!"
       else
         redirect_to upload_documento_fornecedores_resposta_de_cotacao_path(@resposta), alert: "Nenhum documento selecionado."
       end
     end
+
 
 
 

@@ -31,9 +31,7 @@ module Admin
     end
 
     def fornecedor_params
-      # Permitimos atualizar os campos do fornecedor e, para assinatura, como estamos mantendo apenas uma, usamos fields_for
-      params.require(:usuario).permit(:telefone, :logo, :company_stamp, :commission_percentage,
-                                      assinatura_attributes: [:id, :imagem_assinatura])
+      params.require(:usuario).permit(:telefone, assinatura_attributes: [:imagem_assinatura])
     end
 
     def verificar_admin

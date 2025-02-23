@@ -1,4 +1,7 @@
 class Assinatura < ApplicationRecord
   belongs_to :usuario
-  validates :imagem, presence: true
+
+  has_one_attached :imagem_assinatura
+
+  validates :imagem_assinatura, presence: true
 end

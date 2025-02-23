@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_21_233521) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_23_184610) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,7 +44,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_233521) do
 
   create_table "assinaturas", force: :cascade do |t|
     t.bigint "usuario_id", null: false
-    t.text "imagem"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["usuario_id"], name: "index_assinaturas_on_usuario_id"
@@ -140,7 +139,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_233521) do
     t.string "responsavel"
     t.text "endereco"
     t.text "logo"
-    t.text "company_stamp"
     t.decimal "commission_percentage"
     t.string "telefone"
     t.datetime "created_at", null: false

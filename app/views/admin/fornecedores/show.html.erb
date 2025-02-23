@@ -1,14 +1,15 @@
-<h1>Detalhes do Fornecedor: <%= @fornecedor.nome %></h1>
+<!-- app/views/admin/fornecedores/show.html.erb -->
+
+<h1>Fornecedor: <%= @fornecedor.nome %></h1>
 
 <p><strong>Email:</strong> <%= @fornecedor.email %></p>
-<p><strong>CNPJ:</strong> <%= @fornecedor.cnpj %></p>
 <p><strong>Telefone:</strong> <%= @fornecedor.telefone %></p>
-<p><strong>Assinatura:</strong>
-  <% if @fornecedor.assinatura.present? %>
-    <%= image_tag @fornecedor.assinatura.imagem_assinatura, width: 200 %>
-  <% else %>
-    Não cadastrada.
-  <% end %>
-</p>
 
-<%= link_to "Editar Fornecedor", edit_admin_fornecedor_path(@fornecedor) %>
+<% if @fornecedor.assinatura&.imagem_assinatura&.attached? %>
+  <p><strong>Assinatura de <%= @fornecedor.nome %>:</strong></p>
+  <%= image_tag @fornecedor.assinatura.imagem_assinatura, width: 200 %>
+<% else %>
+  <p>Nenhuma assinatura cadastrada.</p>
+<% end %>
+
+<%= link_to 'Editar', edit_admin_fornecedor_path(@fornecedor), class: 'btn btn-secondary' %>
