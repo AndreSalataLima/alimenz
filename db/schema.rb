@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_21_132424) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_21_233521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,6 +123,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_21_132424) do
     t.integer "fornecedor_id"
     t.string "status", default: "pendente"
     t.date "data_validade"
+    t.string "status_analise", default: "pendente_de_analise"
     t.index ["cotacao_id"], name: "index_resposta_de_cotacaos_on_cotacao_id"
     t.index ["fornecedor_id"], name: "index_resposta_de_cotacaos_on_fornecedor_id"
   end

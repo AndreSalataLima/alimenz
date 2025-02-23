@@ -1,11 +1,21 @@
 <h1>Bem-vindo ao Dashboard do Admin</h1>
 
-<p>Escolha uma das opções:</p>
-<ul>
-  <li><%= link_to "Criar novo usuário", new_admin_usuario_path %></li>
-  <li><%= link_to "Criar novo produto", new_produto_path %></li>
+<% respostas_pendentes = RespostaDeCotacao.where(status_analise: "pendente_de_analise").count %>
+<% if respostas_pendentes > 0 %>
+  <div class="bg-yellow-300 p-2 rounded mb-4">
+    <strong>Atenção:</strong> Existem <%= respostas_pendentes %> resposta(s) de cotação pendente(s) de análise.
+    <%= link_to "Visualizar Respostas", admin_respostas_de_cotacao_path, class: "underline ml-2" %>
+  </div>
+<% end %>
+
+<ul class="list-disc ml-6">
+  <li><%= link_to "Criar novo usuário", new_admin_usuario_path, class: "text-blue-500" %></li>
+  <li><%= link_to "Criar novo produto", new_produto_path, class: "text-blue-500" %></li>
+  <li><%= link_to "Ver Clientes", admin_clientes_path, class: "text-blue-500" %></li>
+  <li><%= link_to "Ver Fornecedores", admin_fornecedores_path, class: "text-blue-500" %></li>
+  <li><%= link_to "Visualizar Cotações", admin_cotacoes_path, class: "text-blue-500" %></li>
+  <li><%= link_to "Visualizar Respostas de Cotação", admin_respostas_de_cotacao_path, class: "text-blue-500" %></li>
   <li>
-    <!-- O link de logout do Devise, para destruir a sessão -->
-    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
+    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" }, class: "text-blue-500" %>
   </li>
 </ul>

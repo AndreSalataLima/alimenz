@@ -12,7 +12,17 @@ Rails.application.routes.draw do
   # end
   namespace :admin do
     resources :usuarios
+    resources :clientes, only: [:index, :show]
+    resources :fornecedores, only: [:index, :show, :edit, :update]
+    resources :cotacoes, only: [:index, :show]
     resources :dashboard, only: [:index]
+
+    resources :respostas_de_cotacao, only: [:index, :show] do
+      member do
+        patch :aprovar
+        patch :reprovar
+      end
+    end
 
     get 'pending_verifications', to: 'dashboard#pending_verifications'
   end

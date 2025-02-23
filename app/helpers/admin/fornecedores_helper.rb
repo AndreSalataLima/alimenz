@@ -1,0 +1,2 @@
+module Admin::FornecedoresHelper
+end

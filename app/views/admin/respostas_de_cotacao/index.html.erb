@@ -1,0 +1,44 @@
+<h1>Lista de Respostas de Cotação</h1>
+
+<table class="min-w-full border-collapse">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="px-4 py-2 border">ID</th>
+      <th class="px-4 py-2 border">Fornecedor</th>
+      <th class="px-4 py-2 border">Cotação</th>
+      <th class="px-4 py-2 border">Data de Validade</th>
+      <th class="px-4 py-2 border">Status Fornecedor</th>
+      <th class="px-4 py-2 border">Análise Admin</th>
+      <th class="px-4 py-2 border">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @respostas.each do |resposta| %>
+      <tr>
+        <td class="px-4 py-2 border"><%= resposta.id %></td>
+        <td class="px-4 py-2 border"><%= resposta.fornecedor.nome %></td>
+        <td class="px-4 py-2 border">
+          <%= link_to "Cotação #{resposta.cotacao.id}", admin_cotacao_path(resposta.cotacao), class: "text-blue-500" %>
+        </td>
+        <td class="px-4 py-2 border">
+          <%= resposta.data_validade.strftime('%d/%m/%Y') if resposta.data_validade %>
+        </td>
+        <td class="px-4 py-2 border"><%= resposta.status.capitalize %></td>
+        <td class="px-4 py-2 border">
+          <% if resposta.status_analise == "pendente_de_analise" %>
+            <span class="text-yellow-600 font-bold">🟡 Pendente de Análise</span>
+          <% elsif resposta.status_analise == "aprovado" %>
+            <span class="text-green-600 font-bold">✅ Aprovado</span>
+          <% elsif resposta.status_analise == "cotacao_nao_aceita" %>
+            <span class="text-red-600 font-bold">❌ Cotação não aceita</span>
+          <% else %>
+            <span class="text-gray-600">–</span>
+          <% end %>
+        </td>
+        <td class="px-4 py-2 border">
+          <%= link_to "Ver Detalhes", admin_resposta_de_cotacao_path(resposta), class: "text-blue-500" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

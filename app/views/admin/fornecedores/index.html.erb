@@ -1,0 +1,9 @@
+<h1>Lista de Fornecedores</h1>
+
+<ul>
+  <% @fornecedores.each do |fornecedor| %>
+    <li>
+      <%= link_to fornecedor.nome, admin_fornecedor_path(fornecedor) %>
+    </li>
+  <% end %>
+</ul>

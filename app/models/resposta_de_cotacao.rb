@@ -11,5 +11,9 @@ class RespostaDeCotacao < ApplicationRecord
 
   has_one_attached :documento_assinado
 
+  VALID_STATUS_ANALISE = ["pendente_de_analise", "aprovado", "cotacao_nao_aceita"]
+  validates :status_analise, inclusion: { in: VALID_STATUS_ANALISE }, allow_nil: true
+
+
   validates :status, inclusion: { in: ["pendente", "finalizado", "aguardando assinatura"] }
 end

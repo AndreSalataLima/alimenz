@@ -1,0 +1,22 @@
+<h1>Editar Fornecedor: <%= @fornecedor.nome %></h1>
+
+<%= form_with model: @fornecedor, local: true, method: :patch do |f| %>
+  <div>
+    <%= f.label :telefone, "Telefone" %><br>
+    <%= f.text_field :telefone %>
+  </div>
+
+  <div>
+    <%= f.label :logo, "Logo" %><br>
+    <%= f.text_field :logo %>
+  </div>
+
+  <div>
+    <%= f.label :company_stamp, "Carimbo (URL ou Caminho da Imagem)" %><br>
+    <%= f.text_field :company_stamp %>
+  </div>
+
+  <div>
+    <%= f.submit "Atualizar Fornecedor" %>
+  </div>
+<% end %>
