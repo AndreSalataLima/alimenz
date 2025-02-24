@@ -32,7 +32,11 @@ Rails.application.routes.draw do
   get 'fornecedor_home', to: 'fornecedores#home'
   get 'cliente_home', to: 'clientes#home'
 
-  resources :pedidos_de_compras, only: [:index, :show, :new, :create]
+  resources :pedidos_de_compras, only: [:index, :show, :new, :create] do
+    member do
+      get :pdf, to: "pedidos_de_compras#pdf", as: :pdf
+    end
+  end
 
   resources :produtos do
     resources :produto_customizados, only: [:create]
@@ -46,7 +50,7 @@ Rails.application.routes.draw do
       post :finalizar_pedidos     # Passo 7: Gera os Pedidos de Compra a partir dos pedidos confirmados
     end
   end
-  
+
   namespace :fornecedores do
     resources :respostas_de_cotacao, only: [:index, :show, :edit, :update] do
       member do

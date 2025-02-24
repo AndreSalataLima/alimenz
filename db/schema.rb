@@ -124,7 +124,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
     t.integer "item_de_cotacao_id", null: false
     t.decimal "preco", precision: 10, scale: 2, default: "0.0", null: false
     t.boolean "disponivel", default: true, null: false
-    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_item_de_cotacao_id"
+    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_
+    ao_id"
     t.index ["resposta_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_resposta_de_cotacao_id"
   end
 

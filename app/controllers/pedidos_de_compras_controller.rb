@@ -40,6 +40,39 @@ class PedidosDeComprasController < ApplicationController
     end
   end
 
+  def pdf
+    @pedido = PedidoDeCompra.find(params[:id])
+
+    pdf = Prawn::Document.new
+    pdf.text "Pedido de Compra ##{@pedido.id}", size: 20, style: :bold
+    pdf.text "Cliente: #{@pedido.cliente.nome}"
+    pdf.text "Fornecedor: #{@pedido.fornecedor.nome}"
+    pdf.text "Data de Validade: #{@pedido.data_validade.strftime('%d/%m/%Y')}" if @pedido.data_validade
+
+    pdf.move_down 20
+
+    data = [["Produto", "Quantidade", "Unidade", "Preço (R$)"]]
+
+    @pedido.itens.each do |item|
+      produto = Produto.find(item["produto_id"])
+      data << [
+        produto.nome_generico,
+        item["quantidade"],
+        item["unidade"],
+        "R$ #{item['preco']}"
+      ]
+    end
+
+    pdf.table(data, header: true, cell_style: { padding: 5 })
+
+    send_data pdf.render,
+              filename: "pedido_de_compra_#{@pedido.id}.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
+
+
   private
 
   def pedido_de_compra_params

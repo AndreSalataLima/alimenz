@@ -4,6 +4,8 @@ class FornecedoresController < ApplicationController
 
   def home
     @respostas = current_usuario.respostas_de_cotacao.includes(:cotacao)
+    @pedidos = PedidoDeCompra.where(fornecedor_id: current_usuario.id).order(created_at: :desc)
+
   end
 
   private
