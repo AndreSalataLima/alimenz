@@ -1,0 +1,24 @@
+<h1>Meus Pedidos de Compra</h1>
+
+<table class="min-w-full divide-y divide-gray-200">
+  <thead>
+    <tr>
+      <th>Fornecedor</th>
+      <th>Valor Total</th>
+      <th>Data de Validade</th>
+      <th>Status</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pedidos.each do |pedido| %>
+      <tr>
+        <td><%= pedido.fornecedor.nome %></td>
+        <td><%= number_to_currency(pedido.valor_total) %></td>
+        <td><%= pedido.data_validade %></td>
+        <td><%= pedido.status.capitalize %></td>
+        <td><%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

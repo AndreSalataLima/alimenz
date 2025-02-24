@@ -32,14 +32,21 @@ Rails.application.routes.draw do
   get 'fornecedor_home', to: 'fornecedores#home'
   get 'cliente_home', to: 'clientes#home'
 
-
+  resources :pedidos_de_compras, only: [:index, :show, :new, :create]
 
   resources :produtos do
     resources :produto_customizados, only: [:create]
   end
 
-  resources :cotacoes, only: [:index, :new, :create, :show]
-
+  resources :cotacoes, only: [:index, :new, :create, :show] do
+    member do
+      # Novo fluxo para gerar pedidos de compra
+      get :selecionar_pedidos    # Passo 4: Exibe a tabela com itens (linhas) x fornecedores (colunas)
+      post :resumo_pedidos        # Passo 5: Recebe os checkboxes e exibe os cards de resumo
+      post :finalizar_pedidos     # Passo 7: Gera os Pedidos de Compra a partir dos pedidos confirmados
+    end
+  end
+  
   namespace :fornecedores do
     resources :respostas_de_cotacao, only: [:index, :show, :edit, :update] do
       member do

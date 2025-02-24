@@ -46,8 +46,9 @@ class Admin::UsuariosController < ApplicationController
   end
 
   def usuario_params
-    params.require(:usuario).permit(:nome, :email, :papel, :cnpj, :responsavel, :endereco, :logo, :commission_percentage, :telefone, :password, :password_confirmation, assinatura_attributes: [:id, :imagem_assinatura, :_destroy])
+    params.require(:usuario).permit(:nome, :email, :papel, :cnpj, :responsavel, :endereco, :logo, :commission_percentage, :telefone, :password, :password_confirmation, assinatura_attributes: [:id, :imagem_assinatura, :_destroy], categoria_ids: [])
   end
+
 
   def verificar_admin
     unless current_usuario && current_usuario.papel == 'admin'

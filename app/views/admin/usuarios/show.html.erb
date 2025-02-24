@@ -13,5 +13,12 @@
   <strong>Papel:</strong> <%= @usuario.papel %>
 </p>
 
+<% if @usuario.papel == 'fornecedor' %>
+  <p>
+    <strong>Categorias:</strong>
+    <%= @usuario.categorias.map(&:nome).join(', ') %>
+  </p>
+<% end %>
+
 <%= link_to 'Editar', edit_admin_usuario_path(@usuario) %> |
 <%= link_to 'Voltar', admin_usuarios_path %>

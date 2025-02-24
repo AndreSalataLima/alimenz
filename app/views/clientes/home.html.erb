@@ -1,5 +1,8 @@
 <h1>Bem-vindo ao Dashboard do Cliente</h1>
 
+<%= link_to "Visualizar Cotações", cotacoes_path, class: "text-blue-500" %>
+
+
 <!-- Botão de logout -->
 <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
 

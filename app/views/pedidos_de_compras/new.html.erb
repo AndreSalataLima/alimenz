@@ -1,0 +1,43 @@
+<h1>Revisão do Pedido de Compra</h1>
+
+<%= form_with model: @pedido, url: pedidos_de_compras_path, local: true do |f| %>
+  <div class="mb-4">
+    <%= f.label :fornecedor_id, "Fornecedor", class: "block font-bold" %>
+    <%= f.collection_select :fornecedor_id, @fornecedores, :id, :nome, prompt: "Selecione um fornecedor", class: "border rounded p-2 w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :valor_total, "Valor Total", class: "block font-bold" %>
+    <%= f.text_field :valor_total, value: @pedido.valor_total || 0.0, readonly: true, class: "border rounded p-2 w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :data_validade, "Data de Validade", class: "block font-bold" %>
+    <%= f.date_field :data_validade, value: @pedido.data_validade, readonly: true, class: "border rounded p-2 w-full" %>
+  </div>
+
+  <!-- Campo hidden para status (padrão: pendente) -->
+  <%= f.hidden_field :status, value: "pendente" %>
+
+  <div class="mb-4">
+    <h2 class="font-bold">Itens do Pedido</h2>
+    <% if @itens.present? %>
+      <% @itens.each do |item| %>
+        <p>
+          <strong><%= item["nome"] %></strong> -
+          Quantidade: <%= item["quantidade"] %> -
+          Unidade: <%= item["unidade"] %> -
+          Preço: <%= number_to_currency(item["preco"]) %>
+        </p>
+      <% end %>
+    <% else %>
+      <p>Nenhum item para exibir.</p>
+    <% end %>
+  </div>
+
+  <div>
+    <%= f.submit "Confirmar Pedido", class: "bg-blue-500 text-white py-2 px-4 rounded" %>
+  </div>
+<% end %>
+
+<%= link_to "Voltar", pedidos_de_compras_path, class: "text-blue-500 underline mt-4 inline-block" %>

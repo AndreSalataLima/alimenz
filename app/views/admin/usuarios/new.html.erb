@@ -45,6 +45,15 @@
     <%= f.label :password_confirmation %>
     <%= f.password_field :password_confirmation %>
   </div>
+
+  <%# Se o usuário for fornecedor, permita selecionar as categorias que ele atende %>
+  <% if @usuario.papel == "fornecedor" %>
+    <div>
+      <%= f.label :categoria_ids, "Categorias" %>
+      <%= f.collection_select :categoria_ids, Categoria.all, :id, :nome, { prompt: "Selecione as categorias" }, { multiple: true } %>
+    </div>
+  <% end %>
+
   <div>
     <%= f.submit "Criar Usuário" %>
   </div>
