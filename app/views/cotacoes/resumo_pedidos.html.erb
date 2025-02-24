@@ -1,0 +1,41 @@
+<h1>Resumo dos Pedidos</h1>
+
+<p>Revise os pedidos por fornecedor e confirme os que deseja enviar.</p>
+
+<%= form_with url: finalizar_pedidos_cotacao_path(@cotacao), method: :post, local: true do |f| %>
+  <input type="hidden" name="cotacao_id" value="<%= @cotacao.id %>">
+  <%# Repasse os IDs das respostas selecionadas para manter a associação %>
+  <% @respostas_selecionadas.each do |resp| %>
+    <%# Transforma a estrutura selecionada em hidden fields para manter os dados %>
+    <% (params[:selecionados][resp.id.to_s] || {}).each do |item_id, _| %>
+      <%= hidden_field_tag "selecionados[#{resp.id}][#{item_id}]", "1" %>
+    <% end %>
+  <% end %>
+
+  <% @respostas_por_fornecedor.each do |fornecedor_id, respostas| %>
+    <% fornecedor = Usuario.find(fornecedor_id) %>
+    <div class="border p-4 rounded mb-4">
+      <h2 class="font-bold">Fornecedor: <%= fornecedor.nome %></h2>
+      <ul>
+        <% respostas.each do |resposta| %>
+          <% @itens_por_resposta[resposta.id].each do |item| %>
+            <li>
+              Produto: <%= item.item_de_cotacao.produto.nome_generico %> –
+              Quantidade: <%= item.item_de_cotacao.quantidade %> –
+              Preço Unitário: <%= number_to_currency(item.preco) %>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+      <p class="font-bold">Total: <%= number_to_currency(@resumos[fornecedor_id]) %></p>
+      <div>
+        <%= check_box_tag "confirmacoes[#{fornecedor_id}]", "1" %>
+        <%= label_tag "confirmacoes_#{fornecedor_id}", "Confirmar pedido com este fornecedor" %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= f.submit "Finalizar Pedido", class: "bg-green-500 text-white py-2 px-4 rounded" %>
+  </div>
+<% end %>

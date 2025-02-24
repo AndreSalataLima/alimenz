@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_23_184610) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_184610) do
     t.index ["produto_id"], name: "index_item_de_cotacaos_on_produto_id"
   end
 
+  create_table "pedido_de_compras", force: :cascade do |t|
+    t.bigint "cliente_id", null: false
+    t.bigint "fornecedor_id", null: false
+    t.decimal "valor_total", precision: 10, scale: 2, default: "0.0", null: false
+    t.date "data_validade", null: false
+    t.string "status", default: "pendente", null: false
+    t.jsonb "itens", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cliente_id"], name: "index_pedido_de_compras_on_cliente_id"
+    t.index ["fornecedor_id"], name: "index_pedido_de_compras_on_fornecedor_id"
+  end
+
   create_table "produto_customizados", force: :cascade do |t|
     t.integer "cliente_id"
     t.integer "produto_id"
@@ -111,7 +124,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_184610) do
     t.integer "item_de_cotacao_id", null: false
     t.decimal "preco", precision: 10, scale: 2, default: "0.0", null: false
     t.boolean "disponivel", default: true, null: false
-    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_item_de_cotacao_id"
+    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_
+    ao_id"
     t.index ["resposta_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_resposta_de_cotacao_id"
   end
 
@@ -154,6 +168,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_184610) do
   add_foreign_key "fornecedor_categorias", "usuarios", column: "fornecedor_id"
   add_foreign_key "item_de_cotacaos", "cotacaos"
   add_foreign_key "item_de_cotacaos", "produtos"
+  add_foreign_key "pedido_de_compras", "usuarios", column: "cliente_id"
+  add_foreign_key "pedido_de_compras", "usuarios", column: "fornecedor_id"
   add_foreign_key "resposta_de_cotacao_items", "item_de_cotacaos"
   add_foreign_key "resposta_de_cotacao_items", "resposta_de_cotacaos"
   add_foreign_key "resposta_de_cotacaos", "cotacaos"

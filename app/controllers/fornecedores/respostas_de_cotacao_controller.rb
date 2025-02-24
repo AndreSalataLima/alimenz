@@ -48,10 +48,6 @@ module Fornecedores
       end
     end
 
-
-
-
-
     def confirmar_upload
       @resposta = RespostaDeCotacao.find(params[:id])
 

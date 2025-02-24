@@ -4,6 +4,7 @@ class Usuario < ApplicationRecord
   has_many :respostas_de_cotacao, foreign_key: "fornecedor_id", class_name: "RespostaDeCotacao"
   has_many :fornecedor_categorias, foreign_key: "fornecedor_id", class_name: "FornecedorCategoria", dependent: :destroy
   has_many :categorias, through: :fornecedor_categorias
+  has_many :pedidos_de_compras, foreign_key: "cliente_id", class_name: "PedidoDeCompra"
 
 
   accepts_nested_attributes_for :assinatura

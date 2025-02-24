@@ -29,7 +29,6 @@
     <%= f.label :logo %>
     <%= f.text_field :logo %>
   </div>
-
   <div>
     <%= f.label :commission_percentage %>
     <%= f.number_field :commission_percentage, step: 0.01 %>
@@ -47,6 +46,14 @@
     <%= f.label :password_confirmation %>
     <%= f.password_field :password_confirmation %>
   </div>
+
+  <% if @usuario.papel == "fornecedor" %>
+    <div>
+      <%= f.label :categoria_ids, "Categorias" %>
+      <%= f.collection_select :categoria_ids, Categoria.all, :id, :nome, { prompt: "Selecione as categorias", selected: @usuario.categoria_ids }, { multiple: true } %>
+    </div>
+  <% end %>
+
   <div>
     <%= f.submit "Atualizar Usuário" %>
   </div>
