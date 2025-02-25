@@ -1,31 +1,28 @@
 <!-- Barra superior com logo e links -->
 <div class="w-full bg-neutral-100 shadow-sm">
   <div class="container mx-auto flex justify-between items-center py-4 px-8">
-    <!-- Logo à esquerda -->
+    <!-- Logo -->
     <%= image_tag "logo_vet_499x137.png", alt: "Logo", class: "max-w-[120px] max-h-[40px] object-contain" %>
 
     <!-- Links de navegação -->
     <div class="flex items-center gap-4">
-      <!-- Link para Página Inicial -->
-
-      <!-- Home page / solicitar cotação -->
-      <%= link_to cliente_home_path,
+      <!-- Home -->
+      <%= link_to fornecedor_home_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
-        Solicitar cotação
+        Página Inicial
       <% end %>
 
-      <!-- Cistórico de cotações do cliente -->
-      <%= link_to cotacoes_path,
+      <!-- Cotações -->
+      <%= link_to fornecedores_respostas_de_cotacao_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
-        Histórico de cotações
+        Minhas Cotações
       <% end %>
 
-      <!-- Link para Pedidos de Compra -->
+      <!-- Pedidos de Compra -->
       <%= link_to pedidos_de_compras_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
         Pedidos de Compra
       <% end %>
-
 
       <!-- Link para logout -->
       <%= link_to "Logout",
@@ -36,9 +33,9 @@
   </div>
 </div>
 
-<!-- Cabeçalho marrom (recebe um título via variável local 'titulo') -->
+<!-- Cabeçalho marrom -->
 <div class="w-full h-[60px] bg-[#615F4A] rounded-b-[40px] shadow-md flex items-center px-8">
   <h1 class="text-white text-2xl font-bold text-center w-full">
-    <%= titulo || "Título Padrão" %>
+    <%= titulo || "Dashboard do Fornecedor" %>
   </h1>
 </div>

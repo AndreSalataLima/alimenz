@@ -1,21 +1,37 @@
-<h1>Bem-vindo ao Dashboard do Admin</h1>
+<%= render 'admin/shared/navbar', titulo: "Dashboard do Administrador" %>
 
-<% respostas_pendentes = RespostaDeCotacao.where(status_analise: "pendente_de_analise").count %>
-<% if respostas_pendentes > 0 %>
-  <div class="bg-yellow-300 p-2 rounded mb-4">
-    <strong>Atenção:</strong> Existem <%= respostas_pendentes %> resposta(s) de cotação pendente(s) de análise.
-    <%= link_to "Visualizar Respostas", admin_respostas_de_cotacao_path, class: "underline ml-2" %>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Painel de Controle</h2>
+
+    <% respostas_pendentes = RespostaDeCotacao.where(status_analise: "pendente_de_analise").count %>
+    <% if respostas_pendentes > 0 %>
+      <div class="bg-yellow-300 p-4 rounded-lg mb-6 text-gray-900 shadow-md flex justify-between items-center">
+        <div>
+          <strong>Atenção:</strong> Existem <%= respostas_pendentes %> resposta(s) de cotação pendente(s) de análise.
+        </div>
+        <%= link_to "Visualizar Respostas", admin_respostas_de_cotacao_path,
+          class: "bg-yellow-500 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-600 transition" %>
+      </div>
+    <% end %>
+
+    <!-- Grid de Ações -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Card: Criar Usuário -->
+      <div class="bg-blue-100 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Gerenciar Usuários</h3>
+        <p class="text-gray-600 mb-4">Adicione novos usuários ao sistema.</p>
+        <%= link_to "Criar novo usuário", new_admin_usuario_path,
+          class: "bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition" %>
+      </div>
+
+      <!-- Card: Criar Produto -->
+      <div class="bg-green-100 p-6 rounded-lg shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Gerenciar Produtos</h3>
+        <p class="text-gray-600 mb-4">Cadastre novos produtos no sistema.</p>
+        <%= link_to "Criar novo produto", new_produto_path,
+          class: "bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600 transition" %>
+      </div>
+    </div>
   </div>
-<% end %>
-
-<ul class="list-disc ml-6">
-  <li><%= link_to "Criar novo usuário", new_admin_usuario_path, class: "text-blue-500" %></li>
-  <li><%= link_to "Criar novo produto", new_produto_path, class: "text-blue-500" %></li>
-  <li><%= link_to "Ver Clientes", admin_clientes_path, class: "text-blue-500" %></li>
-  <li><%= link_to "Ver Fornecedores", admin_fornecedores_path, class: "text-blue-500" %></li>
-  <li><%= link_to "Visualizar Cotações", admin_cotacoes_path, class: "text-blue-500" %></li>
-  <li><%= link_to "Visualizar Respostas de Cotação", admin_respostas_de_cotacao_path, class: "text-blue-500" %></li>
-  <li>
-    <%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" }, class: "text-blue-500" %>
-  </li>
-</ul>
+</div>

@@ -1,34 +1,60 @@
-<h1>Respostas de Cotação</h1>
+<%= render 'fornecedores/shared/navbar', titulo: "Respostas de Cotação" %>
 
-<% if @respostas.any? %>
-  <table class="table-auto w-full border-collapse">
-    <thead>
-      <tr class="bg-gray-100 border-b">
-        <th class="px-2 py-2">Cotação</th>
-        <th class="px-2 py-2">Data de Validade</th>
-        <th class="px-2 py-2">Status</th>
-        <th class="px-2 py-2">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @respostas.each do |resposta| %>
-        <tr class="border-b">
-          <td class="px-2 py-2">
-            <%= link_to "Cotação ##{resposta.cotacao.id}", cotacao_path(resposta.cotacao) %>
-          </td>
-          <td class="px-2 py-2">
-            <% if resposta.cotacao.data_validade.present? %>
-              <%= resposta.cotacao.data_validade.strftime("%d/%m/%Y") %>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Minhas Respostas de Cotação</h2>
+
+    <% if @respostas.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @respostas.each do |resposta| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2 font-medium">
+                  <%= link_to "Cotação ##{resposta.cotacao.id}", cotacao_path(resposta.cotacao), class: "text-blue-600 hover:underline" %>
+                </td>
+                <td class="px-4 py-2">
+                  <% if resposta.cotacao.data_validade.present? %>
+                    <%= resposta.cotacao.data_validade.strftime("%d/%m/%Y") %>
+                  <% else %>
+                    <span class="text-gray-500">Não informado</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2">
+                  <span class="px-2 py-1 rounded-lg text-sm font-semibold
+                    <%= resposta.status == 'pendente' ? 'bg-yellow-200 text-yellow-800' :
+                         resposta.status == 'aguardando assinatura' ? 'bg-blue-200 text-blue-800' :
+                         resposta.status == 'finalizado' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800' %>">
+                    <%= resposta.status.capitalize %>
+                  </span>
+                </td>
+                <td class="px-4 py-2">
+                  <% if resposta.status == "aguardando assinatura" %>
+                    <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600 hover:underline" %>
+                    <%= link_to "Upload Documento Assinado", upload_documento_fornecedores_resposta_de_cotacao_path(resposta), class: "ml-4 text-green-600 hover:underline" %>
+                    <%= link_to "Visualizar PDF", pdf_fornecedores_resposta_de_cotacao_path(resposta), target: "_blank", class: "ml-4 text-purple-600 hover:underline" %>
+                  <% elsif resposta.status == "finalizado" %>
+                    <%= link_to "Baixar Cotação", rails_blob_path(resposta.documento_assinado, disposition: "attachment"), class: "text-blue-600 hover:underline" %>
+                    <%= link_to "Visualizar Cotação", rails_blob_path(resposta.documento_assinado, disposition: "inline"), target: "_blank", class: "ml-4 text-green-600 hover:underline" %>
+                  <% else %>
+                    <%= link_to "Responder", edit_fornecedores_resposta_de_cotacao_path(resposta), class: "text-blue-600 hover:underline" %>
+                  <% end %>
+                </td>
+              </tr>
             <% end %>
-          </td>
-          <td class="px-2 py-2"><%= resposta.status %></td>
-          <td class="px-2 py-2">
-            <%= link_to "Ver Detalhes", fornecedores_resposta_de_cotacao_path(resposta) %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>Não há respostas de cotação disponíveis.</p>
-<% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Não há respostas de cotação disponíveis.</p>
+    <% end %>
+  </div>
+</div>

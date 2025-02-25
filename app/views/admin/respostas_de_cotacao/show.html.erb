@@ -1,113 +1,120 @@
-<h1>Detalhes da Resposta de Cotação</h1>
+<%= render 'admin/shared/navbar', titulo: "Detalhes da Resposta de Cotação" %>
 
-<p><strong>ID da Resposta:</strong> <%= @resposta.id %></p>
-<p><strong>Fornecedor:</strong> <%= @resposta.fornecedor.nome %></p>
-<p><strong>Status Fornecedor:</strong> <%= @resposta.status.capitalize %></p>
-<p><strong>Status de Análise:</strong> <%= @resposta.status_analise.humanize %></p>
-<p><strong>Data de Validade:</strong> <%= @resposta.data_validade.strftime('%d/%m/%Y') if @resposta.data_validade %></p>
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Resposta da Cotação #<%= @resposta.id %></h2>
 
-<% if @resposta.status == "finalizado" && @resposta.documento_assinado.attached? %>
-  <div class="mt-4">
-    <strong>Documento Enviado:</strong>
-    <%= link_to "Visualizar PDF", rails_blob_path(@resposta.documento_assinado, disposition: "inline"), target: "_blank", class: "text-blue-600" %>
-  </div>
-<% else %>
-  <p class="text-red-500">Nenhum documento enviado ou resposta não finalizada.</p>
-<% end %>
+    <div class="space-y-4">
+      <p><strong>Fornecedor:</strong> <%= @resposta.fornecedor.nome %></p>
+      <p><strong>Status do Fornecedor:</strong> <%= @resposta.status.capitalize %></p>
+      <p><strong>Status da Análise:</strong>
+        <% if @resposta.status_analise == "pendente_de_analise" %>
+          <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+            🟡 Pendente de Análise
+          </span>
+        <% elsif @resposta.status_analise == "aprovado" %>
+          <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+            ✅ Aprovado
+          </span>
+        <% elsif @resposta.status_analise == "cotacao_nao_aceita" %>
+          <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
+            ❌ Cotação não aceita
+          </span>
+        <% else %>
+          <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+            -
+          </span>
+        <% end %>
+      </p>
+      <p><strong>Data de Validade:</strong> <%= @resposta.data_validade.strftime("%d/%m/%Y") if @resposta.data_validade %></p>
 
-<h2 class="mt-4">Itens da Cotação</h2>
-<table class="table-auto w-full border-collapse mt-2">
-  <thead class="bg-gray-100">
-    <tr>
-      <th class="px-4 py-2 border">Produto</th>
-      <th class="px-4 py-2 border">Quantidade</th>
-      <th class="px-4 py-2 border">Unidade</th>
-      <th class="px-4 py-2 border">Preço (R$)</th>
-      <th class="px-4 py-2 border">Disponível?</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @itens.each do |item| %>
-      <tr class="border-b">
-        <td class="px-4 py-2 border">
-          <strong><%= item.item_de_cotacao.produto.nome_generico %></strong>
-        </td>
-        <td class="px-4 py-2 border"><%= item.item_de_cotacao.quantidade %></td>
-        <td class="px-4 py-2 border"><%= item.item_de_cotacao.unidade_selecionada %></td>
-        <td class="px-4 py-2 border">
-          <% if item.disponivel %>
-            R$ <%= number_with_precision(item.preco, precision: 2) %>
-          <% else %>
-            <span class="text-red-600">Indisponível</span>
+      <% if @resposta.status == "finalizado" && @resposta.documento_assinado.attached? %>
+        <div class="mt-4">
+          <strong>Documento Enviado:</strong>
+          <%= link_to "📄 Visualizar PDF", rails_blob_path(@resposta.documento_assinado, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
+        </div>
+      <% else %>
+        <p class="text-red-500 mt-4">❌ Nenhum documento enviado ou resposta não finalizada.</p>
+      <% end %>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 mt-2">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left">Produto</th>
+            <th class="px-4 py-2 text-left">Quantidade</th>
+            <th class="px-4 py-2 text-left">Unidade</th>
+            <th class="px-4 py-2 text-left">Preço</th>
+            <th class="px-4 py-2 text-left">Disponível?</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @resposta.resposta_de_cotacao_items.each do |item| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2"><%= item.item_de_cotacao.produto.nome_generico %></td>
+              <td class="px-4 py-2"><%= item.item_de_cotacao.quantidade %></td>
+              <td class="px-4 py-2"><%= item.item_de_cotacao.unidade_selecionada %></td>
+              <td class="px-4 py-2">
+                <% if item.disponivel %>
+                  <span class="text-green-700 font-semibold">R$ <%= number_with_precision(item.preco, precision: 2) %></span>
+                <% else %>
+                  <span class="text-red-600">Indisponível</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-2 text-center">
+                <% if item.disponivel %>
+                  ✅
+                <% else %>
+                  ❌
+                <% end %>
+              </td>
+            </tr>
           <% end %>
-        </td>
-        <td class="px-4 py-2 border text-center">
-          <% if item.disponivel %>
-            ✅
-          <% else %>
-            ❌
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+        </tbody>
+      </table>
+    </div>
 
-<h2 class="mt-6">Checklist de Validação</h2>
-<p>Marque os itens que estão de acordo:</p>
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Checklist de Validação</h3>
+    <p class="text-gray-600">Marque os itens que estão de acordo:</p>
 
-<div data-controller="approval">
-  <%= form_with id: "checklistForm", url: aprovar_admin_resposta_de_cotacao_path(@resposta), method: :patch, local: true do |f| %>
-    <div>
-      <%= f.check_box :check_carimbo, { id: "check_carimbo" }, "1", "0" %>
-      <%= f.label :check_carimbo, "Carimbo e assinaturas legíveis" %>
-    </div>
-    <div>
-      <%= f.check_box :check_data, { id: "check_data" }, "1", "0" %>
-      <%= f.label :check_data, "Data de validade válida" %>
-    </div>
-    <div>
-      <%= f.check_box :check_produtos, { id: "check_produtos" }, "1", "0" %>
-      <%= f.label :check_produtos, "Produtos da lista correspondem ao pedido de cotação" %>
-    </div>
-    <div>
-      <%= f.check_box :check_valores, { id: "check_valores" }, "1", "0" %>
-      <%= f.label :check_valores, "Valores individuais do sistema batem com o documento enviado" %>
-    </div>
-    <div class="mt-2">
-      <button type="button" data-action="click->approval#selecionarTodos" class="bg-gray-300 px-2 py-1">Selecionar Todos</button>
-    </div>
-    <div class="mt-4">
-      <button type="button" id="btnAprovar" data-action="click->approval#showAprovarModal" class="bg-green-500 text-white px-4 py-2 rounded">Aprovar Cotação</button>
-      <button type="button" id="btnReprovar" data-action="click->approval#showReprovarModal" data-action-url="<%= reprovar_admin_resposta_de_cotacao_path(@resposta) %>" class="bg-red-500 text-white px-4 py-2 rounded ml-4">Reprovar Cotação</button>
-    </div>
-  <% end %>
+    <div data-controller="approval">
+      <%= form_with id: "checklistForm", url: aprovar_admin_resposta_de_cotacao_path(@resposta), method: :patch, local: true do |f| %>
+        <div class="space-y-2">
+          <%= f.check_box :check_carimbo, { id: "check_carimbo" }, "1", "0" %>
+          <%= f.label :check_carimbo, "Carimbo e assinaturas legíveis" %><br>
 
-  <div class="mt-4">
-    <%= link_to "Voltar à Lista de Respostas", admin_respostas_de_cotacao_path, class: "text-blue-500" %>
-  </div>
+          <%= f.check_box :check_data, { id: "check_data" }, "1", "0" %>
+          <%= f.label :check_data, "Data de validade válida" %><br>
 
-  <!-- Modal de Confirmação para Aprovação -->
-  <div id="modalAprovar" data-approval-target="modalAprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div class="bg-white p-6 rounded w-1/3">
-      <h2 class="text-lg font-bold mb-2" id="modalAprovarTitulo"></h2>
-      <div id="modalAprovarMensagem"></div>
-      <div class="mt-4 flex justify-end space-x-4">
-        <button type="button" data-action="click->approval#confirmarAprovacao" class="bg-green-500 text-white px-4 py-2 rounded">Sim</button>
-        <button type="button" data-action="click->approval#cancelarAprovacao" class="bg-red-500 text-white px-4 py-2 rounded">Não</button>
-      </div>
+          <%= f.check_box :check_produtos, { id: "check_produtos" }, "1", "0" %>
+          <%= f.label :check_produtos, "Produtos correspondem à cotação" %><br>
+
+          <%= f.check_box :check_valores, { id: "check_valores" }, "1", "0" %>
+          <%= f.label :check_valores, "Valores individuais batem com o documento" %>
+        </div>
+
+        <div class="mt-4">
+          <button type="button" data-action="click->approval#selecionarTodos" class="bg-gray-300 px-3 py-1 rounded">Selecionar Todos</button>
+        </div>
+
+        <div class="mt-6 flex space-x-4">
+          <button type="button" id="btnAprovar" data-action="click->approval#showAprovarModal" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">Aprovar Cotação</button>
+          <button type="button" id="btnReprovar" data-action="click->approval#showReprovarModal" data-action-url="<%= reprovar_admin_resposta_de_cotacao_path(@resposta) %>" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">Reprovar Cotação</button>
+        </div>
+      <% end %>
     </div>
-  </div>
 
-
-  <!-- Modal de Confirmação para Reprovação -->
-  <div id="modalReprovar" data-approval-target="modalReprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div class="bg-white p-6 rounded w-1/3">
-      <h2 class="text-lg font-bold mb-2">Confirma Reprovação</h2>
-      <p>Tem certeza que deseja reprovar esta cotação?</p>
-      <div class="mt-4 flex justify-end space-x-4">
-        <button type="button" data-action="click->approval#confirmarReprovacao" class="bg-red-500 text-white px-4 py-2 rounded">Reprovar</button>
-        <button type="button" data-action="click->approval#cancelarReprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+    <!-- Modal de Aprovação -->
+    <div id="modalAprovar" data-approval-target="modalAprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+      <div class="bg-white p-6 rounded w-1/3 shadow-lg">
+        <h2 class="text-lg font-bold mb-2">Confirmar Aprovação</h2>
+        <p>Tem certeza que deseja aprovar esta cotação?</p>
+        <div class="mt-4 flex justify-end space-x-4">
+          <button type="button" data-action="click->approval#confirmarAprovacao" class="bg-green-500 text-white px-4 py-2 rounded">Aprovar</button>
+          <button type="button" data-action="click->approval#cancelarAprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>

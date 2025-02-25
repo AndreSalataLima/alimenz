@@ -6,26 +6,30 @@
 
     <!-- Links de navegação -->
     <div class="flex items-center gap-4">
-      <!-- Link para Página Inicial -->
-
-      <!-- Home page / solicitar cotação -->
-      <%= link_to cliente_home_path,
+      <%= link_to admin_dashboard_index_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
-        Solicitar cotação
+        Dashboard
       <% end %>
 
-      <!-- Cistórico de cotações do cliente -->
-      <%= link_to cotacoes_path,
+      <%= link_to admin_clientes_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
-        Histórico de cotações
+        Clientes
       <% end %>
 
-      <!-- Link para Pedidos de Compra -->
-      <%= link_to pedidos_de_compras_path,
+      <%= link_to admin_fornecedores_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
-        Pedidos de Compra
+        Fornecedores
       <% end %>
 
+      <%= link_to admin_cotacoes_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Cotações
+      <% end %>
+
+      <%= link_to admin_respostas_de_cotacao_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Respostas
+      <% end %>
 
       <!-- Link para logout -->
       <%= link_to "Logout",
@@ -36,9 +40,9 @@
   </div>
 </div>
 
-<!-- Cabeçalho marrom (recebe um título via variável local 'titulo') -->
+<!-- Cabeçalho marrom -->
 <div class="w-full h-[60px] bg-[#615F4A] rounded-b-[40px] shadow-md flex items-center px-8">
   <h1 class="text-white text-2xl font-bold text-center w-full">
-    <%= titulo || "Título Padrão" %>
+    <%= titulo || "Painel Administrativo" %>
   </h1>
 </div>

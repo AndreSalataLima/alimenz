@@ -1,44 +1,78 @@
-<h1>Lista de Respostas de Cotação</h1>
+<%= render 'admin/shared/navbar', titulo: "Gerenciar Respostas de Cotação" %>
 
-<table class="min-w-full border-collapse">
-  <thead class="bg-gray-200">
-    <tr>
-      <th class="px-4 py-2 border">ID</th>
-      <th class="px-4 py-2 border">Fornecedor</th>
-      <th class="px-4 py-2 border">Cotação</th>
-      <th class="px-4 py-2 border">Data de Validade</th>
-      <th class="px-4 py-2 border">Status Fornecedor</th>
-      <th class="px-4 py-2 border">Análise Admin</th>
-      <th class="px-4 py-2 border">Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @respostas.each do |resposta| %>
-      <tr>
-        <td class="px-4 py-2 border"><%= resposta.id %></td>
-        <td class="px-4 py-2 border"><%= resposta.fornecedor.nome %></td>
-        <td class="px-4 py-2 border">
-          <%= link_to "Cotação #{resposta.cotacao.id}", admin_cotacao_path(resposta.cotacao), class: "text-blue-500" %>
-        </td>
-        <td class="px-4 py-2 border">
-          <%= resposta.data_validade.strftime('%d/%m/%Y') if resposta.data_validade %>
-        </td>
-        <td class="px-4 py-2 border"><%= resposta.status.capitalize %></td>
-        <td class="px-4 py-2 border">
-          <% if resposta.status_analise == "pendente_de_analise" %>
-            <span class="text-yellow-600 font-bold">🟡 Pendente de Análise</span>
-          <% elsif resposta.status_analise == "aprovado" %>
-            <span class="text-green-600 font-bold">✅ Aprovado</span>
-          <% elsif resposta.status_analise == "cotacao_nao_aceita" %>
-            <span class="text-red-600 font-bold">❌ Cotação não aceita</span>
-          <% else %>
-            <span class="text-gray-600">–</span>
-          <% end %>
-        </td>
-        <td class="px-4 py-2 border">
-          <%= link_to "Ver Detalhes", admin_resposta_de_cotacao_path(resposta), class: "text-blue-500" %>
-        </td>
-      </tr>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Lista de Respostas de Cotação</h2>
+
+    <% if @respostas.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">ID</th>
+              <th class="px-4 py-2 text-left">Fornecedor</th>
+              <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Status Fornecedor</th>
+              <th class="px-4 py-2 text-left">Análise Admin</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @respostas.each do |resposta| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2"><%= resposta.id %></td>
+                <td class="px-4 py-2"><%= resposta.fornecedor.nome %></td>
+                <td class="px-4 py-2">
+                  <%= link_to "Cotação ##{resposta.cotacao.id}", admin_cotacao_path(resposta.cotacao), class: "text-blue-600 hover:underline" %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= resposta.data_validade.strftime('%d/%m/%Y') if resposta.data_validade %>
+                </td>
+                <td class="px-4 py-2">
+                  <% if resposta.status == "pendente" %>
+                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      Pendente
+                    </span>
+                  <% elsif resposta.status == "finalizado" %>
+                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      Finalizado
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+                      <%= resposta.status.capitalize %>
+                    </span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2">
+                  <% if resposta.status_analise == "pendente_de_analise" %>
+                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      🟡 Pendente de Análise
+                    </span>
+                  <% elsif resposta.status_analise == "aprovado" %>
+                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      ✅ Aprovado
+                    </span>
+                  <% elsif resposta.status_analise == "cotacao_nao_aceita" %>
+                    <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
+                      ❌ Cotação não aceita
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+                      -
+                    </span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= link_to "Ver Detalhes", admin_resposta_de_cotacao_path(resposta), class: "text-blue-600 hover:underline" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Nenhuma resposta de cotação encontrada.</p>
     <% end %>
-  </tbody>
-</table>
+  </div>
+</div>
