@@ -1,0 +1,48 @@
+<!-- Barra superior com logo e links -->
+<div class="w-full bg-neutral-100 shadow-sm">
+  <div class="container mx-auto flex justify-between items-center py-4 px-8">
+    <!-- Logo à esquerda -->
+    <%= image_tag "logo_vet_499x137.png", alt: "Logo", class: "max-w-[120px] max-h-[40px] object-contain" %>
+
+    <!-- Links de navegação -->
+    <div class="flex items-center gap-4">
+      <%= link_to admin_dashboard_index_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Dashboard
+      <% end %>
+
+      <%= link_to admin_clientes_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Clientes
+      <% end %>
+
+      <%= link_to admin_fornecedores_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Fornecedores
+      <% end %>
+
+      <%= link_to admin_cotacoes_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Cotações
+      <% end %>
+
+      <%= link_to admin_respostas_de_cotacao_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Respostas
+      <% end %>
+
+      <!-- Link para logout -->
+      <%= link_to "Logout",
+                  destroy_usuario_session_path,
+                  data: { turbo_method: :delete, confirm: "Tem certeza que deseja sair?" },
+                  class: "bg-[#615F4A] text-white px-4 py-1 rounded-full font-medium shadow" %>
+    </div>
+  </div>
+</div>
+
+<!-- Cabeçalho marrom -->
+<div class="w-full h-[60px] bg-[#615F4A] rounded-b-[40px] shadow-md flex items-center px-8">
+  <h1 class="text-white text-2xl font-bold text-center w-full">
+    <%= titulo || "Painel Administrativo" %>
+  </h1>
+</div>

@@ -1,75 +1,77 @@
-<h1>Responder Cotação</h1>
+<%= render 'fornecedores/shared/navbar', titulo: "Responder Cotação" %>
 
-<%= form_with model: @resposta, url: fornecedores_resposta_de_cotacao_path(@resposta), method: :patch, data: { controller: "price-alert", price_alert_target: "form" }, local: true do |f| %>
-  <table class="table-auto w-full border-collapse">
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="px-2 py-2">Produto</th>
-        <th class="px-2 py-2">Unidade</th>
-        <th class="px-2 py-2">Quantidade</th>
-        <th class="px-2 py-2">Preço (R$)</th>
-        <th class="px-2 py-2">Disponível?</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= f.fields_for :resposta_de_cotacao_items do |item_fields| %>
-        <%= item_fields.hidden_field :item_de_cotacao_id, value: item_fields.object.item_de_cotacao_id %>
-        <% produto = (item_fields.object.item_de_cotacao || ItemDeCotacao.find(item_fields.object.item_de_cotacao_id)).produto %>
-        <tr class="border-b" data-controller="availability">
-          <td class="px-2 py-2">
-            <strong><%= produto.nome_generico %></strong>
-          </td>
-          <td class="px-2 py-2">
-            <%= item_fields.object.item_de_cotacao.unidade_selecionada %>
-          </td>
-          <td class="px-2 py-2">
-            <%= item_fields.object.item_de_cotacao.quantidade %>
-          </td>
-          <td class="px-2 py-2">
-            <%= item_fields.number_field :preco, step: 0.01, class: "border rounded px-2 py-1", data: {
-              price_alert_target: "priceInput",
-              product_name: produto.nome_generico,
-              availability_target: "price"
-            } %>
-          </td>
-          <td class="px-2 py-2 text-center">
-            <%= item_fields.check_box :disponivel, data: { availability_target: "checkbox", action: "change->availability#toggle" } %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="text-gray-700">Preencha os valores e disponibilidade dos produtos para responder à cotação.</p>
 
-  <div class="mt-4">
-    <%= f.label :data_validade, "Validade da Resposta" %>
-    <%= f.date_field :data_validade, class: "border rounded px-2 py-1" %>
-    <p class="text-sm text-gray-600">Esta data indica até quando os valores informados permanecerão válidos (ex: 5 dias).</p>
-  </div>
+    <%= form_with model: @resposta, url: fornecedores_resposta_de_cotacao_path(@resposta), method: :patch,
+                  data: { controller: "price-alert", price_alert_target: "form" }, local: true do |f| %>
 
-  <% if current_usuario.assinatura.present? %>
-    <div class="mt-4">
-      <%= f.label :usar_assinatura_pre_cadastrada, "Utilizar assinatura pré-cadastrada?" %>
-      <%= f.check_box :usar_assinatura_pre_cadastrada %>
-      <p class="text-sm text-gray-600">Se marcado, o PDF será gerado com a sua assinatura já cadastrada.</p>
-    </div>
-  <% end %>
-
-
-  <div class="mt-4">
-    <%= f.submit "Responder Cotação", class: "bg-blue-500 text-white px-4 py-2 rounded" %>
-  </div>
-
-  <!-- Modal para alerta de produtos com preço 0 -->
-  <div data-price-alert-target="modal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div class="bg-white p-4 rounded w-1/3">
-      <h2 class="text-lg font-bold mb-2">Atenção</h2>
-      <p>Os seguintes produtos possuem preço 0:</p>
-      <ul data-price-alert-target="modalList" class="list-disc ml-6 mb-4"></ul>
-      <p>Deseja continuar?</p>
-      <div class="flex justify-end space-x-4 mt-4">
-        <button data-action="click->price-alert#confirm" class="bg-green-500 text-white px-4 py-2 rounded">Sim</button>
-        <button type="button" data-action="click->price-alert#cancel" class="bg-red-500 text-white px-4 py-2 rounded">Não, revisar preços</button>
+      <div class="overflow-x-auto rounded-lg border border-gray-200 mt-4">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Produto</th>
+              <th class="px-4 py-2 text-center">Unidade</th>
+              <th class="px-4 py-2 text-center">Quantidade</th>
+              <th class="px-4 py-2 text-center">Preço (R$)</th>
+              <th class="px-4 py-2 text-center">Disponível?</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <%= f.fields_for :resposta_de_cotacao_items do |item_fields| %>
+              <%= item_fields.hidden_field :item_de_cotacao_id, value: item_fields.object.item_de_cotacao_id %>
+              <% produto = (item_fields.object.item_de_cotacao || ItemDeCotacao.find(item_fields.object.item_de_cotacao_id)).produto %>
+              <tr class="hover:bg-gray-50" data-controller="availability">
+                <td class="px-4 py-2 font-medium"><%= produto.nome_generico %></td>
+                <td class="px-4 py-2 text-center"><%= item_fields.object.item_de_cotacao.unidade_selecionada %></td>
+                <td class="px-4 py-2 text-center"><%= item_fields.object.item_de_cotacao.quantidade %></td>
+                <td class="px-4 py-2 text-center">
+                  <%= item_fields.number_field :preco, step: 0.01, class: "border rounded px-3 py-1 w-24 text-center",
+                        data: { price_alert_target: "priceInput", product_name: produto.nome_generico,
+                                availability_target: "price" } %>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <%= item_fields.check_box :disponivel, class: "rounded border-gray-300 focus:ring-indigo-500",
+                        data: { availability_target: "checkbox", action: "change->availability#toggle" } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      <div class="mt-6">
+        <%= f.label :data_validade, "Validade da Resposta", class: "block font-medium text-gray-800" %>
+        <%= f.date_field :data_validade, class: "border rounded px-3 py-2 w-full mt-1" %>
+        <p class="text-sm text-gray-600 mt-1">Indica até quando os valores informados permanecerão válidos.</p>
+      </div>
+
+      <% if current_usuario.assinatura.present? %>
+        <div class="mt-4">
+          <%= f.label :usar_assinatura_pre_cadastrada, "Utilizar assinatura pré-cadastrada?", class: "font-medium text-gray-800" %>
+          <%= f.check_box :usar_assinatura_pre_cadastrada, class: "ml-2" %>
+          <p class="text-sm text-gray-600 mt-1">Se marcado, o PDF será gerado com sua assinatura já cadastrada.</p>
+        </div>
+      <% end %>
+
+      <div class="mt-6 text-center">
+        <%= f.submit "Responder Cotação", class: "bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700" %>
+      </div>
+
+      <!-- Modal para alerta de preços zerados (agora dentro do form) -->
+      <div data-price-alert-target="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+          <h2 class="text-lg font-bold mb-2">Atenção</h2>
+          <p>Os seguintes produtos possuem preço R$0,00:</p>
+          <ul data-price-alert-target="modalList" class="list-disc ml-6 mb-4 text-red-500 font-semibold"></ul>
+          <p>Deseja continuar mesmo assim?</p>
+          <div class="flex justify-end space-x-4 mt-4">
+            <button data-action="click->price-alert#confirm" class="bg-green-500 text-white px-4 py-2 rounded">Sim</button>
+            <button type="button" data-action="click->price-alert#cancel" class="bg-red-500 text-white px-4 py-2 rounded">Não, revisar preços</button>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>

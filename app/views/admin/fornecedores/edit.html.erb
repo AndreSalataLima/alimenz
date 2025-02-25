@@ -1,32 +1,44 @@
-<h1>Editar Fornecedor: <%= @fornecedor.nome %></h1>
+<%= render 'admin/shared/navbar', titulo: "Editar Fornecedor" %>
 
-<%= form_with model: [:admin, @fornecedor], local: true, multipart: true do |f| %>
-  <div>
-    <%= f.label :telefone, "Telefone" %><br>
-    <%= f.text_field :telefone %>
-  </div>
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Editar Fornecedor</h2>
 
-  <!-- Assinatura -->
-  <div>
-    <h2>Assinatura</h2>
-    <% assinatura = @fornecedor.assinatura || @fornecedor.build_assinatura %>
+    <%= form_with model: [:admin, @fornecedor], local: true, multipart: true, class: "space-y-4" do |f| %>
 
-    <% if assinatura.imagem_assinatura.attached? %>
-      <p>Assinatura atual:</p>
-      <%= image_tag assinatura.imagem_assinatura, width: 200 %>
-    <% else %>
-      <p>Nenhuma assinatura cadastrada.</p>
-    <% end %>
-
-    <%= f.fields_for :assinatura_attributes, assinatura do |af| %>
+      <!-- Telefone -->
       <div>
-        <%= af.label :imagem_assinatura, "Upload de nova assinatura (imagem)" %><br>
-        <%= af.file_field :imagem_assinatura %>
+        <%= f.label :telefone, "Telefone", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :telefone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+      </div>
+
+      <!-- Assinatura -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-700">Assinatura</h3>
+
+        <% assinatura = @fornecedor.assinatura || @fornecedor.build_assinatura %>
+        <% if assinatura.imagem_assinatura.attached? %>
+          <p class="text-sm text-gray-600">Assinatura atual:</p>
+          <div class="border p-2 rounded-lg inline-block shadow-sm">
+            <%= image_tag assinatura.imagem_assinatura, width: 200, class: "rounded-lg" %>
+          </div>
+        <% else %>
+          <p class="text-gray-500">Nenhuma assinatura cadastrada.</p>
+        <% end %>
+
+        <%= f.fields_for :assinatura_attributes, assinatura do |af| %>
+          <div class="mt-2">
+            <%= af.label :imagem_assinatura, "Upload de nova assinatura (imagem)", class: "block font-semibold text-gray-700" %>
+            <%= af.file_field :imagem_assinatura, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Botões -->
+      <div class="flex justify-between mt-6">
+        <%= link_to "Cancelar", admin_fornecedor_path(@fornecedor), class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+        <%= f.submit "Atualizar Fornecedor", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
       </div>
     <% end %>
   </div>
-
-  <div>
-    <%= f.submit "Atualizar Fornecedor", class: "btn btn-primary" %>
-  </div>
-<% end %>
+</div>

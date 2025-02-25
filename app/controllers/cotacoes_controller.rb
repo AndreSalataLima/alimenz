@@ -4,6 +4,11 @@ class CotacoesController < ApplicationController
 
   def index
     @cotacoes = current_usuario.cotacoes.order(created_at: :desc)
+
+    if params[:status].present?
+      @cotacoes = @cotacoes.where(status: params[:status])
+    end
+
   end
 
 
@@ -79,13 +84,9 @@ class CotacoesController < ApplicationController
   # Passo 7: Finalizar e gerar os pedidos de compra para os fornecedores confirmados
   def finalizar_pedidos
     @cotacao = Cotacao.find(params[:id])
-    # "selecionados" agora é um hash no formato:
-    # { "resposta_id1" => { "item_id_a" => "1", ... }, "resposta_id2" => { "item_id_b" => "1", ... } }
     selecionados = params[:selecionados] || {}
-    # Recupera as respostas de cotação selecionadas com base nas chaves do hash
     respostas_selecionadas = RespostaDeCotacao.where(id: selecionados.keys)
 
-    # Filtra os itens de cada resposta conforme os checkboxes selecionados
     itens_por_resposta = {}
     respostas_selecionadas.each do |resposta|
       selected_item_ids = selecionados[resposta.id.to_s]&.keys || []
@@ -95,45 +96,46 @@ class CotacoesController < ApplicationController
       itens_por_resposta[resposta.id] = filtered_items
     end
 
-    # Agrupa as respostas por fornecedor
     respostas_por_fornecedor = respostas_selecionadas.group_by(&:fornecedor_id)
     @pedidos_criados = []
 
-    # "confirmacoes" contém para cada fornecedor_id se o cliente confirmou o pedido ("1")
     confirmacoes = params[:confirmacoes] || {}
 
     respostas_por_fornecedor.each do |fornecedor_id, respostas|
       next unless confirmacoes[fornecedor_id.to_s] == "1"
 
-      # Para cada resposta desse fornecedor, agregamos apenas os itens filtrados
       itens = []
       respostas.each do |resposta|
         itens.concat(itens_por_resposta[resposta.id])
       end
 
-      # Calcula o valor total apenas com os itens selecionados
       valor_total = itens.sum { |item| item.preco.to_f * item.item_de_cotacao.quantidade.to_f }
 
-      # Cria o Pedido de Compra com os itens formatados (transformando cada item num hash)
+      # 1) Cria o PedidoDeCompra sem o campo itens (JSON).
       pedido = current_usuario.pedidos_de_compras.create!(
         fornecedor_id: fornecedor_id,
         valor_total: valor_total,
         data_validade: @cotacao.data_validade,
-        status: "pendente",
-        itens: itens.map do |i|
-          {
-            produto_id: i.item_de_cotacao.produto_id,
-            quantidade: i.item_de_cotacao.quantidade,
-            preco: i.preco,
-            unidade: i.item_de_cotacao.unidade_selecionada
-          }
-        end
+        status: "pendente"
       )
+
+      # 2) Cria registros em PedidoDeCompraItem para cada item selecionado.
+      itens.each do |i|
+        PedidoDeCompraItem.create!(
+          pedido_de_compra_id: pedido.id,
+          produto_id: i.item_de_cotacao.produto_id,
+          quantidade: i.item_de_cotacao.quantidade,
+          preco: i.preco,
+          unidade: i.item_de_cotacao.unidade_selecionada
+        )
+      end
+
       @pedidos_criados << pedido
     end
 
     redirect_to pedidos_de_compras_path, notice: "Pedidos de compra gerados com sucesso."
   end
+
 
 
   private

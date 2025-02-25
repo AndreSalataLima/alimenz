@@ -1,10 +1,8 @@
-<h1>Bem-vindo ao Dashboard do Cliente</h1>
+<%= render 'clientes/shared/navbar', titulo: "Realizar nova cotação" %>
 
-<%= link_to "Visualizar Cotações", cotacoes_path, class: "text-blue-500" %>
-
-
-<!-- Botão de logout -->
-<%= button_to "Sair", destroy_usuario_session_path, method: :delete, data: { confirm: "Tem certeza que deseja sair?" } %>
-
-<!-- Renderiza o formulário de nova cotação -->
-<%= render 'cotacoes/form', cotacao: @cotacao %>
+<div class="container mx-auto py-6 px-4">
+  <!-- Conteúdo principal da home do cliente -->
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <%= render 'cotacoes/form', cotacao: @cotacao %>
+  </div>
+</div>

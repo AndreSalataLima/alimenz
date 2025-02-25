@@ -1,4 +1,83 @@
-<div>
-  <h1 class="font-bold text-4xl">Admin::Cotacoes#show</h1>
-  <p>Find me in app/views/admin/cotacoes/show.html.erb</p>
+<%= render 'admin/shared/navbar', titulo: "Detalhes da Cotação" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Cotação #<%= @cotacao.id %></h2>
+
+    <div class="space-y-4">
+      <p><strong>Cliente:</strong> <%= @cotacao.cliente.nome %></p>
+      <p><strong>Data de Validade:</strong> <%= @cotacao.data_validade.strftime("%d/%m/%Y") if @cotacao.data_validade %></p>
+      <p><strong>Status:</strong> <%= @cotacao.status.capitalize %></p>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 mt-2">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left">Produto</th>
+            <th class="px-4 py-2 text-left">Quantidade</th>
+            <th class="px-4 py-2 text-left">Unidade</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @cotacao.itens_de_cotacao.each do |item| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2"><%= item.produto.nome_generico %></td>
+              <td class="px-4 py-2"><%= item.quantidade %></td>
+              <td class="px-4 py-2"><%= item.unidade_selecionada %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Respostas de Fornecedores</h3>
+    <% if @cotacao.respostas_de_cotacao.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 mt-2">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Fornecedor</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @cotacao.respostas_de_cotacao.each do |resposta| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2"><%= resposta.fornecedor.nome %></td>
+                <td class="px-4 py-2">
+                  <% if resposta.status == "pendente" %>
+                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      Pendente
+                    </span>
+                  <% elsif resposta.status == "finalizado" %>
+                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      Finalizado
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+                      <%= resposta.status.capitalize %>
+                    </span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2"><%= resposta.data_validade.strftime("%d/%m/%Y") if resposta.data_validade %></td>
+                <td class="px-4 py-2">
+                  <%= link_to "Ver Detalhes", admin_resposta_de_cotacao_path(resposta), class: "text-blue-600 hover:underline" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Nenhuma resposta de fornecedor para esta cotação.</p>
+    <% end %>
+
+    <div class="mt-6 flex space-x-4">
+      <%= link_to "Voltar", admin_cotacoes_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+    </div>
+  </div>
 </div>

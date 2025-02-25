@@ -1,41 +1,55 @@
-<h1>Resumo dos Pedidos</h1>
+<%= render 'clientes/shared/navbar', titulo: "Resumo dos Pedidos" %>
 
-<p>Revise os pedidos por fornecedor e confirme os que deseja enviar.</p>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="mb-4 text-gray-700">Revise os pedidos por fornecedor e confirme os que deseja enviar.</p>
 
-<%= form_with url: finalizar_pedidos_cotacao_path(@cotacao), method: :post, local: true do |f| %>
-  <input type="hidden" name="cotacao_id" value="<%= @cotacao.id %>">
-  <%# Repasse os IDs das respostas selecionadas para manter a associação %>
-  <% @respostas_selecionadas.each do |resp| %>
-    <%# Transforma a estrutura selecionada em hidden fields para manter os dados %>
-    <% (params[:selecionados][resp.id.to_s] || {}).each do |item_id, _| %>
-      <%= hidden_field_tag "selecionados[#{resp.id}][#{item_id}]", "1" %>
-    <% end %>
-  <% end %>
+    <%= form_with url: finalizar_pedidos_cotacao_path(@cotacao), method: :post, local: true do |f| %>
+      <input type="hidden" name="cotacao_id" value="<%= @cotacao.id %>">
 
-  <% @respostas_por_fornecedor.each do |fornecedor_id, respostas| %>
-    <% fornecedor = Usuario.find(fornecedor_id) %>
-    <div class="border p-4 rounded mb-4">
-      <h2 class="font-bold">Fornecedor: <%= fornecedor.nome %></h2>
-      <ul>
-        <% respostas.each do |resposta| %>
-          <% @itens_por_resposta[resposta.id].each do |item| %>
-            <li>
-              Produto: <%= item.item_de_cotacao.produto.nome_generico %> –
-              Quantidade: <%= item.item_de_cotacao.quantidade %> –
-              Preço Unitário: <%= number_to_currency(item.preco) %>
-            </li>
-          <% end %>
+      <% @respostas_selecionadas.each do |resp| %>
+        <% (params[:selecionados][resp.id.to_s] || {}).each do |item_id, _| %>
+          <%= hidden_field_tag "selecionados[#{resp.id}][#{item_id}]", "1" %>
         <% end %>
-      </ul>
-      <p class="font-bold">Total: <%= number_to_currency(@resumos[fornecedor_id]) %></p>
-      <div>
-        <%= check_box_tag "confirmacoes[#{fornecedor_id}]", "1" %>
-        <%= label_tag "confirmacoes_#{fornecedor_id}", "Confirmar pedido com este fornecedor" %>
-      </div>
-    </div>
-  <% end %>
+      <% end %>
 
-  <div class="mt-4">
-    <%= f.submit "Finalizar Pedido", class: "bg-green-500 text-white py-2 px-4 rounded" %>
+      <% @respostas_por_fornecedor.each do |fornecedor_id, respostas| %>
+        <% fornecedor = Usuario.find(fornecedor_id) %>
+        <div class="border border-gray-200 p-4 rounded-lg shadow mb-6">
+          <h2 class="text-lg font-bold text-gray-800">Fornecedor: <%= fornecedor.nome %></h2>
+          <div class="overflow-x-auto mt-4">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-2 text-left">Produto</th>
+                  <th class="px-4 py-2 text-left">Quantidade</th>
+                  <th class="px-4 py-2 text-left">Preço Unitário</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% respostas.each do |resposta| %>
+                  <% @itens_por_resposta[resposta.id].each do |item| %>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-2"><%= item.item_de_cotacao.produto.nome_generico %></td>
+                      <td class="px-4 py-2"><%= item.item_de_cotacao.quantidade %></td>
+                      <td class="px-4 py-2"><%= number_to_currency(item.preco) %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="font-bold text-gray-800 mt-4">Total: <%= number_to_currency(@resumos[fornecedor_id]) %></p>
+          <div class="mt-2">
+            <%= check_box_tag "confirmacoes[#{fornecedor_id}]", "1", false, class: "mr-2 rounded border-gray-300 focus:ring-indigo-500" %>
+            <%= label_tag "confirmacoes_#{fornecedor_id}", "Confirmar pedido com este fornecedor", class: "text-gray-700" %>
+          </div>
+        </div>
+      <% end %>
+      
+      <div class="mt-6 text-center">
+        <%= f.submit "Finalizar Pedido", class: "bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>

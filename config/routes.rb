@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   # end
   namespace :admin do
     resources :usuarios
-    resources :clientes, only: [:index, :show]
+    resources :clientes, only: [:index, :show, :edit, :update]
     resources :fornecedores, only: [:index, :show, :edit, :update]
     resources :cotacoes, only: [:index, :show]
     resources :dashboard, only: [:index]
