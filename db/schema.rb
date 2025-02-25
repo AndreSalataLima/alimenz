@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_24_232747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,6 +62,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
     t.datetime "updated_at", null: false
     t.date "data_validade"
     t.integer "cliente_id"
+    t.string "status"
   end
 
   create_table "fornecedor_categorias", force: :cascade do |t|
@@ -83,6 +84,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
     t.boolean "manter_nome_generico"
     t.index ["cotacao_id"], name: "index_item_de_cotacaos_on_cotacao_id"
     t.index ["produto_id"], name: "index_item_de_cotacaos_on_produto_id"
+  end
+
+  create_table "pedido_de_compra_items", force: :cascade do |t|
+    t.bigint "pedido_de_compra_id", null: false
+    t.bigint "produto_id", null: false
+    t.decimal "quantidade", precision: 10, scale: 2, default: "0.0"
+    t.string "unidade"
+    t.decimal "preco", precision: 10, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pedido_de_compra_id"], name: "index_pedido_de_compra_items_on_pedido_de_compra_id"
+    t.index ["produto_id"], name: "index_pedido_de_compra_items_on_produto_id"
   end
 
   create_table "pedido_de_compras", force: :cascade do |t|
@@ -124,8 +137,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
     t.integer "item_de_cotacao_id", null: false
     t.decimal "preco", precision: 10, scale: 2, default: "0.0", null: false
     t.boolean "disponivel", default: true, null: false
-    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_
-    ao_id"
+    t.index ["item_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_item_de_cotacao_id"
     t.index ["resposta_de_cotacao_id"], name: "index_resposta_de_cotacao_items_on_resposta_de_cotacao_id"
   end
 
@@ -168,6 +180,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_23_205122) do
   add_foreign_key "fornecedor_categorias", "usuarios", column: "fornecedor_id"
   add_foreign_key "item_de_cotacaos", "cotacaos"
   add_foreign_key "item_de_cotacaos", "produtos"
+  add_foreign_key "pedido_de_compra_items", "pedido_de_compras"
+  add_foreign_key "pedido_de_compra_items", "produtos"
   add_foreign_key "pedido_de_compras", "usuarios", column: "cliente_id"
   add_foreign_key "pedido_de_compras", "usuarios", column: "fornecedor_id"
   add_foreign_key "resposta_de_cotacao_items", "item_de_cotacaos"

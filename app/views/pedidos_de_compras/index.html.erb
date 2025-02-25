@@ -1,24 +1,30 @@
-<h1>Meus Pedidos de Compra</h1>
+<%= render 'clientes/shared/navbar', titulo: "Meus Pedidos de Compra" %>
 
-<table class="min-w-full divide-y divide-gray-200">
-  <thead>
-    <tr>
-      <th>Fornecedor</th>
-      <th>Valor Total</th>
-      <th>Data de Validade</th>
-      <th>Status</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @pedidos.each do |pedido| %>
-      <tr>
-        <td><%= pedido.fornecedor.nome %></td>
-        <td><%= number_to_currency(pedido.valor_total) %></td>
-        <td><%= pedido.data_validade %></td>
-        <td><%= pedido.status.capitalize %></td>
-        <td><%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline" %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left">Fornecedor</th>
+          <th class="px-4 py-2 text-left">Valor Total</th>
+          <th class="px-4 py-2 text-left">Data de Validade</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <% @pedidos.each do |pedido| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2"><%= pedido.fornecedor.nome %></td>
+            <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
+            <td class="px-4 py-2"><%= pedido.data_validade.strftime('%d/%m/%Y') %></td>
+            <td class="px-4 py-2 capitalize"><%= pedido.status %></td>
+            <td class="px-4 py-2">
+              <%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline hover:text-blue-700" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

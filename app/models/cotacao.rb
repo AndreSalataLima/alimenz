@@ -10,6 +10,9 @@ class Cotacao < ApplicationRecord
   # Após criar a cotação, gerar automaticamente as respostas
   after_create :gerar_respostas_de_cotacao
 
+  attribute :status, :string, default: 'pendente'
+
+  
   private
 
   def gerar_respostas_de_cotacao

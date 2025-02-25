@@ -1,20 +1,41 @@
-<h1>Detalhes da Cotação</h1>
-<p><strong>Data de Validade:</strong> <%= @cotacao.data_validade %></p>
+<%= render 'clientes/shared/navbar', titulo: "Detalhes da Cotação" %>
 
-<h2>Itens de Cotação</h2>
-<ul>
-  <% @cotacao.itens_de_cotacao.each do |item| %>
-    <li>
-      Produto: <%= item.produto.nome_generico %> – Quantidade: <%= item.quantidade %> – Unidade: <%= item.unidade_selecionada %>
-    </li>
-  <% end %>
-</ul>
+<div class="container mx-auto py-6 px-4">
+  <!-- Card principal com detalhes da cotação -->
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="mb-4 text-lg">
+      <strong class="text-gray-700">Data de Validade:</strong>
+      <span class="text-gray-900"><%= @cotacao.data_validade.strftime('%d/%m/%Y') %></span>
+    </p>
 
-<h2>Respostas de Cotação</h2>
-<ul>
-  <% @cotacao.respostas_de_cotacao.each do |resposta| %>
-    <li>
-      Fornecedor: <%= resposta.fornecedor.nome %> – Status: <%= resposta.status %>
-    </li>
-  <% end %>
-</ul>
+    <!-- Itens de Cotação -->
+    <h2 class="text-xl font-semibold text-gray-800 mb-3">Itens da Cotação</h2>
+    <div class="overflow-x-auto rounded-lg border border-gray-200">
+      <table class="min-w-full bg-white">
+        <thead class="bg-gray-100 border-b">
+          <tr>
+            <th class="px-4 py-2 text-left">Produto</th>
+            <th class="px-4 py-2 text-left">Quantidade</th>
+            <th class="px-4 py-2 text-left">Unidade</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @cotacao.itens_de_cotacao.each do |item| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2"><%= item.produto.nome_generico %></td>
+              <td class="px-4 py-2"><%= item.quantidade %></td>
+              <td class="px-4 py-2"><%= item.unidade_selecionada %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- Botão voltar para Minhas Cotações -->
+    <div class="mt-6">
+      <%= link_to "Voltar para Minhas Cotações", cotacoes_path,
+                  class: "inline-block bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
+    </div>
+  </div>
+</div>
