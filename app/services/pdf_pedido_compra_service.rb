@@ -13,24 +13,21 @@ class PdfPedidoCompraService
     pdf.text "Pedido de Compra ##{@pedido.id}", size: 20, style: :bold
     pdf.text "Fornecedor: #{@pedido.fornecedor.nome}"
     pdf.text "Cliente: #{@pedido.cliente.nome}"
-    if @pedido.data_validade
-      pdf.text "Data de Validade: #{@pedido.data_validade.strftime('%d/%m/%Y')}"
-    end
+    pdf.text "Data de Validade: #{@pedido.data_validade.strftime('%d/%m/%Y')}" if @pedido.data_validade
     pdf.move_down 10
 
-    # Tabela de Itens do Pedido
+    # Tabela de Itens do Pedido usando a nova associação
     data = [["Produto", "Quantidade", "Unidade", "Preço Unitário (R$)", "Total (R$)"]]
-    @pedido.itens.each do |item|
-      # Cada item é um hash com chaves: "produto_id", "quantidade", "preco", "unidade"
-      produto = Produto.find(item["produto_id"])
-      quantidade = item["quantidade"].to_f
-      preco_unitario = item["preco"].to_f
+    @pedido.pedido_de_compra_items.each do |item|
+      produto = item.produto
+      quantidade = item.quantidade.to_f
+      preco_unitario = item.preco.to_f
       total_item = quantidade * preco_unitario
 
       data << [
         produto.nome_generico,
         quantidade,
-        item["unidade"],
+        item.unidade,
         "R$ #{'%.2f' % preco_unitario}",
         "R$ #{'%.2f' % total_item}"
       ]
@@ -48,3 +45,4 @@ class PdfPedidoCompraService
     pdf.render
   end
 end
+
