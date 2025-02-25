@@ -3,7 +3,11 @@ class PedidosDeComprasController < ApplicationController
 
   # Lista os pedidos de compra do cliente atual
   def index
-    @pedidos = current_usuario.pedidos_de_compras.includes(:fornecedor).order(created_at: :desc)
+    if current_usuario.papel == "fornecedor"
+      @pedidos = PedidoDeCompra.where(fornecedor_id: current_usuario.id).order(created_at: :desc)
+    else
+      @pedidos = PedidoDeCompra.where(cliente_id: current_usuario.id).order(created_at: :desc)
+    end
   end
 
   # Exibe os detalhes de um pedido de compra

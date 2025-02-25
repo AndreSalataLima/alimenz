@@ -1,30 +1,79 @@
-<%= render 'clientes/shared/navbar', titulo: "Meus Pedidos de Compra" %>
+<% if current_usuario.papel == "fornecedor" %>
+  <%= render 'fornecedores/shared/navbar', titulo: "Pedidos Recebidos" %>
+<% else %>
+  <%= render 'clientes/shared/navbar', titulo: "Meus Pedidos de Compra" %>
+<% end %>
 
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
-    <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
-      <thead class="bg-gray-100 text-gray-700">
-        <tr>
-          <th class="px-4 py-2 text-left">Fornecedor</th>
-          <th class="px-4 py-2 text-left">Valor Total</th>
-          <th class="px-4 py-2 text-left">Data de Validade</th>
-          <th class="px-4 py-2 text-left">Status</th>
-          <th class="px-4 py-2 text-left">Ações</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
-        <% @pedidos.each do |pedido| %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-2"><%= pedido.fornecedor.nome %></td>
-            <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
-            <td class="px-4 py-2"><%= pedido.data_validade.strftime('%d/%m/%Y') %></td>
-            <td class="px-4 py-2 capitalize"><%= pedido.status %></td>
-            <td class="px-4 py-2">
-              <%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline hover:text-blue-700" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+
+    <% if current_usuario.papel == "fornecedor" %>
+      <!-- Visão do FORNECEDOR -->
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Pedidos de Compra Recebidos</h2>
+
+      <% if @pedidos.present? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left">Pedido</th>
+                <th class="px-4 py-2 text-left">Cliente</th>
+                <th class="px-4 py-2 text-left">Valor Total</th>
+                <th class="px-4 py-2 text-left">Data de Validade</th>
+                <th class="px-4 py-2 text-left">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <% @pedidos.each do |pedido| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
+                  <td class="px-4 py-2"><%= pedido.cliente.nome %></td>
+                  <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
+                  <td class="px-4 py-2"><%= pedido.data_validade.strftime("%d/%m/%Y") if pedido.data_validade %></td>
+                  <td class="px-4 py-2">
+                    <%= link_to "Visualizar PDF", pdf_pedidos_de_compra_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-500">Não há pedidos de compra.</p>
+      <% end %>
+
+    <% else %>
+      <!-- Visão do CLIENTE -->
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Meus Pedidos de Compra</h2>
+
+      <% if @pedidos.present? %>
+        <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>
+              <th class="px-4 py-2 text-left">Fornecedor</th>
+              <th class="px-4 py-2 text-left">Valor Total</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @pedidos.each do |pedido| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2"><%= pedido.fornecedor.nome %></td>
+                <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
+                <td class="px-4 py-2"><%= pedido.data_validade.strftime('%d/%m/%Y') %></td>
+                <td class="px-4 py-2 capitalize"><%= pedido.status %></td>
+                <td class="px-4 py-2">
+                  <%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline hover:text-blue-700" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-gray-500">Você ainda não realizou nenhum pedido de compra.</p>
+      <% end %>
+    <% end %>
   </div>
 </div>
