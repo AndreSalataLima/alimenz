@@ -23,30 +23,35 @@ module Fornecedores
     end
 
     def update
-      # Verifica se o fornecedor marcou a assinatura pré-cadastrada
       usar_assinatura = (params[:resposta_de_cotacao][:usar_assinatura_pre_cadastrada] == "1")
 
-      if usar_assinatura && current_usuario.assinatura&.imagem_assinatura&.attached?
-        novo_status = "finalizado"
-        pdf_content = PdfGeneratorService.new(@resposta, usar_assinatura: true).generate
-        @resposta.documento_assinado.attach(
-          io: StringIO.new(pdf_content),
-          filename: "resposta_cotacao_#{@resposta.id}.pdf",
-          content_type: "application/pdf"
-        )
-      else
-        novo_status = "aguardando assinatura"
-      end
+      novo_status = if usar_assinatura && current_usuario.assinatura&.imagem_assinatura&.attached?
+                      "finalizado"
+                    else
+                      "aguardando assinatura"
+                    end
 
-      # Atualiza status e status_analise
       atualizar_status_analise = (novo_status == "finalizado") ? { status_analise: "pendente_de_analise" } : {}
 
       if @resposta.update(resposta_de_cotacao_params.merge(status: novo_status).merge(atualizar_status_analise))
+        # Recarrega a resposta para garantir que os nested attributes (itens) estejam presentes
+        @resposta.reload
+
+        if usar_assinatura && current_usuario.assinatura&.imagem_assinatura&.attached?
+          pdf_content = PdfGeneratorService.new(@resposta, usar_assinatura: true).generate
+          @resposta.documento_assinado.attach(
+            io: StringIO.new(pdf_content),
+            filename: "resposta_cotacao_#{@resposta.id}.pdf",
+            content_type: "application/pdf"
+          )
+        end
+
         redirect_to fornecedor_home_path, notice: "Cotação respondida com sucesso! Status: #{novo_status.capitalize}"
       else
         render :edit, status: :unprocessable_entity
       end
     end
+
 
     def confirmar_upload
       @resposta = RespostaDeCotacao.find(params[:id])

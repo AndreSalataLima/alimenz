@@ -31,7 +31,7 @@ module Admin
     end
 
     def fornecedor_params
-      params.require(:usuario).permit(:telefone, assinatura_attributes: [:imagem_assinatura])
+      params.require(:usuario).permit(:telefone, assinatura_attributes: [:id, :imagem_assinatura, :imagem_carimbo, :_destroy])
     end
 
     def verificar_admin

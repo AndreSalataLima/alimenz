@@ -2,15 +2,22 @@ class CotacoesController < ApplicationController
   before_action :authenticate_usuario!
   before_action :verificar_cliente, only: [:new, :create, :selecionar_pedidos, :resumo_pedidos, :finalizar_pedidos]
 
+  def preview_pdf_dados
+    @cotacao = Cotacao.find(params[:id])
+    # Supondo que a resposta desejada seja a primeira com status "finalizado"
+    @resposta = @cotacao.respostas_de_cotacao.find_by(status: "finalizado")
+    unless @resposta
+      redirect_to @cotacao, alert: "Nenhuma resposta finalizada encontrada para essa cotação."
+    end
+  end
+
   def index
     @cotacoes = current_usuario.cotacoes.order(created_at: :desc)
 
     if params[:status].present?
       @cotacoes = @cotacoes.where(status: params[:status])
     end
-
   end
-
 
   def new
     @cotacao = Cotacao.new
@@ -141,8 +148,11 @@ class CotacoesController < ApplicationController
   private
 
   def cotacao_params
-    params.require(:cotacao).permit(:data_validade, itens_de_cotacao_attributes: [:produto_id, :quantidade, :unidade_selecionada])
+    params.require(:cotacao).permit(:data_validade,
+      itens_de_cotacao_attributes: [:produto_id, :quantidade, :unidade_selecionada, :manter_nome_generico]
+    )
   end
+
 
   def verificar_cliente
     redirect_to root_path, alert: "Acesso negado." unless current_usuario.papel == "cliente"
