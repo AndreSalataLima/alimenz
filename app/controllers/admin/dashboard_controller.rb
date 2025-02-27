@@ -1,20 +1,20 @@
 class Admin::DashboardController < ApplicationController
-  before_action :authenticate_usuario!
-  before_action :verificar_admin
+  before_action :authenticate_user!
+  before_action :verify_admin
 
   def index
-    # Aqui você pode colocar a lógica que quiser exibir no painel
+    # Place any dashboard logic here
   end
 
-  def pending_verifications
-    # Método já declarado na rota, caso necessário
-  end
+  # def pending_verifications
+    # Method declared in routes, if needed
+  # end
 
   private
 
-  def verificar_admin
-    unless current_usuario && current_usuario.papel == 'admin'
-      redirect_to root_path, alert: "Acesso negado."
+  def verify_admin
+    unless current_user && current_user.role == 'admin'
+      redirect_to root_path, alert: "Access denied."
     end
   end
 end
