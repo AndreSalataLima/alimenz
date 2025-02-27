@@ -12,11 +12,11 @@
         <%= f.text_field :telefone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
       </div>
 
-      <!-- Assinatura -->
+      <!-- Assinatura e Carimbo -->
       <div>
-        <h3 class="text-lg font-semibold text-gray-700">Assinatura</h3>
-
         <% assinatura = @fornecedor.assinatura || @fornecedor.build_assinatura %>
+
+        <h3 class="text-lg font-semibold text-gray-700">Assinatura</h3>
         <% if assinatura.imagem_assinatura.attached? %>
           <p class="text-sm text-gray-600">Assinatura atual:</p>
           <div class="border p-2 rounded-lg inline-block shadow-sm">
@@ -26,10 +26,25 @@
           <p class="text-gray-500">Nenhuma assinatura cadastrada.</p>
         <% end %>
 
+        <h3 class="text-lg font-semibold text-gray-700 mt-4">Carimbo</h3>
+        <% if assinatura.imagem_carimbo.attached? %>
+          <p class="text-sm text-gray-600">Carimbo atual:</p>
+          <div class="border p-2 rounded-lg inline-block shadow-sm">
+            <%= image_tag assinatura.imagem_carimbo, width: 200, class: "rounded-lg" %>
+          </div>
+        <% else %>
+          <p class="text-gray-500">Nenhum carimbo cadastrado.</p>
+        <% end %>
+
         <%= f.fields_for :assinatura_attributes, assinatura do |af| %>
+          <%= af.hidden_field :id %>
           <div class="mt-2">
             <%= af.label :imagem_assinatura, "Upload de nova assinatura (imagem)", class: "block font-semibold text-gray-700" %>
             <%= af.file_field :imagem_assinatura, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          </div>
+          <div class="mt-2">
+            <%= af.label :imagem_carimbo, "Upload de novo carimbo (imagem)", class: "block font-semibold text-gray-700" %>
+            <%= af.file_field :imagem_carimbo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
           </div>
         <% end %>
       </div>

@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       get :selecionar_pedidos    # Passo 4: Exibe a tabela com itens (linhas) x fornecedores (colunas)
       post :resumo_pedidos        # Passo 5: Recebe os checkboxes e exibe os cards de resumo
       post :finalizar_pedidos     # Passo 7: Gera os Pedidos de Compra a partir dos pedidos confirmados
+    
     end
   end
 
