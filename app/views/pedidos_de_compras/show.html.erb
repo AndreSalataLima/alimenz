@@ -1,14 +1,14 @@
-<%= render 'clientes/shared/navbar', titulo: "Detalhes do Pedido de Compra" %>
+<%= render 'customers/shared/navbar', titulo: "Detalhes do Pedido de Compra" %>
 
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
-    <p class="mb-4 text-gray-700"><strong>Fornecedor:</strong> <%= @pedido.fornecedor.nome %></p>
-    <p class="mb-4 text-gray-700"><strong>Valor Total:</strong> <%= number_to_currency(@pedido.valor_total) %></p>
-    <p class="mb-4 text-gray-700"><strong>Data de Validade:</strong> <%= @pedido.data_validade.strftime('%d/%m/%Y') if @pedido.data_validade %></p>
-    <p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @pedido.status.capitalize %></p>
+    <p class="mb-4 text-gray-700"><strong>Fornecedor:</strong> <%= @purchase_order.supplier.name %></p>
+    <p class="mb-4 text-gray-700"><strong>Valor Total:</strong> <%= number_to_currency(@purchase_order.total_value) %></p>
+    <p class="mb-4 text-gray-700"><strong>Data de Validade:</strong> <%= @purchase_order.expiration_date.strftime('%d/%m/%Y') if @purchase_order.expiration_date %></p>
+    <p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @purchase_order.status.capitalize %></p>
 
     <h2 class="text-lg font-bold text-gray-800 mt-6 mb-4">Itens do Pedido</h2>
-    <% if @pedido.pedido_de_compra_items.any? %>
+    <% if @purchase_order.purchase_order_items.any? %>
       <div class="overflow-x-auto rounded-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -20,12 +20,12 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <% @pedido.pedido_de_compra_items.each do |item| %>
+            <% @purchase_order.purchase_order_items.each do |item| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= item.produto.nome_generico %></td>
-                <td class="px-4 py-2"><%= item.quantidade %></td>
-                <td class="px-4 py-2"><%= item.unidade %></td>
-                <td class="px-4 py-2"><%= number_to_currency(item.preco) %></td>
+                <td class="px-4 py-2"><%= item.product.generic_name %></td>
+                <td class="px-4 py-2"><%= item.quantity %></td>
+                <td class="px-4 py-2"><%= item.unit %></td>
+                <td class="px-4 py-2"><%= number_to_currency(item.price) %></td>
               </tr>
             <% end %>
           </tbody>
@@ -36,7 +36,7 @@
     <% end %>
 
     <div class="mt-6">
-      <%= link_to "Voltar", pedidos_de_compras_path, class: "bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700" %>
+      <%= link_to "Voltar", purchase_orders_path, class: "bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700" %>
     </div>
   </div>
 </div>

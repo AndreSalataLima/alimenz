@@ -1,20 +1,20 @@
 <h1>Novo Produto</h1>
 
-<%= form_for @produto do |f| %>
+<%= form_for @product do |f| %>
   <div>
-    <%= f.label :nome_generico %>
-    <%= f.text_field :nome_generico %>
+    <%= f.label :generic_name, "Nome Genérico" %>
+    <%= f.text_field :generic_name %>
   </div>
   <div>
-    <%= f.label :marca %>
-    <%= f.text_field :marca %>
+    <%= f.label :brand, "Marca" %>
+    <%= f.text_field :brand %>
   </div>
   <div>
-    <%= f.label :opcoes_unidades %>
-    <%= f.text_field :opcoes_unidades %>
+    <%= f.label :unit_options, "Opções de Unidades" %>
+    <%= f.text_field :unit_options %>
   </div>
   <div>
-    <%= f.label :commission_percentage %>
+    <%= f.label :commission_percentage, "Percentual de Comissão" %>
     <%= f.number_field :commission_percentage, step: 0.01 %>
   </div>
   <div>

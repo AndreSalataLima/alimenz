@@ -1,0 +1,83 @@
+<%= render 'admin/shared/navbar', titulo: "Detalhes da Cotação" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Cotação #<%= @quotation.id %></h2>
+
+    <div class="space-y-4">
+      <p><strong>Cliente:</strong> <%= @quotation.customer.name %></p>
+      <p><strong>Data de Validade:</strong> <%= @quotation.expiration_date.strftime("%d/%m/%Y") if @quotation.expiration_date %></p>
+      <p><strong>Status:</strong> <%= @quotation.status.capitalize %></p>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 mt-2">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2 text-left">Produto</th>
+            <th class="px-4 py-2 text-left">Quantidade</th>
+            <th class="px-4 py-2 text-left">Unidade</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <% @quotation.quotation_items.each do |item| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2"><%= item.product.generic_name %></td>
+              <td class="px-4 py-2"><%= item.quantity %></td>
+              <td class="px-4 py-2"><%= item.selected_unit %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-semibold text-gray-700 mt-6">Respostas de Fornecedores</h3>
+    <% if @quotation.quotation_responses.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 mt-2">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Fornecedor</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @quotation.quotation_responses.each do |response| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2"><%= response.supplier.name %></td>
+                <td class="px-4 py-2">
+                  <% if response.status == "pendente" %>
+                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      Pendente
+                    </span>
+                  <% elsif response.status == "finalizado" %>
+                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      Finalizado
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+                      <%= response.status.capitalize %>
+                    </span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2"><%= response.expiration_date.strftime("%d/%m/%Y") if response.expiration_date %></td>
+                <td class="px-4 py-2">
+                  <%= link_to "Ver Detalhes", admin_quotation_response_path(response), class: "text-blue-600 hover:underline" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Nenhuma resposta de fornecedor para esta cotação.</p>
+    <% end %>
+
+    <div class="mt-6 flex space-x-4">
+      <%= link_to "Voltar", admin_quotations_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+    </div>
+  </div>
+</div>

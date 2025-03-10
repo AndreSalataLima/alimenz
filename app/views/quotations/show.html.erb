@@ -1,14 +1,14 @@
-<%= render 'clientes/shared/navbar', titulo: "Detalhes da Cotação" %>
+<%= render 'customers/shared/navbar', titulo: "Detalhes da Cotação" %>
 
 <div class="container mx-auto py-6 px-4">
   <!-- Card principal com detalhes da cotação -->
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <p class="mb-4 text-lg">
       <strong class="text-gray-700">Data de Validade:</strong>
-      <span class="text-gray-900"><%= @cotacao.data_validade.strftime('%d/%m/%Y') %></span>
+      <span class="text-gray-900"><%= @quotation.expiration_date.strftime('%d/%m/%Y') %></span>
     </p>
 
-    <!-- Itens de Cotação -->
+    <!-- Itens da Cotação -->
     <h2 class="text-xl font-semibold text-gray-800 mb-3">Itens da Cotação</h2>
     <div class="overflow-x-auto rounded-lg border border-gray-200">
       <table class="min-w-full bg-white">
@@ -20,11 +20,11 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <% @cotacao.itens_de_cotacao.each do |item| %>
+          <% @quotation.quotation_items.each do |item| %>
             <tr class="hover:bg-gray-50">
-              <td class="px-4 py-2"><%= item.produto.nome_generico %></td>
-              <td class="px-4 py-2"><%= item.quantidade %></td>
-              <td class="px-4 py-2"><%= item.unidade_selecionada %></td>
+              <td class="px-4 py-2"><%= item.product.generic_name %></td>
+              <td class="px-4 py-2"><%= item.quantity %></td>
+              <td class="px-4 py-2"><%= item.selected_unit %></td>
             </tr>
           <% end %>
         </tbody>

@@ -17,4 +17,3 @@ class PdfMergeService
     pdf_io
   end
 end
-

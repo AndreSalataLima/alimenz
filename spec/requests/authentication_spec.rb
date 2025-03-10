@@ -1,10 +1,9 @@
-# spec/requests/authentication_spec.rb
 require 'rails_helper'
 
 RSpec.describe "Autenticação", type: :request do
-  let(:admin) { Usuario.create!(nome: "Admin", email: "admin@example.com", papel: "admin", password: "123456") }
-  let(:fornecedor) { Usuario.create!(nome: "Fornecedor", email: "fornecedor@example.com", papel: "fornecedor", password: "123456") }
-  let(:cliente) { Usuario.create!(nome: "Cliente", email: "cliente@example.com", papel: "cliente", password: "123456") }
+  let(:admin)     { User.create!(name: "Admin", email: "admin@example.com", role: "admin", password: "123456") }
+  let(:supplier)  { User.create!(name: "Fornecedor", email: "fornecedor@example.com", role: "supplier", password: "123456") }
+  let(:customer)  { User.create!(name: "Cliente", email: "cliente@example.com", role: "customer", password: "123456") }
 
   it "redireciona o admin para o dashboard correto" do
     sign_in admin
@@ -13,14 +12,14 @@ RSpec.describe "Autenticação", type: :request do
   end
 
   it "redireciona o fornecedor para o painel de respostas" do
-    sign_in fornecedor
+    sign_in supplier
     get root_path
-    expect(response).to redirect_to(respostas_de_cotacao_index_path)
+    expect(response).to redirect_to(suppliers_quotation_responses_path)
   end
 
   it "redireciona o cliente para as cotações" do
-    sign_in cliente
+    sign_in customer
     get root_path
-    expect(response).to redirect_to(cotacoes_index_path)
+    expect(response).to redirect_to(quotations_path)
   end
 end

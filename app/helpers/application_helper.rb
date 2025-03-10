@@ -1,9 +1,7 @@
 module ApplicationHelper
-
-  def nome_para_exibir(produto)
-    return produto.nome_generico unless current_usuario&.papel == 'cliente'
-    custom = ProdutoCustomizado.find_by(cliente_id: current_usuario.id, produto_id: produto.id)
-    custom ? custom.nome_customizado : produto.nome_generico
+  def display_name(product)
+    return product.generic_name unless current_user&.role == 'cliente'
+    custom = CustomizedProduct.find_by(customer_id: current_user.id, product_id: product.id)
+    custom ? custom.custom_name : product.generic_name
   end
-
 end

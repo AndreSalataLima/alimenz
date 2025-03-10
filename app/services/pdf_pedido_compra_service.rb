@@ -1,34 +1,36 @@
 require "prawn"
 require "prawn/table"
 
-class PdfPedidoCompraService
-  def initialize(pedido)
-    @pedido = pedido
+class PdfPurchaseOrderService
+  def initialize(purchase_order)
+    @purchase_order = purchase_order
   end
 
   def generate
     pdf = Prawn::Document.new(page_size: "A4", margin: 50)
 
     # Cabeçalho
-    pdf.text "Pedido de Compra ##{@pedido.id}", size: 20, style: :bold
-    pdf.text "Fornecedor: #{@pedido.fornecedor.nome}"
-    pdf.text "Cliente: #{@pedido.cliente.nome}"
-    pdf.text "Data de Validade: #{@pedido.data_validade.strftime('%d/%m/%Y')}" if @pedido.data_validade
+    pdf.text "Pedido de Compra ##{@purchase_order.id}", size: 20, style: :bold
+    pdf.text "Fornecedor: #{@purchase_order.supplier.nome}"
+    pdf.text "Cliente: #{@purchase_order.customer.nome}"
+    if @purchase_order.expiration_date
+      pdf.text "Data de Validade: #{@purchase_order.expiration_date.strftime('%d/%m/%Y')}"
+    end
     pdf.move_down 10
 
-    # Tabela de Itens do Pedido usando a nova associação
+    # Tabela de Itens do Pedido
     data = [["Produto", "Quantidade", "Unidade", "Preço Unitário (R$)", "Total (R$)"]]
-    @pedido.pedido_de_compra_items.each do |item|
-      produto = item.produto
-      quantidade = item.quantidade.to_f
-      preco_unitario = item.preco.to_f
-      total_item = quantidade * preco_unitario
+    @purchase_order.purchase_order_items.each do |item|
+      product = item.product
+      quantity = item.quantity.to_f
+      unit_price = item.price.to_f
+      total_item = quantity * unit_price
 
       data << [
-        produto.nome_generico,
-        quantidade,
-        item.unidade,
-        "R$ #{'%.2f' % preco_unitario}",
+        product.generic_name,
+        quantity,
+        item.unit,
+        "R$ #{'%.2f' % unit_price}",
         "R$ #{'%.2f' % total_item}"
       ]
     end
@@ -40,9 +42,8 @@ class PdfPedidoCompraService
     end
 
     pdf.move_down 20
-    pdf.text "Valor Total do Pedido: R$ #{'%.2f' % @pedido.valor_total}", size: 16, style: :bold, align: :right
+    pdf.text "Valor Total do Pedido: R$ #{'%.2f' % @purchase_order.total_value}", size: 16, style: :bold, align: :right
 
     pdf.render
   end
 end
-

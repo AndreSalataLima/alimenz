@@ -1,7 +1,7 @@
 <h1>Lista de Produtos</h1>
 
-<% if current_usuario&.papel == 'admin' %>
-  <%= link_to "Novo Produto", new_produto_path %>
+<% if current_user&.role == 'admin' %>
+  <%= link_to "Novo Produto", new_product_path %>
 <% end %>
 
 <table>
@@ -14,24 +14,23 @@
     </tr>
   </thead>
   <tbody>
-    <% @produtos.each do |produto| %>
-      <% nome_exibido = produto.nome_generico %>
-      <% if current_usuario&.papel == 'cliente' %>
-        <% # Checar se existe um nome customizado para este produto %>
-        <% custom = ProdutoCustomizado.find_by(cliente_id: current_usuario.id, produto_id: produto.id) %>
+    <% @products.each do |product| %>
+      <% nome_exibido = product.generic_name %>
+      <% if current_user&.role == 'customer' %>
+        <%# Checar se existe um nome customizado para este produto %>
+        <% custom = CustomizedProduct.find_by(customer_id: current_user.id, product_id: product.id) %>
         <% nome_exibido = custom.nome_customizado if custom.present? %>
       <% end %>
 
       <tr>
-        <td><%= nome_para_exibir(produto) %></td>
-        <%#= nome_exibido %>
-        <td><%= produto.marca %></td>
-        <td><%= produto.opcoes_unidades %></td>
+        <td><%= nome_exibido %></td>
+        <td><%= product.brand %></td>
+        <td><%= product.unit_options %></td>
         <td>
-          <%= link_to "Mostrar", produto_path(produto) %>
-          <% if current_usuario&.papel == 'admin' %>
-            | <%= link_to "Editar", edit_produto_path(produto) %>
-            | <%= link_to "Remover", produto_path(produto), method: :delete, data: { confirm: "Tem certeza?" } %>
+          <%= link_to "Mostrar", product_path(product) %>
+          <% if current_user&.role == 'admin' %>
+            | <%= link_to "Editar", edit_product_path(product) %>
+            | <%= link_to "Remover", product_path(product), method: :delete, data: { confirm: "Tem certeza?" } %>
           <% end %>
         </td>
       </tr>

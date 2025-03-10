@@ -1,0 +1,90 @@
+<%= render 'suppliers/shared/navbar', titulo: "Dashboard do Fornecedor" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="text-gray-700">Gerencie suas cotações e pedidos de compra.</p>
+  </div>
+
+  <!-- Pedidos de Compra Recebidos -->
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Pedidos de Compra Recebidos</h2>
+
+    <% if @pedidos.present? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Pedido</th>
+              <th class="px-4 py-2 text-left">Cliente</th>
+              <th class="px-4 py-2 text-left">Valor Total</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @pedidos.each do |pedido| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
+                <td class="px-4 py-2"><%= pedido.customer.name %></td>
+                <td class="px-4 py-2"><%= number_to_currency(pedido.total_value) %></td>
+                <td class="px-4 py-2"><%= pedido.expiration_date.strftime("%d/%m/%Y") if pedido.expiration_date %></td>
+                <td class="px-4 py-2">
+                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Não há pedidos de compra.</p>
+    <% end %>
+  </div>
+
+  <!-- Cotações Disponíveis -->
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Cotações Disponíveis</h2>
+
+    <% if @quotation_responses.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @quotation_responses.each do |quotation_response| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2 font-medium"><%= "Cotação ##{quotation_response.quotation.id}" %></td>
+                <td class="px-4 py-2">
+                  <% if quotation_response.quotation.expiration_date.present? %>
+                    <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2"><%= quotation_response.status.capitalize %></td>
+                <td class="px-4 py-2">
+                  <% if quotation_response.status == "aguardando assinatura" %>
+                    <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
+                    <%= link_to "Upload Documento Assinado", upload_document_for_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600 hover:underline" %>
+                    <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response), target: "_blank", class: "ml-4 text-purple-600 hover:underline" %>
+                  <% elsif quotation_response.status == "finalizado" %>
+                    <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"), class: "text-blue-600 hover:underline" %>
+                    <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "ml-4 text-green-600 hover:underline" %>
+                  <% else %>
+                    <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Não há respostas de cotação disponíveis.</p>
+    <% end %>
+  </div>
+</div>

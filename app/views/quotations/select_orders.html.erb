@@ -1,0 +1,67 @@
+<%= render 'customers/shared/navbar', titulo: "Selecione os Itens para Compra" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="mb-4 text-gray-700">
+      Revise os valores informados pelos fornecedores para cada item da sua cotação.
+    </p>
+
+    <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false } do |f| %>
+      <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
+
+      <div class="overflow-x-auto rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Produto (Item)</th>
+              <% @suppliers.each do |supplier| %>
+                <th class="px-4 py-2 text-center"><%= supplier.nome %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @items.each do |item| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2">
+                  <%= item.product.generic_name %> –
+                  <span class="font-medium"><%= item.quantity %> <%= item.selected_unit %></span>
+                </td>
+                <% @suppliers.each do |supplier| %>
+                  <td class="px-4 py-2 text-center">
+                    <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
+                    <% if response.present? %>
+                      <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id)&.price %>
+                      <% if response_item.present? %>
+                        <p class="font-medium text-gray-800">
+                          <%= number_to_currency(response_item.to_f * item.quantity.to_f) %>
+                        </p>
+                        <div class="flex items-center justify-center mt-2">
+                          <%= check_box_tag "selecionados[#{response.id}][#{item.id}]",
+                                            "1",
+                                            false,
+                                            class: "mr-2 rounded border-gray-300 focus:ring-indigo-500" %>
+                          <%= label_tag "selecionados_#{response.id}_#{item.id}",
+                                        "Comprar",
+                                        class: "text-gray-700" %>
+                        </div>
+                      <% else %>
+                        <span class="text-sm text-red-500">Sem preço</span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">-</span>
+                    <% end %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6">
+        <%= f.submit "Avançar",
+          class: "bg-[#615F4A] text-white py-2 px-4 rounded-lg shadow hover:bg-[#4b493f]" %>
+      </div>
+    <% end %>
+  </div>
+</div>

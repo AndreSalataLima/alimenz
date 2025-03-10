@@ -11,29 +11,29 @@
         Dashboard
       <% end %>
 
-      <%= link_to admin_clientes_path,
+      <%= link_to admin_customers_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
         Clientes
       <% end %>
 
-      <%= link_to admin_fornecedores_path,
+      <%= link_to admin_suppliers_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
         Fornecedores
       <% end %>
 
-      <%= link_to admin_cotacoes_path,
+      <%= link_to admin_quotations_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
         Cotações
       <% end %>
 
-      <%= link_to admin_respostas_de_cotacao_path,
+      <%= link_to admin_quotation_responses_path,
                   class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
         Respostas
       <% end %>
 
       <!-- Link para logout -->
       <%= link_to "Logout",
-                  destroy_usuario_session_path,
+                  destroy_user_session_path,
                   data: { turbo_method: :delete, confirm: "Tem certeza que deseja sair?" },
                   class: "bg-[#615F4A] text-white px-4 py-1 rounded-full font-medium shadow" %>
     </div>

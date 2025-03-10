@@ -1,17 +1,17 @@
-<% if current_usuario.papel == "fornecedor" %>
-  <%= render 'fornecedores/shared/navbar', titulo: "Pedidos Recebidos" %>
+<% if current_user.role == "supplier" %>
+  <%= render 'suppliers/shared/navbar', titulo: "Pedidos Recebidos" %>
 <% else %>
-  <%= render 'clientes/shared/navbar', titulo: "Meus Pedidos de Compra" %>
+  <%= render 'customers/shared/navbar', titulo: "Meus Pedidos de Compra" %>
 <% end %>
 
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
 
-    <% if current_usuario.papel == "fornecedor" %>
+    <% if current_user.role == "supplier" %>
       <!-- Visão do FORNECEDOR -->
       <h2 class="text-xl font-bold text-gray-800 mb-4">Pedidos de Compra Recebidos</h2>
 
-      <% if @pedidos.present? %>
+      <% if @purchase_orders.present? %>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-100">
@@ -24,14 +24,14 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-              <% @pedidos.each do |pedido| %>
+              <% @purchase_orders.each do |purchase_order| %>
                 <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
-                  <td class="px-4 py-2"><%= pedido.cliente.nome %></td>
-                  <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
-                  <td class="px-4 py-2"><%= pedido.data_validade.strftime("%d/%m/%Y") if pedido.data_validade %></td>
+                  <td class="px-4 py-2 font-medium"><%= "Pedido ##{purchase_order.id}" %></td>
+                  <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
+                  <td class="px-4 py-2"><%= number_to_currency(purchase_order.total_value) %></td>
+                  <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                   <td class="px-4 py-2">
-                    <%= link_to "Visualizar PDF", pdf_pedidos_de_compra_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>
+                    <%= link_to "Visualizar PDF", pdf_purchase_order_path(purchase_order), target: "_blank", class: "text-blue-600 hover:underline" %>
                   </td>
                 </tr>
               <% end %>
@@ -46,7 +46,7 @@
       <!-- Visão do CLIENTE -->
       <h2 class="text-xl font-bold text-gray-800 mb-4">Meus Pedidos de Compra</h2>
 
-      <% if @pedidos.present? %>
+      <% if @purchase_orders.present? %>
         <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
           <thead class="bg-gray-100 text-gray-700">
             <tr>
@@ -58,14 +58,14 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <% @pedidos.each do |pedido| %>
+            <% @purchase_orders.each do |purchase_order| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= pedido.fornecedor.nome %></td>
-                <td class="px-4 py-2"><%= number_to_currency(pedido.valor_total) %></td>
-                <td class="px-4 py-2"><%= pedido.data_validade.strftime('%d/%m/%Y') %></td>
-                <td class="px-4 py-2 capitalize"><%= pedido.status %></td>
+                <td class="px-4 py-2"><%= purchase_order.supplier.name %></td>
+                <td class="px-4 py-2"><%= number_to_currency(purchase_order.total_value) %></td>
+                <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime('%d/%m/%Y') %></td>
+                <td class="px-4 py-2 capitalize"><%= purchase_order.status %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", pedidos_de_compra_path(pedido), class: "text-blue-500 underline hover:text-blue-700" %>
+                  <%= link_to "Ver Detalhes", purchase_order_path(purchase_order), class: "text-blue-500 underline hover:text-blue-700" %>
                 </td>
               </tr>
             <% end %>
