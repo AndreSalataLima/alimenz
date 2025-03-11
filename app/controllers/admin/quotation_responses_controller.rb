@@ -5,7 +5,7 @@ module Admin
     before_action :set_response, only: [:show, :approve, :reject]
 
     def index
-      @responses = QuotationResponse.includes(:quotation, :supplier).order(created_at: :desc)
+      @quotation_responses = QuotationResponse.includes(:quotation, :supplier).order(created_at: :desc)
     end
 
     def show

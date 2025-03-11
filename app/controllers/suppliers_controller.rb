@@ -3,7 +3,7 @@ class SuppliersController < ApplicationController
   before_action :verify_supplier
 
   def home
-    @responses = current_user.quotation_responses.includes(:quotation)
+    @quotation_responses = current_user.quotation_responses.includes(:quotation)
     @orders = PurchaseOrder.where(supplier_id: current_user.id).order(created_at: :desc)
   end
 
