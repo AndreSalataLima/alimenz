@@ -1,7 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["unidadeSelect", "quantidade", "total", "modal"]
+  static targets = [
+    "unidadeSelect",
+    "quantidade",
+    "total",
+    "modal",
+    "errorModal",
+    "errorMessage",
+    "confirmModal"  // novo target para o modal de confirmação
+  ]
 
   connect() {
     console.log("Cotacao Controller conectado");
@@ -32,7 +40,6 @@ export default class extends Controller {
   }
 
   calcularTotal(event) {
-    // Descobre qual linha do produto foi alterada
     const row = event.target.closest("tr");
     if (!row) return;
 
@@ -40,44 +47,34 @@ export default class extends Controller {
     const quantidadeInput = row.querySelector("[data-cotacao-target='quantidade']");
     const totalSpan = row.querySelector("[data-cotacao-target='total']");
 
-    // Obtém a unidade selecionada
     const selectedOption = unidadeSelect.selectedOptions[0];
     if (!selectedOption) {
       totalSpan.textContent = "0";
       return;
     }
 
-    const unidadeTexto = selectedOption.value.trim(); // Ex: "5kg", "4 x 12 caixas", "caixa", "unidade"
+    const unidadeTexto = selectedOption.value.trim();
     const quantidade = parseInt(quantidadeInput.value) || 0;
 
-    // 1️⃣ Verifica se é um pacote (ex: "4 x 12 caixas")
-    const pacoteMatch = unidadeTexto.match(/^(\d+)\s*x\s*(\d+)\s*(\w+)$/i);
-
     let resultadoTexto = "";
+    const pacoteMatch = unidadeTexto.match(/^(\d+)\s*x\s*(\d+)\s*(\w+)$/i);
     if (pacoteMatch) {
-      // Pacote detectado: "4 x 12 caixas"
-      const multiplicador = parseInt(pacoteMatch[1]); // Ex: "4"
-      const quantidadePorUnidade = parseInt(pacoteMatch[2]); // Ex: "12"
-      const unidadeFinal = pacoteMatch[3]; // Ex: "caixas"
-
+      const multiplicador = parseInt(pacoteMatch[1]);
+      const quantidadePorUnidade = parseInt(pacoteMatch[2]);
+      const unidadeFinal = pacoteMatch[3];
       const totalPacotes = quantidade * multiplicador;
       resultadoTexto = `${totalPacotes} x ${quantidadePorUnidade} ${this.pluralize(totalPacotes, unidadeFinal)}`;
     } else {
-      // 2️⃣ Se não for pacote, verifica se contém um número no início (ex: "5kg")
       const unidadeMatch = unidadeTexto.match(/^(\d+)\s*(\D+)$/);
-
       if (unidadeMatch) {
-        // Caso padrão: número + unidade (ex: "5kg")
-        const valorNumerico = parseInt(unidadeMatch[1]); // Ex: "5"
-        const unidadeFinal = unidadeMatch[2].trim(); // Ex: "kg"
+        const valorNumerico = parseInt(unidadeMatch[1]);
+        const unidadeFinal = unidadeMatch[2].trim();
         const total = quantidade * valorNumerico;
         resultadoTexto = `${total} ${unidadeFinal}`;
       } else {
-        // 3️⃣ Caso contrário, é uma unidade simples (ex: "caixa", "unidade")
         resultadoTexto = `${quantidade} ${this.pluralize(quantidade, unidadeTexto)}`;
       }
     }
-
     totalSpan.textContent = resultadoTexto;
   }
 
@@ -90,8 +87,52 @@ export default class extends Controller {
     if (quantidade > 1 && pluralRegras[unidade]) {
       return pluralRegras[unidade];
     }
+    return unidade;
+  }
 
-    return unidade; // Mantém no singular se quantidade = 1
+  // Método para interceptar o submit do formulário
+  submitForm(event) {
+    // Obtemos o input oculto preenchido pelo date-picker
+    const dateInput = document.querySelector("[data-date-picker-target='hiddenInput']");
+    if (!dateInput || !dateInput.value) {
+      event.preventDefault();
+      this.showErrorModal("A data de validade da cotação é obrigatória e deve ser futura.");
+      return;
+    }
+    // Se a data estiver ok, previne o envio e abre o modal de confirmação
+    event.preventDefault();
+    this.showConfirmModal();
+  }
+
+  // Exibe o modal de erro (já existente)
+  showErrorModal(message) {
+    this.errorMessageTarget.textContent = message;
+    this.errorModalTarget.classList.remove("hidden");
+  }
+
+  // Fecha o modal de erro
+  fecharErrorModal() {
+    this.errorModalTarget.classList.add("hidden");
+  }
+
+  // Exibe o modal de confirmação
+  showConfirmModal() {
+    this.confirmModalTarget.classList.remove("hidden");
+  }
+
+  // Método chamado ao clicar em "Buscar novos produtos"
+  cancelSubmit() {
+    this.confirmModalTarget.classList.add("hidden");
+  }
+
+  // Método chamado ao clicar em "Enviar": fecha o modal e submete o formulário
+  confirmSubmit() {
+    this.confirmModalTarget.classList.add("hidden");
+    // Procura o form dentro do elemento controlado e submete programaticamente
+    const form = this.element.querySelector("form");
+    if (form) {
+      form.submit();
+    }
   }
 
   mostrarModal() {

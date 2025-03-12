@@ -1,0 +1,24 @@
+<h1>Detalhes do Usuário</h1>
+
+<p>
+  <strong>ID:</strong> <%= @user.id %>
+</p>
+<p>
+  <strong>Nome:</strong> <%= @user.name %>
+</p>
+<p>
+  <strong>Email:</strong> <%= @user.email %>
+</p>
+<p>
+  <strong>Papel:</strong> <%= @user.role %>
+</p>
+
+<% if @user.role == 'supplier' %>
+  <p>
+    <strong>Categorias:</strong>
+    <%= @user.categories.map(&:name).join(', ') %>
+  </p>
+<% end %>
+
+<%= link_to 'Editar', edit_admin_user_path(@user) %> |
+<%= link_to 'Voltar', admin_users_path %>

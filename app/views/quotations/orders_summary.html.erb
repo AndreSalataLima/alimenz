@@ -1,0 +1,55 @@
+<%= render 'customers/shared/navbar', titulo: "Resumo dos Pedidos" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
+    <p class="mb-4 text-gray-700">Revise os pedidos por fornecedor e confirme os que deseja enviar.</p>
+
+    <%= form_with url: finalize_orders_quotation_path(@quotation), method: :post, local: true do |f| %>
+      <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
+
+      <% @selected_responses.each do |response| %>
+        <% (params[:selecionados][response.id.to_s] || {}).each do |item_id, _| %>
+          <%= hidden_field_tag "selecionados[#{response.id}][#{item_id}]", "1" %>
+        <% end %>
+      <% end %>
+
+      <% @responses_by_supplier.each do |supplier_id, responses| %>
+        <% supplier = User.find(supplier_id) %>
+        <div class="border border-gray-200 p-4 rounded-lg shadow mb-6">
+          <h2 class="text-lg font-bold text-gray-800">Fornecedor: <%= supplier.nome %></h2>
+          <div class="overflow-x-auto mt-4">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-2 text-left">Produto</th>
+                  <th class="px-4 py-2 text-left">Quantidade</th>
+                  <th class="px-4 py-2 text-left">Preço Unitário</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% responses.each do |response| %>
+                  <% @items_by_response[response.id].each do |item| %>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-4 py-2"><%= item.quotation_item.product.generic_name %></td>
+                      <td class="px-4 py-2"><%= item.quotation_item.quantity %></td>
+                      <td class="px-4 py-2"><%= number_to_currency(item.price) %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <p class="font-bold text-gray-800 mt-4">Total: <%= number_to_currency(@summaries[supplier_id]) %></p>
+          <div class="mt-2">
+            <%= check_box_tag "confirmacoes[#{supplier_id}]", "1", false, class: "mr-2 rounded border-gray-300 focus:ring-indigo-500" %>
+            <%= label_tag "confirmacoes_#{supplier_id}", "Confirmar pedido com este fornecedor", class: "text-gray-700" %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="mt-6 text-center">
+        <%= f.submit "Finalizar Pedido", class: "bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50" %>
+      </div>
+    <% end %>
+  </div>
+</div>

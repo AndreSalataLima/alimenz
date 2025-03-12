@@ -1,0 +1,2 @@
+module Suppliers::QuotationResponsesHelper
+end

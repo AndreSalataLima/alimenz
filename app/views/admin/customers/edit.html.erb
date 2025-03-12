@@ -1,0 +1,40 @@
+<%= render 'admin/shared/navbar', titulo: "Editar Cliente" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Editar Cliente</h2>
+
+    <%= form_with model: [:admin, @customer], local: true, class: "space-y-4" do |f| %>
+
+      <!-- Nome -->
+      <div>
+        <%= f.label :name, "Nome", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <%= f.label :email, "Email", class: "block font-semibold text-gray-700" %>
+        <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+      </div>
+
+      <!-- Telefone -->
+      <div>
+        <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+      </div>
+
+      <!-- Endereço -->
+      <div>
+        <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
+        <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+      </div>
+
+      <!-- Botões -->
+      <div class="flex justify-between mt-6">
+        <%= link_to "Cancelar", admin_customer_path(@customer), class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+        <%= f.submit "Atualizar Cliente", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
+      </div>
+    <% end %>
+  </div>
+</div>

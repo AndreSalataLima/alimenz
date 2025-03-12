@@ -1,0 +1,19 @@
+<h1>Novo Produto</h1>
+
+<%= form_for @product do |f| %>
+  <div>
+    <%= f.label :generic_name, "Nome Genérico" %>
+    <%= f.text_field :generic_name %>
+  </div>
+  <div>
+    <%= f.label :brand, "Marca" %>
+    <%= f.text_field :brand %>
+  </div>
+  <div>
+    <%= f.label :unit_options, "Opções de Unidades" %>
+    <%= f.text_field :unit_options %>
+  </div>
+  <div>
+    <%= f.submit "Criar Produto" %>
+  </div>
+<% end %>

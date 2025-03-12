@@ -3,13 +3,13 @@ require "prawn/table"
 require "stringio"
 
 class PdfGeneratorService
-  def initialize(resposta, usar_assinatura: false)
-    @resposta = resposta
-    @usar_assinatura = usar_assinatura
+  def initialize(response, use_signature: false)
+    @response = response
+    @use_signature = use_signature
   end
 
   def generate
-    @resposta.reload
+    @response.reload
     pdf = Prawn::Document.new(page_size: "A4", margin: 50)
 
     # Cabeçalho – Informações da Proposta de Cotação
@@ -19,36 +19,36 @@ class PdfGeneratorService
     pdf.move_down 10
 
     # Dados da Entidade Participante – dados do cliente que criou a cotação
-    cliente = @resposta.cotacao.cliente
-    entidade_nome  = cliente.nome
-    entidade_cnpj  = cliente.cnpj
+    customer = @response.quotation.customer
+    customer_name = customer.nome
+    customer_cnpj = customer.cnpj
 
     # Dados da Empresa Proponente – dados do fornecedor que respondeu à cotação
-    fornecedor = @resposta.fornecedor
-    empresa_nome       = fornecedor.nome
-    empresa_cnpj       = fornecedor.cnpj
-    empresa_endereco   = fornecedor.endereco
-    empresa_telefone   = fornecedor.telefone
-    responsavel        = fornecedor.responsavel
-    data_emissao       = Date.today.strftime("%d/%m/%Y")
-    validade     = @resposta.cotacao.data_validade.strftime("%d/%m/%Y")
+    supplier = @response.supplier
+    supplier_name      = supplier.nome
+    supplier_cnpj      = supplier.cnpj
+    supplier_address   = supplier.endereco
+    supplier_phone     = supplier.telefone
+    supplier_contact   = supplier.responsavel
+    issue_date         = Date.today.strftime("%d/%m/%Y")
+    validity           = @response.quotation.expiration_date.strftime("%d/%m/%Y")
 
     # Exibe os dados em duas colunas
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Entidade Participante:", style: :bold
-      pdf.text entidade_nome
-      pdf.text "CNPJ: #{entidade_cnpj}"
+      pdf.text customer_name
+      pdf.text "CNPJ: #{customer_cnpj}"
     end
 
-    pdf.bounding_box([pdf.bounds.width / 2 + 10, pdf.cursor + 40], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ pdf.bounds.width / 2 + 10, pdf.cursor + 40 ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Empresa Proponente:", style: :bold
-      pdf.text empresa_nome
-      pdf.text "CNPJ: #{empresa_cnpj}"
-      pdf.text "Endereço: #{empresa_endereco}"
-      pdf.text "Telefone: #{empresa_telefone}"
-      pdf.text "Data de emissão: #{data_emissao}"
-      pdf.text "Validade: #{validade}"
-      pdf.text "Responsável: #{responsavel}"
+      pdf.text supplier_name
+      pdf.text "CNPJ: #{supplier_cnpj}"
+      pdf.text "Endereço: #{supplier_address}"
+      pdf.text "Telefone: #{supplier_phone}"
+      pdf.text "Data de emissão: #{issue_date}"
+      pdf.text "Validade: #{validity}"
+      pdf.text "Responsável: #{supplier_contact}"
     end
 
     pdf.move_down 20
@@ -56,25 +56,25 @@ class PdfGeneratorService
     pdf.move_down 20
 
     # Tabela de Cotação de Preços
-    table_data = [["ITEM", "QUANT", "UNID", "DESCRIÇÃO", "PREÇO UNI (R$)", "TOTAL (R$)"]]
+    table_data = [ [ "ITEM", "QUANT", "UNID", "DESCRIÇÃO", "PREÇO UNI (R$)", "TOTAL (R$)" ] ]
     item_index = 1
-    @resposta.resposta_de_cotacao_items.includes(:item_de_cotacao).each do |item|
-      next unless item.disponivel
+    @response.quotation_response_items.includes(:quotation_item).each do |item|
+      next unless item.available
 
-      cotacao_item = item.item_de_cotacao
-      produto      = cotacao_item.produto
-      quantidade   = cotacao_item.quantidade
-      unidade      = cotacao_item.unidade_selecionada
-      descricao    = produto.nome_generico
-      preco_uni    = item.preco
-      total        = quantidade * preco_uni
+      quotation_item = item.quotation_item
+      product    = quotation_item.product
+      quantity   = quotation_item.quantity
+      unit       = quotation_item.selected_unit
+      description = product.generic_name
+      unit_price = item.price
+      total      = quantity * unit_price
 
       table_data << [
         item_index,
-        quantidade,
-        unidade,
-        descricao,
-        "R$ #{'%.2f' % preco_uni}",
+        quantity,
+        unit,
+        description,
+        "R$ #{'%.2f' % unit_price}",
         "R$ #{'%.2f' % total}"
       ]
       item_index += 1
@@ -96,46 +96,38 @@ class PdfGeneratorService
     pdf.move_down 20
 
     # Rodapé – Assinatura, Carimbo e Dados da Empresa
-
-    # Linha da Assinatura
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width) do
-      # Rótulo "Assinatura:" à esquerda
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width) do
       pdf.text "Assinatura:", style: :bold, align: :left
 
-      # Se a assinatura digital estiver disponível, exibe a imagem à direita
-      if @usar_assinatura && fornecedor.assinatura&.imagem_assinatura&.attached?
-        file = fornecedor.assinatura.imagem_assinatura.download
-        assinatura_image = StringIO.open(file)
-        # Posiciona a imagem com um deslocamento à direita (ajuste o [x,y] conforme necessário)
-        pdf.bounding_box([150, pdf.cursor + 15], width: 150, height: 50) do
-          pdf.image assinatura_image, fit: [150, 50]
+      if @use_signature && supplier.signature&.signature_image&.attached?
+        file = supplier.signature.signature_image.download
+        signature_image = StringIO.open(file)
+        pdf.bounding_box([ 150, pdf.cursor + 15 ], width: 150, height: 50) do
+          pdf.image signature_image, fit: [ 150, 50 ]
         end
       end
     end
 
     pdf.move_down 30
 
-    # Linha do Carimbo da Empresa
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width) do
-      # Rótulo "Carimbo da empresa:" à esquerda
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width) do
       pdf.text "Carimbo da empresa:", style: :bold, align: :left
 
-      # Exibe a imagem do carimbo (caso esteja anexada)
-      if fornecedor.assinatura&.imagem_carimbo&.attached?
-        file = fornecedor.assinatura.imagem_carimbo.download
-        carimbo_image = StringIO.open(file)
-        pdf.bounding_box([200, pdf.cursor + 15], width: 150, height: 50) do
-          pdf.image carimbo_image, fit: [150, 50]
+      if supplier.signature&.stamp_image&.attached?
+        file = supplier.signature.stamp_image.download
+        stamp_image = StringIO.open(file)
+        pdf.bounding_box([ 200, pdf.cursor + 15 ], width: 150, height: 50) do
+          pdf.image stamp_image, fit: [ 150, 50 ]
         end
       end
     end
 
     pdf.move_down 20
     pdf.text "Dados da Empresa:", style: :bold
-    pdf.text "Razão Social: #{empresa_nome}"
-    pdf.text "CNPJ: #{empresa_cnpj}"
-    pdf.text "Endereço: #{empresa_endereco}"
-    pdf.text "Telefone: #{empresa_telefone}"
+    pdf.text "Razão Social: #{supplier_name}"
+    pdf.text "CNPJ: #{supplier_cnpj}"
+    pdf.text "Endereço: #{supplier_address}"
+    pdf.text "Telefone: #{supplier_phone}"
 
     pdf.render
   end

@@ -1,0 +1,52 @@
+<%= render 'admin/shared/navbar', titulo: "Gerenciar Cotações" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Lista de Cotações</h2>
+
+    <% if @quotations.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">ID</th>
+              <th class="px-4 py-2 text-left">Cliente</th>
+              <th class="px-4 py-2 text-left">Data de Validade</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @quotations.each do |quotation| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2"><%= quotation.id %></td>
+                <td class="px-4 py-2"><%= quotation.customer.name %></td>
+                <td class="px-4 py-2"><%= quotation.expiration_date.strftime("%d/%m/%Y") if quotation.expiration_date %></td>
+                <td class="px-4 py-2">
+                  <% if quotation.status == "pendente" %>
+                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
+                      Pendente
+                    </span>
+                  <% elsif quotation.status == "finalizada" %>
+                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                      Finalizada
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
+                      <%= quotation.status.capitalize %>
+                    </span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2">
+                  <%= link_to "Ver Detalhes", admin_quotation_path(quotation), class: "text-blue-600 hover:underline" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">Nenhuma cotação cadastrada.</p>
+    <% end %>
+  </div>
+</div>

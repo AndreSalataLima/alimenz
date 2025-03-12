@@ -1,0 +1,67 @@
+<h1>Revisão do Pedido de Compra</h1>
+
+<%= form_with model: @purchase_order, local: true do |f| %>
+  <div class="mb-4">
+    <%= f.label :supplier_id, "Fornecedor", class: "block font-bold" %>
+    <%= f.collection_select :supplier_id, @suppliers, :id, :name,
+                            prompt: "Selecione um fornecedor",
+                            class: "border rounded p-2 w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :total_value, "Valor Total", class: "block font-bold" %>
+    <%= f.text_field :total_value, value: @purchase_order.total_value || 0.0,
+                     class: "border rounded p-2 w-full" %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :expiration_date, "Data de Validade", class: "block font-bold" %>
+    <%= f.date_field :expiration_date, value: @purchase_order.expiration_date,
+                     class: "border rounded p-2 w-full" %>
+  </div>
+
+  <%= f.hidden_field :status, value: "pendente" %>
+
+  <!-- Campos aninhados para itens do pedido -->
+  <div class="mb-4">
+    <h2 class="font-bold">Itens do Pedido</h2>
+
+    <%= f.fields_for :purchase_order_items do |item_form| %>
+      <div class="border border-gray-300 rounded p-2 mb-2">
+        <div>
+          <%= item_form.label :product_id, "Produto", class: "font-bold" %>
+          <%= item_form.collection_select :product_id, Product.all, :id, :generic_name,
+                                          prompt: "Selecione um produto",
+                                          class: "border rounded p-1 w-full" %>
+        </div>
+        <div>
+          <%= item_form.label :quantity, "Quantidade", class: "font-bold" %>
+          <%= item_form.number_field :quantity, step: 0.01, class: "border rounded p-1 w-full" %>
+        </div>
+        <div>
+          <%= item_form.label :unit, "Unidade", class: "font-bold" %>
+          <%= item_form.text_field :unit, class: "border rounded p-1 w-full" %>
+        </div>
+        <div>
+          <%= item_form.label :price, "Preço Unitário", class: "font-bold" %>
+          <%= item_form.number_field :price, step: 0.01, class: "border rounded p-1 w-full" %>
+        </div>
+        <%= link_to "Remover", "#",
+                    class: "text-red-500 underline",
+                    data: { action: "click->remove-fields#remove" } %>
+      </div>
+    <% end %>
+
+    <!-- Botão para adicionar novos itens via JavaScript (Opcional) -->
+    <button type="button" class="bg-green-600 text-white px-2 py-1 rounded"
+            data-action="click->add-fields#add"
+            data-add-fields-target="container"
+            data-add-fields-template="<%= raw escape_javascript(fields_for(@purchase_order.purchase_order_items.build) do |item_form| render('purchase_order_item_fields', f: item_form) end) %>">
+      Adicionar Item
+    </button>
+  </div>
+
+  <div>
+    <%= f.submit "Confirmar Pedido", class: "bg-blue-500 text-white py-2 px-4 rounded" %>
+  </div>
+<% end %>
