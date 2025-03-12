@@ -16,6 +16,8 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
+    # Atribuição explícita do role
+    @user.role = params[:user][:role] if params[:user][:role].present?
     if @user.save
       redirect_to admin_user_path(@user), notice: "User created successfully."
     else
@@ -27,7 +29,9 @@ class Admin::UsersController < ApplicationController
   end
 
   def update
-    if @user.update(user_params)
+    # Mescla os parâmetros permitidos com o role explicitamente atribuído
+    new_params = user_params.merge(role: params[:user][:role])
+    if @user.update(new_params)
       redirect_to admin_user_path(@user), notice: "User updated successfully."
     else
       render :edit
@@ -46,8 +50,9 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
+    # Removemos :role daqui para evitar que ele seja atribuído via mass assignment
     params.require(:user).permit(
-      :name, :email, :role, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation,
+      :name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation,
       signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],
       category_ids: []
     )
