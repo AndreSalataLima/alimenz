@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: 'users/registrations' }
+  devise_for :users, controllers: { registrations: "users/registrations" }
 
   namespace :admin do
     resources :users
-    resources :customers, only: [:index, :show, :edit, :update]
-    resources :suppliers, only: [:index, :show, :edit, :update]
-    resources :quotations, only: [:index, :show]
-    resources :dashboard, only: [:index]
+    resources :customers, only: [ :index, :show, :edit, :update ]
+    resources :suppliers, only: [ :index, :show, :edit, :update ]
+    resources :quotations, only: [ :index, :show ]
+    resources :dashboard, only: [ :index ]
 
-    resources :quotation_responses, only: [:index, :show] do
+    resources :quotation_responses, only: [ :index, :show ] do
       member do
         patch :approve
         patch :reject
@@ -19,20 +19,20 @@ Rails.application.routes.draw do
   end
 
   # Home pages for supplier and customer
-  get 'supplier_home', to: 'suppliers#home'
-  get 'customer_home', to: 'customers#home'
+  get "supplier_home", to: "suppliers#home"
+  get "customer_home", to: "customers#home"
 
-  resources :purchase_orders, only: [:index, :show, :new, :create] do
+  resources :purchase_orders, only: [ :index, :show, :new, :create ] do
     member do
       get :pdf, to: "purchase_orders#pdf", as: :pdf
     end
   end
 
   resources :products do
-    resources :customized_products, only: [:create]
+    resources :customized_products, only: [ :create ]
   end
 
-  resources :quotations, only: [:index, :new, :create, :show] do
+  resources :quotations, only: [ :index, :new, :create, :show ] do
     member do
       # New flow to generate purchase orders
       get :select_orders        # Step 4: Displays the table with items (rows) x suppliers (columns)
@@ -42,7 +42,7 @@ Rails.application.routes.draw do
   end
 
   namespace :suppliers do
-    resources :quotation_responses, only: [:index, :show, :edit, :update] do
+    resources :quotation_responses, only: [ :index, :show, :edit, :update ] do
       member do
         get "pdf", to: "quotation_responses#pdf"
         get "upload_document", to: "quotation_responses#upload_document"

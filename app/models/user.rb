@@ -10,9 +10,9 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
-  scope :customers, -> { where(role: 'customer') }
-  scope :suppliers, -> { where(role: 'supplier') }
-  scope :admins, -> { where(role: 'admin') }
+  scope :customers, -> { where(role: "customer") }
+  scope :suppliers, -> { where(role: "supplier") }
+  scope :admins, -> { where(role: "admin") }
 
   validates :name, presence: true
   validates :role, inclusion: { in: %w[customer supplier admin] }

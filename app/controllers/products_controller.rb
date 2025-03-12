@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-  before_action :verify_admin, except: [:index, :show]
+  before_action :verify_admin, except: [ :index, :show ]
 
   def index
     @products = Product.order(:generic_name)

@@ -2,7 +2,7 @@ module Admin
   class CustomersController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_customer, only: [:show, :edit, :update]
+    before_action :set_customer, only: [ :show, :edit, :update ]
 
     def index
       @customers = User.where(role: "customer")
@@ -31,7 +31,7 @@ module Admin
     end
 
     def customer_params
-      params.require(:user).permit(:phone, signature_attributes: [:signature_image, :stamp_image, :_destroy])
+      params.require(:user).permit(:phone, signature_attributes: [ :signature_image, :stamp_image, :_destroy ])
     end
 
     def verify_admin

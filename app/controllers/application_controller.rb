@@ -5,11 +5,11 @@ class ApplicationController < ActionController::Base
 
   def after_sign_in_path_for(resource)
     case resource.role
-    when 'admin'
+    when "admin"
       admin_dashboard_index_path
-    when 'supplier'
+    when "supplier"
       supplier_home_path
-    when 'customer'
+    when "customer"
       customer_home_path
     else
       root_path
@@ -17,6 +17,6 @@ class ApplicationController < ActionController::Base
   end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_in, keys: [:name, :role])
+    devise_parameter_sanitizer.permit(:sign_in, keys: [ :name, :role ])
   end
 end

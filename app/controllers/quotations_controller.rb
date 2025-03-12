@@ -1,6 +1,6 @@
 class QuotationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :verify_customer, only: [:new, :create, :select_orders, :orders_summary, :finalize_orders]
+  before_action :verify_customer, only: [ :new, :create, :select_orders, :orders_summary, :finalize_orders ]
 
   def preview_pdf_data
     @quotation = Quotation.find(params[:id])
@@ -127,7 +127,7 @@ class QuotationsController < ApplicationController
 
   def quotation_params
     params.require(:quotation).permit(:expiration_date,
-      quotation_items_attributes: [:product_id, :quantity, :selected_unit, :keep_generic_name]
+      quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name ]
     )
   end
 

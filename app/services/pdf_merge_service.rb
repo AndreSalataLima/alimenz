@@ -9,7 +9,7 @@ class PdfMergeService
     uploaded_files.each_with_index do |uploaded_file, index|
       pdf.start_new_page unless index.zero?
       image_path = uploaded_file.tempfile.path
-      pdf.image(image_path, at: [0, pdf.bounds.top], width: pdf.bounds.width, height: pdf.bounds.height)
+      pdf.image(image_path, at: [ 0, pdf.bounds.top ], width: pdf.bounds.width, height: pdf.bounds.height)
     end
 
     pdf_io = StringIO.new(pdf.render)

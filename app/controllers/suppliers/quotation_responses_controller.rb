@@ -2,7 +2,7 @@ module Suppliers
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_supplier
-    before_action :set_quotation_response, only: [:show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign]
+    before_action :set_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
 
     def index
       @quotation_responses = current_user.quotation_responses.includes(:quotation)
@@ -98,7 +98,7 @@ module Suppliers
     def quotation_response_params
       params.require(:quotation_response).permit(
         :expiration_date, :status, :use_pre_registered_signature, :signed_document,
-        quotation_response_items_attributes: [:id, :quotation_item_id, :price, :available, :_destroy]
+        quotation_response_items_attributes: [ :id, :quotation_item_id, :price, :available, :_destroy ]
       )
     end
 

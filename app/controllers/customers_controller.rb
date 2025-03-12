@@ -1,6 +1,6 @@
 class CustomersController < ApplicationController
   before_action :authenticate_user!
-  before_action :verify_customer, only: [:home]
+  before_action :verify_customer, only: [ :home ]
 
   def home
     # Only customers have access to this area

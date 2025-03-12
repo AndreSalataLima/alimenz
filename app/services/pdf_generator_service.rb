@@ -34,13 +34,13 @@ class PdfGeneratorService
     validity           = @response.quotation.expiration_date.strftime("%d/%m/%Y")
 
     # Exibe os dados em duas colunas
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Entidade Participante:", style: :bold
       pdf.text customer_name
       pdf.text "CNPJ: #{customer_cnpj}"
     end
 
-    pdf.bounding_box([pdf.bounds.width / 2 + 10, pdf.cursor + 40], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ pdf.bounds.width / 2 + 10, pdf.cursor + 40 ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Empresa Proponente:", style: :bold
       pdf.text supplier_name
       pdf.text "CNPJ: #{supplier_cnpj}"
@@ -56,7 +56,7 @@ class PdfGeneratorService
     pdf.move_down 20
 
     # Tabela de Cotação de Preços
-    table_data = [["ITEM", "QUANT", "UNID", "DESCRIÇÃO", "PREÇO UNI (R$)", "TOTAL (R$)"]]
+    table_data = [ [ "ITEM", "QUANT", "UNID", "DESCRIÇÃO", "PREÇO UNI (R$)", "TOTAL (R$)" ] ]
     item_index = 1
     @response.quotation_response_items.includes(:quotation_item).each do |item|
       next unless item.available
@@ -96,28 +96,28 @@ class PdfGeneratorService
     pdf.move_down 20
 
     # Rodapé – Assinatura, Carimbo e Dados da Empresa
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width) do
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width) do
       pdf.text "Assinatura:", style: :bold, align: :left
 
       if @use_signature && supplier.signature&.signature_image&.attached?
         file = supplier.signature.signature_image.download
         signature_image = StringIO.open(file)
-        pdf.bounding_box([150, pdf.cursor + 15], width: 150, height: 50) do
-          pdf.image signature_image, fit: [150, 50]
+        pdf.bounding_box([ 150, pdf.cursor + 15 ], width: 150, height: 50) do
+          pdf.image signature_image, fit: [ 150, 50 ]
         end
       end
     end
 
     pdf.move_down 30
 
-    pdf.bounding_box([0, pdf.cursor], width: pdf.bounds.width) do
+    pdf.bounding_box([ 0, pdf.cursor ], width: pdf.bounds.width) do
       pdf.text "Carimbo da empresa:", style: :bold, align: :left
 
       if supplier.signature&.stamp_image&.attached?
         file = supplier.signature.stamp_image.download
         stamp_image = StringIO.open(file)
-        pdf.bounding_box([200, pdf.cursor + 15], width: 150, height: 50) do
-          pdf.image stamp_image, fit: [150, 50]
+        pdf.bounding_box([ 200, pdf.cursor + 15 ], width: 150, height: 50) do
+          pdf.image stamp_image, fit: [ 150, 50 ]
         end
       end
     end

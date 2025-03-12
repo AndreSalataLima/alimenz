@@ -2,7 +2,7 @@ module Admin
   class SuppliersController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_supplier, only: [:show, :edit, :update]
+    before_action :set_supplier, only: [ :show, :edit, :update ]
 
     def index
       @suppliers = User.where(role: "supplier")
@@ -31,7 +31,7 @@ module Admin
     end
 
     def supplier_params
-      params.require(:user).permit(:phone, signature_attributes: [:id, :signature_image, :stamp_image, :_destroy])
+      params.require(:user).permit(:phone, signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ])
     end
 
     def verify_admin

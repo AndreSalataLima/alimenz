@@ -7,13 +7,13 @@ class Admin::DashboardController < ApplicationController
   end
 
   # def pending_verifications
-    # Method declared in routes, if needed
+  # Method declared in routes, if needed
   # end
 
   private
 
   def verify_admin
-    unless current_user && current_user.role == 'admin'
+    unless current_user && current_user.role == "admin"
       redirect_to root_path, alert: "Access denied."
     end
   end

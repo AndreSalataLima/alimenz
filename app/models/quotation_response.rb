@@ -9,8 +9,8 @@ class QuotationResponse < ApplicationRecord
 
   has_one_attached :signed_document
 
-  VALID_ANALYSIS_STATUS = ["pendente_de_analise", "aprovado", "cotacao_nao_aceita"]
+  VALID_ANALYSIS_STATUS = [ "pendente_de_analise", "aprovado", "cotacao_nao_aceita" ]
   validates :analysis_status, inclusion: { in: VALID_ANALYSIS_STATUS }, allow_nil: true
 
-  validates :status, inclusion: { in: ["pendente", "finalizado", "aguardando assinatura"] }
+  validates :status, inclusion: { in: [ "pendente", "finalizado", "aguardando assinatura" ] }
 end

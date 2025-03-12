@@ -19,7 +19,7 @@ class PdfPurchaseOrderService
     pdf.move_down 10
 
     # Tabela de Itens do Pedido
-    data = [["Produto", "Quantidade", "Unidade", "Preço Unitário (R$)", "Total (R$)"]]
+    data = [ [ "Produto", "Quantidade", "Unidade", "Preço Unitário (R$)", "Total (R$)" ] ]
     @purchase_order.purchase_order_items.each do |item|
       product = item.product
       quantity = item.quantity.to_f
@@ -36,7 +36,7 @@ class PdfPurchaseOrderService
     end
 
     if data.size > 1
-      pdf.table(data, header: true, cell_style: { borders: [:bottom], padding: 5 })
+      pdf.table(data, header: true, cell_style: { borders: [ :bottom ], padding: 5 })
     else
       pdf.text "Nenhum item no pedido de compra."
     end
