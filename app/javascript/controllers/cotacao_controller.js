@@ -1,7 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["unidadeSelect", "quantidade", "total", "modal", "errorModal", "errorMessage"]
+  static targets = [
+    "unidadeSelect",
+    "quantidade",
+    "total",
+    "modal",
+    "errorModal",
+    "errorMessage",
+    "confirmModal"  // novo target para o modal de confirmação
+  ]
 
   connect() {
     console.log("Cotacao Controller conectado");
@@ -84,15 +92,19 @@ export default class extends Controller {
 
   // Método para interceptar o submit do formulário
   submitForm(event) {
-    // Obtemos o input oculto preenchido pelo date_picker_controller
+    // Obtemos o input oculto preenchido pelo date-picker
     const dateInput = document.querySelector("[data-date-picker-target='hiddenInput']");
     if (!dateInput || !dateInput.value) {
       event.preventDefault();
-      this.showErrorModal("Acrescente uma data de validade à cotação.");
+      this.showErrorModal("A data de validade da cotação é obrigatória e deve ser futura.");
+      return;
     }
+    // Se a data estiver ok, previne o envio e abre o modal de confirmação
+    event.preventDefault();
+    this.showConfirmModal();
   }
 
-  // Exibe o modal de erro com a mensagem fornecida
+  // Exibe o modal de erro (já existente)
   showErrorModal(message) {
     this.errorMessageTarget.textContent = message;
     this.errorModalTarget.classList.remove("hidden");
@@ -101,6 +113,26 @@ export default class extends Controller {
   // Fecha o modal de erro
   fecharErrorModal() {
     this.errorModalTarget.classList.add("hidden");
+  }
+
+  // Exibe o modal de confirmação
+  showConfirmModal() {
+    this.confirmModalTarget.classList.remove("hidden");
+  }
+
+  // Método chamado ao clicar em "Buscar novos produtos"
+  cancelSubmit() {
+    this.confirmModalTarget.classList.add("hidden");
+  }
+
+  // Método chamado ao clicar em "Enviar": fecha o modal e submete o formulário
+  confirmSubmit() {
+    this.confirmModalTarget.classList.add("hidden");
+    // Procura o form dentro do elemento controlado e submete programaticamente
+    const form = this.element.querySelector("form");
+    if (form) {
+      form.submit();
+    }
   }
 
   mostrarModal() {
