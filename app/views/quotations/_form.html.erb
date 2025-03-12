@@ -1,5 +1,5 @@
 <!-- app/views/quotations/_form.html.erb -->
-<div data-controller="quotation">
+<div data-controller="cotacao">
   <script>
     window.PRODUCTS = <%= raw Product.order(:generic_name).to_json(
       only: [:id, :generic_name, :brand],
@@ -7,7 +7,7 @@
     ) %>;
   </script>
 
-  <%= form_with(model: quotation, url: quotations_path, local: true) do |f| %>
+  <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
     <!-- Data de Validade com Stimulus -->
     <div data-controller="date-picker" class="flex items-center space-x-2 mb-4">
@@ -44,7 +44,7 @@
           <th class="px-2 py-2 text-left">Produto</th>
           <th class="px-2 py-2 text-left">Manter nome genérico
             <span class="ml-2 cursor-pointer text-blue-600"
-                  data-action="click->quotation#mostrarModal"
+                  data-action="click->cotacao#mostrarModal"
                   title="Exibir produto sem marca na cotação final">
               &#9432;
             </span>
@@ -73,8 +73,8 @@
 
               <td class="px-2 py-2">
                 <select name="<%= item_form.object_name %>[selected_unit]"
-                        data-quotation-target="unidadeSelect"
-                        data-action="change->quotation#calcularTotal"
+                        data-cotacao-target="unidadeSelect"
+                        data-action="change->cotacao#calcularTotal"
                         class="border rounded px-2 py-1">
                   <option value="">Selecione</option>
                   <% product.unit_options.each do |unit| %>
@@ -86,12 +86,12 @@
               <td class="px-2 py-2">
                 <%= item_form.number_field :quantity,
                   min: 0, step: 1, value: 0,
-                  data: { quotation_target: "quantidade", action: "input->quotation#calcularTotal" },
+                  data: { cotacao_target: "quantidade", action: "input->cotacao#calcularTotal" },
                   class: "border rounded px-2 py-1 w-20" %>
               </td>
 
               <td class="px-2 py-2">
-                <span data-quotation-target="total">0</span>
+                <span data-cotacao-target="total">0</span>
               </td>
             </tr>
           <% end %>
@@ -106,15 +106,25 @@
   <% end %>
 
   <!-- Modal explicativo -->
-  <div id="modal-info" data-quotation-target="modal"
+  <div id="modal-info" data-cotacao-target="modal"
        class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded w-1/3">
       <h3 class="text-lg font-bold mb-2">Informação</h3>
       <p class="mb-4">
         Ao selecionar "Manter nome genérico", a cotação final exibirá o nome do produto sem a marca no PDF oficial.
       </p>
-      <button data-action="click->quotation#fecharModal"
+      <button data-action="click->cotacao#fecharModal"
               class="px-4 py-2 bg-gray-300 rounded">Fechar</button>
     </div>
   </div>
+
+  <!-- Modal de Erro de Data -->
+  <div id="error-modal" data-cotacao-target="errorModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded w-1/3">
+      <h3 class="text-lg font-bold mb-2">Atenção</h3>
+      <p class="mb-4" data-cotacao-target="errorMessage">A data de validade deve ser preenchida e ser futura.</p>
+      <button data-action="click->cotacao#fecharErrorModal" class="px-4 py-2 bg-gray-300 rounded">Fechar</button>
+    </div>
+  </div>
+
 </div>

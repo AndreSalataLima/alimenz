@@ -31,7 +31,7 @@ class QuotationsController < ApplicationController
     if @quotation.save
       redirect_to @quotation, notice: "Quotation created successfully."
     else
-      render :new
+      redirect_to customer_home_path, alert: @quotation.errors.full_messages.join(", ")
     end
   end
 
