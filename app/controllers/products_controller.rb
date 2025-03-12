@@ -45,7 +45,7 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:category_id, :subcategory_id, :brand, :unit_options, :generic_name, :commission_percentage)
+    params.require(:product).permit(:category_id, :subcategory_id, :brand, :unit_options, :generic_name)
   end
 
   def verify_admin

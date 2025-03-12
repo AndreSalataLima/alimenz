@@ -47,8 +47,7 @@ class Admin::UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(
-      :name, :email, :role, :cnpj, :responsible, :address, :logo,
-      :commission_percentage, :phone, :password, :password_confirmation,
+      :name, :email, :role, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation,
       signature_attributes: [:id, :signature_image, :stamp_image, :_destroy],
       category_ids: []
     )

@@ -1,4 +1,6 @@
 class Quotation < ApplicationRecord
+  validates :expiration_date, presence: { message: "precisa ser preenchida" }
+
   belongs_to :customer, class_name: "User", foreign_key: "customer_id"
   has_many :quotation_items, dependent: :destroy
   has_many :quotation_responses, dependent: :destroy
