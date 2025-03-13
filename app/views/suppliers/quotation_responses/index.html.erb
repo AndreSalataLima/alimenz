@@ -39,7 +39,7 @@
                 <td class="px-4 py-2">
                   <% if quotation_response.status == "aguardando assinatura" %>
                     <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
-                    <%= link_to "Upload Documento Assinado", upload_document_for_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600 hover:underline" %>
+                    <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600 hover:underline" %>
                     <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response), target: "_blank", class: "ml-4 text-purple-600 hover:underline" %>
                   <% elsif quotation_response.status == "finalizado" %>
                     <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"), class: "text-blue-600 hover:underline" %>

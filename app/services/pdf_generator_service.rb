@@ -20,16 +20,16 @@ class PdfGeneratorService
 
     # Dados da Entidade Participante – dados do cliente que criou a cotação
     customer = @response.quotation.customer
-    customer_name = customer.nome
+    customer_name = customer.name
     customer_cnpj = customer.cnpj
 
     # Dados da Empresa Proponente – dados do fornecedor que respondeu à cotação
     supplier = @response.supplier
-    supplier_name      = supplier.nome
+    supplier_name      = supplier.name
     supplier_cnpj      = supplier.cnpj
-    supplier_address   = supplier.endereco
-    supplier_phone     = supplier.telefone
-    supplier_contact   = supplier.responsavel
+    supplier_address   = supplier.address
+    supplier_phone     = supplier.phone
+    supplier_responsible   = supplier.responsible
     issue_date         = Date.today.strftime("%d/%m/%Y")
     validity           = @response.quotation.expiration_date.strftime("%d/%m/%Y")
 
@@ -48,7 +48,7 @@ class PdfGeneratorService
       pdf.text "Telefone: #{supplier_phone}"
       pdf.text "Data de emissão: #{issue_date}"
       pdf.text "Validade: #{validity}"
-      pdf.text "Responsável: #{supplier_contact}"
+      pdf.text "Responsável: #{supplier_responsible}"
     end
 
     pdf.move_down 20
