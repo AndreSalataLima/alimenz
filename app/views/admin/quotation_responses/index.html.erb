@@ -45,15 +45,15 @@
                   <% end %>
                 </td>
                 <td class="px-4 py-2">
-                  <% if qr.status_analise == "pendente_de_analise" %>
+                  <% if qr.analysis_status == "pendente_de_analise" %>
                     <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
                       🟡 Pendente de Análise
                     </span>
-                  <% elsif qr.status_analise == "aprovado" %>
+                  <% elsif qr.analysis_status == "aprovado" %>
                     <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
                       ✅ Aprovado
                     </span>
-                  <% elsif qr.status_analise == "cotacao_nao_aceita" %>
+                  <% elsif qr.analysis_status == "cotacao_nao_aceita" %>
                     <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
                       ❌ Cotação não aceita
                     </span>

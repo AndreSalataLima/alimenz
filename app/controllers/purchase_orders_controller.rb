@@ -3,26 +3,27 @@ class PurchaseOrdersController < ApplicationController
 
   def index
     if current_user.role == "supplier"
-      @orders = PurchaseOrder.where(supplier_id: current_user.id).order(created_at: :desc)
+      @purchase_orders = PurchaseOrder.where(supplier_id: current_user.id).order(created_at: :desc)
     else
-      @orders = PurchaseOrder.where(customer_id: current_user.id).order(created_at: :desc)
+      @purchase_orders = PurchaseOrder.where(customer_id: current_user.id).order(created_at: :desc)
     end
   end
 
+
   def show
-    @order = PurchaseOrder.find(params[:id])
-    redirect_to purchase_orders_path, alert: "Access denied." unless @order.customer == current_user
+    @purchase_orders = PurchaseOrder.find(params[:id])
+    redirect_to purchase_orders_path, alert: "Access denied." unless @purchase_orders.customer == current_user
   end
 
   def new
-    @order = current_user.purchase_orders.build
+    @purchase_orders = current_user.purchase_orders.build
     @suppliers = current_user.quotation_responses.where(status: "finalizado").map(&:supplier).uniq
   end
 
   def create
-    @order = current_user.purchase_orders.build(purchase_order_params)
-    if @order.save
-      redirect_to @order, notice: "Purchase order generated successfully."
+    @purchase_orders = current_user.purchase_orders.build(purchase_order_params)
+    if @purchase_orders.save
+      redirect_to @purchase_orders, notice: "Purchase order generated successfully."
     else
       @suppliers = current_user.quotation_responses.where(status: "finalizado").map(&:supplier).uniq
       render :new, status: :unprocessable_entity
@@ -30,11 +31,11 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def pdf
-    @order = PurchaseOrder.includes(:purchase_order_items).find(params[:id])
-    pdf = PdfPurchaseOrderService.new(@order).generate
+    @purchase_orders = PurchaseOrder.includes(:purchase_order_items).find(params[:id])
+    pdf = PdfPurchaseOrderService.new(@purchase_orders).generate
 
     send_data pdf,
-              filename: "purchase_order_#{@order.id}.pdf",
+              filename: "purchase_order_#{@purchase_orders.id}.pdf",
               type: "application/pdf",
               disposition: "inline"
   end

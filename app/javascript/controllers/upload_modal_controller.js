@@ -16,7 +16,7 @@ export default class extends Controller {
     newField.classList.add("mt-4", "file-field");
     newField.innerHTML = `
       <label class="file-label">Selecione a ${this.pageNumber + 1}ª página do documento</label>
-      <input type="file" name="resposta_de_cotacao[documentos_assinados][]" class="border rounded px-2 py-1 file-input" data-action="change->upload-modal#handleFileSelection">
+      <input type="file" name="quotation_response[signed_documents][]" class="border rounded px-2 py-1 file-input" data-action="change->upload-modal#handleFileSelection">
       <span class="file-name hidden"></span>
     `;
 

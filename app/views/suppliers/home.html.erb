@@ -23,7 +23,7 @@
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
                 <td class="px-4 py-2"><%= pedido.customer.name %></td>
-                <td class="px-4 py-2"><%= number_to_currency(pedido.total_value) %></td>
+                <td class="px-4 py-2"><%= real_currency(pedido.total_value) %></td>
                 <td class="px-4 py-2"><%= pedido.expiration_date.strftime("%d/%m/%Y") if pedido.expiration_date %></td>
                 <td class="px-4 py-2">
                   <%= link_to "Visualizar PDF", pdf_purchase_order_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>

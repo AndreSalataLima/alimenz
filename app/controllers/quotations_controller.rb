@@ -39,27 +39,37 @@ class QuotationsController < ApplicationController
   def select_orders
     @quotation = Quotation.find(params[:id])
     @items = @quotation.quotation_items.includes(:product)
-    supplier_ids = @quotation.quotation_responses.where(status: "finalizado").pluck(:supplier_id).uniq
+
+    # Filtra apenas respostas que foram aprovadas pelo administrador
+    supplier_ids = @quotation.quotation_responses
+                             .where(status: "finalizado", analysis_status: "aprovado")
+                             .pluck(:supplier_id)
+                             .uniq
+
     @suppliers = User.where(id: supplier_ids)
   end
+
 
   # Step 5: Process selection and display grouped summary by supplier
   def orders_summary
     @quotation = Quotation.find(params[:id])
     selected = params[:selected] || {}
 
+    # Obtem todas as respostas de fornecedores baseadas no que foi selecionado
     @selected_responses = QuotationResponse.where(id: selected.keys)
+
+    # Agrupa as respostas pelo fornecedor
     @responses_by_supplier = @selected_responses.group_by(&:supplier_id)
 
+    # Guarda os itens de cada resposta selecionada
     @items_by_response = {}
     @selected_responses.each do |response|
       selected_item_ids = selected[response.id.to_s]&.keys || []
-      filtered_items = response.quotation_response_items.select do |r_item|
-        selected_item_ids.include?(r_item.quotation_item.id.to_s)
-      end
+      filtered_items = response.quotation_response_items.where(quotation_item_id: selected_item_ids)
       @items_by_response[response.id] = filtered_items
     end
 
+    # Calcula o valor total por fornecedor
     @summaries = {}
     @selected_responses.each do |response|
       total = @items_by_response[response.id].sum do |item|
@@ -70,11 +80,14 @@ class QuotationsController < ApplicationController
     end
   end
 
+
   # Step 7: Finalize and generate purchase orders for confirmed suppliers
   def finalize_orders
     @quotation = Quotation.find(params[:id])
     selected = params[:selected] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
+
+    puts "Selected responses IDs: #{selected_responses.pluck(:id, :status, :analysis_status)}"
 
     items_by_response = {}
     selected_responses.each do |response|
@@ -88,7 +101,7 @@ class QuotationsController < ApplicationController
     responses_by_supplier = selected_responses.group_by(&:supplier_id)
     @created_orders = []
 
-    confirmations = params[:confirmations] || {}
+    confirmations = params[:confirmacoes] || {}
 
     responses_by_supplier.each do |supplier_id, responses|
       next unless confirmations[supplier_id.to_s] == "1"
@@ -120,8 +133,14 @@ class QuotationsController < ApplicationController
       @created_orders << order
     end
 
-    redirect_to purchase_orders_path, notice: "Purchase orders generated successfully."
+    # 🛠️ Tentar atualizar o status das respostas de cotação
+    selected_responses.each do |response|
+      response.update!(status: "pedido_finalizado")
+    end
+
+    redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
   end
+
 
   private
 

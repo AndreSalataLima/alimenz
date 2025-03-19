@@ -55,6 +55,5 @@ accessories:
         - POSTGRES_PASSWORD
         - ALIMENZ_DATABASE_PASSWORD
         - KAMAL_REGISTRY_PASSWORD
-        # - DATABASE_URL
     directories:
       - data:/var/lib/postgresql/data

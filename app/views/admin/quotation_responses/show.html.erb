@@ -8,15 +8,15 @@
       <p><strong>Fornecedor:</strong> <%= @quotation_response.supplier.name %></p>
       <p><strong>Status do Fornecedor:</strong> <%= @quotation_response.status.capitalize %></p>
       <p><strong>Status da Análise:</strong>
-        <% if @quotation_response.status_analise == "pendente_de_analise" %>
+        <% if @quotation_response.analysis_status == "pendente_de_analise" %>
           <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
             🟡 Pendente de Análise
           </span>
-        <% elsif @quotation_response.status_analise == "aprovado" %>
+        <% elsif @quotation_response.analysis_status == "aprovado" %>
           <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
             ✅ Aprovado
           </span>
-        <% elsif @quotation_response.status_analise == "cotacao_nao_aceita" %>
+        <% elsif @quotation_response.analysis_status == "cotacao_nao_aceita" %>
           <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
             ❌ Cotação não aceita
           </span>
@@ -57,14 +57,14 @@
               <td class="px-4 py-2"><%= item.quotation_item.quantity %></td>
               <td class="px-4 py-2"><%= item.quotation_item.selected_unit %></td>
               <td class="px-4 py-2">
-                <% if item.disponivel %>
-                  <span class="text-green-700 font-semibold">R$ <%= number_with_precision(item.preco, precision: 2) %></span>
+                <% if item.available %>
+                  <span class="text-green-700 font-semibold">R$ <%= number_with_precision(item.price, precision: 2) %></span>
                 <% else %>
                   <span class="text-red-600">Indisponível</span>
                 <% end %>
               </td>
               <td class="px-4 py-2 text-center">
-                <% if item.disponivel %>
+                <% if item.available %>
                   ✅
                 <% else %>
                   ❌
@@ -104,18 +104,19 @@
           <button type="button" id="btnReprovar" data-action="click->approval#showReprovarModal" data-action-url="<%= reject_admin_quotation_response_path(@quotation_response) %>" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">Reprovar Cotação</button>
         </div>
       <% end %>
-    </div>
 
-    <!-- Modal de Aprovação -->
-    <div id="modalAprovar" data-approval-target="modalAprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div class="bg-white p-6 rounded w-1/3 shadow-lg">
-        <h2 class="text-lg font-bold mb-2">Confirmar Aprovação</h2>
-        <p>Tem certeza que deseja aprovar esta cotação?</p>
-        <div class="mt-4 flex justify-end space-x-4">
-          <button type="button" data-action="click->approval#confirmarAprovacao" class="bg-green-500 text-white px-4 py-2 rounded">Aprovar</button>
-          <button type="button" data-action="click->approval#cancelarAprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+      <!-- Modal de Aprovação -->
+      <div id="modalAprovar" data-approval-target="modalAprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div class="bg-white p-6 rounded w-1/3 shadow-lg">
+          <h2 id="modalAprovarTitulo" class="text-lg font-bold mb-2">Confirmar Aprovação</h2>
+          <p id="modalAprovarMensagem">Tem certeza que deseja aprovar esta cotação?</p>
+          <div class="mt-4 flex justify-end space-x-4">
+            <button type="button" data-action="click->approval#confirmarAprovacao" class="bg-green-500 text-white px-4 py-2 rounded">Aprovar</button>
+            <button type="button" data-action="click->approval#cancelarAprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
