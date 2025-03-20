@@ -11,8 +11,8 @@ class PdfPurchaseOrderService
 
     # Cabeçalho
     pdf.text "Pedido de Compra ##{@purchase_order.id}", size: 20, style: :bold
-    pdf.text "Fornecedor: #{@purchase_order.supplier.nome}"
-    pdf.text "Cliente: #{@purchase_order.customer.nome}"
+    pdf.text "Fornecedor: #{@purchase_order.supplier.name}"
+    pdf.text "Cliente: #{@purchase_order.customer.name}"
     if @purchase_order.expiration_date
       pdf.text "Data de Validade: #{@purchase_order.expiration_date.strftime('%d/%m/%Y')}"
     end

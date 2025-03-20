@@ -11,8 +11,11 @@ class PurchaseOrdersController < ApplicationController
 
 
   def show
-    @purchase_orders = PurchaseOrder.find(params[:id])
-    redirect_to purchase_orders_path, alert: "Access denied." unless @purchase_orders.customer == current_user
+    @purchase_order = PurchaseOrder.find(params[:id])
+
+    unless @purchase_order.customer == current_user || @purchase_order.supplier == current_user
+      redirect_to purchase_orders_path, alert: "Access denied."
+    end
   end
 
   def new
