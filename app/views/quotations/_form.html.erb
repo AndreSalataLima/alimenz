@@ -9,6 +9,21 @@
 
   <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
+    <!-- Produtos selecionados (resumo não editável) -->
+    <div class="my-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">Produtos Selecionados</h2>
+      <table class="w-full border text-sm">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-2 py-1 text-left">Produto</th>
+            <th class="px-2 py-1 text-left">Quantidade</th>
+            <th class="px-2 py-1 text-left">Unidade</th>
+          </tr>
+        </thead>
+        <tbody data-cotacao-target="summaryTable"></tbody>
+      </table>
+    </div>
+
     <!-- Data de Validade -->
     <div class="mt-6">
       <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>
@@ -23,7 +38,7 @@
     </div>
 
     <!-- Botão Concluir Cotação -->
-    <div class="mt-6">
+    <div class="mt-6 hidden" data-cotacao-target="submitButton">
       <%= f.submit "Concluir cotação",
         class: "bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
     </div>
@@ -43,17 +58,9 @@
         <tr class="bg-gray-100 border-b">
           <th class="px-2 py-2 text-left">Produto</th>
           <th class="px-2 py-2 text-left">Observação</th>
-          <!--
-          <th class="px-2 py-2 text-left">Manter nome genérico
-            <span class="ml-2 cursor-pointer text-blue-600"
-                  data-action="click->cotacao#mostrarModal"
-                  title="Exibir produto sem marca na cotação final">
-              &#9432;
-            </span>
-          </th>
-          -->
           <th class="px-2 py-2 text-left">Unidade</th>
           <th class="px-2 py-2 text-left">Quantidade</th>
+          <th class="px-2 py-2 text-left"></th>
         </tr>
       </thead>
       <tbody id="itens">
@@ -61,74 +68,63 @@
           <% item = quotation.quotation_items.build(product: product) %>
           <%= f.fields_for :quotation_items, item do |item_form| %>
             <tr class="product-item border-b" data-product-id="<%= product.id %>">
-<td class="px-2 py-2 font-medium" data-controller="custom-name">
-  <% customized = current_user.customized_products.find_by(product_id: product.id) %>
-  <% nome_personalizado = customized&.custom_name.present? ? customized.custom_name : product.generic_name %>
+              <td class="px-2 py-2 font-medium" data-controller="custom-name">
+                <% customized = current_user.customized_products.find_by(product_id: product.id) %>
+                <% nome_personalizado = customized&.custom_name.present? ? customized.custom_name : product.generic_name %>
 
-  <!-- Nome visível -->
-  <span data-custom-name-target="label" id="product-name-<%= product.id %>">
-    <%= nome_personalizado %>
-  </span>
+                <!-- Nome visível -->
+                <span data-custom-name-target="label" id="product-name-<%= product.id %>">
+                  <%= nome_personalizado %>
+                </span>
 
-<!-- Campo de edição com botões inline -->
-<div class="hidden flex items-center space-x-2" data-custom-name-target="actions">
-  <input type="text"
-         name="customized_products[<%= product.id %>]"
-         value="<%= customized&.custom_name %>"
-         placeholder="<%= product.generic_name %>"
-         class="border rounded px-2 py-1 w-auto"
-         data-custom-name-target="input"
-         data-product-id="<%= product.id %>">
+                <!-- Campo de edição com botões -->
+                <div class="hidden flex items-center space-x-2" data-custom-name-target="actions">
+                  <input type="text"
+                         name="customized_products[<%= product.id %>]"
+                         value="<%= customized&.custom_name %>"
+                         placeholder="<%= product.generic_name %>"
+                         class="border rounded px-2 py-1 w-auto"
+                         data-custom-name-target="input"
+                         data-product-id="<%= product.id %>">
 
-  <button type="button"
-          class="text-green-600 hover:text-green-800 text-sm"
-          title="Salvar"
-          data-action="click->custom-name#saveClick">
-    💾
-  </button>
-  <button type="button"
-          class="text-red-600 hover:text-red-800 text-sm"
-          title="Cancelar"
-          data-action="click->custom-name#cancel">
-    🚫
-  </button>
-</div>
+                  <button type="button"
+                          class="text-green-600 hover:text-green-800 text-sm"
+                          title="Salvar"
+                          data-action="click->custom-name#saveClick">
+                    💾
+                  </button>
+                  <button type="button"
+                          class="text-red-600 hover:text-red-800 text-sm"
+                          title="Cancelar"
+                          data-action="click->custom-name#cancel">
+                    🚫
+                  </button>
+                </div>
 
+                <!-- Botão lápis -->
+                <button type="button"
+                        class="ml-2 text-gray-500 hover:text-blue-600 text-sm"
+                        data-action="click->custom-name#toggle"
+                        title="Editar nome do produto"
+                        data-custom-name-target="editButton">
+                  ✏️
+                </button>
 
-  <!-- Botão lápis -->
-  <button type="button"
-          class="ml-2 text-gray-500 hover:text-blue-600 text-sm"
-          data-action="click->custom-name#toggle"
-          title="Editar nome do produto"
-          data-custom-name-target="editButton">
-    ✏️
-  </button>
+                <!-- Mensagem de status -->
+                <div class="text-xs text-green-600 mt-1" data-custom-name-target="status"></div>
 
-  <!-- Mensagem de status -->
-  <div class="text-xs text-green-600 mt-1" data-custom-name-target="status"></div>
+                <%= item_form.hidden_field :product_id, value: product.id %>
+              </td>
 
-  <%= item_form.hidden_field :product_id, value: product.id %>
-</td>
-
-
-
-
-
-              <!-- Coluna para observação específica do produto -->
               <td class="px-2 py-2">
-                <%= item_form.text_field :product_comment, placeholder: "Marcas ou especificações.", class: "border rounded px-2 py-1" %>
+                <%= item_form.text_field :product_comment, placeholder: "Especificações do produto.", class: "border rounded px-2 py-1" %>
               </td>
-
-              <!--
-              <td class="px-2 py-2 text-center">
-                <%= item_form.check_box :keep_generic_name, { class: "mr-1" }, "true", "false" %>
-              </td>
-              -->
 
               <td class="px-2 py-2">
                 <select name="<%= item_form.object_name %>[selected_unit]"
                         data-cotacao-target="unidadeSelect"
-                        class="border rounded px-2 py-1">
+                        class="border rounded px-2 py-1"
+                        data-action="change->cotacao#verificarCampos">
                   <option value="">Selecione</option>
                   <% product.unit_options.each do |unit| %>
                     <option value="<%= unit %>"><%= unit %></option>
@@ -139,8 +135,16 @@
               <td class="px-2 py-2">
                 <%= item_form.number_field :quantity,
                   min: 0, step: 1, value: 0,
-                  data: { cotacao_target: "quantidade" },
-                  class: "border rounded px-2 py-1 w-20" %>
+                  class: "border rounded px-2 py-1 w-20",
+                  data: { action: "input->cotacao#verificarCampos", cotacao_target: "quantidade" } %>
+              </td>
+
+              <td class="px-2 py-2">
+                <button type="button"
+                        class="adicionar-lista-btn text-sm text-blue-600 hidden"
+                        data-action="click->cotacao#adicionarProduto">
+                  ➕ Adicionar
+                </button>
               </td>
             </tr>
           <% end %>
@@ -149,21 +153,6 @@
     </table>
 
   <% end %>
-
-  <!--
-  Modal explicativo sobre "Manter nome genérico"
-  <div id="modal-info" data-cotacao-target="modal"
-       class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded w-1/3">
-      <h3 class="text-lg font-bold mb-2">Informação</h3>
-      <p class="mb-4">
-        Ao selecionar "Manter nome genérico", a cotação final exibirá o nome do produto sem a marca no PDF oficial.
-      </p>
-      <button data-action="click->cotacao#fecharModal"
-              class="px-4 py-2 bg-gray-300 rounded">Fechar</button>
-    </div>
-  </div>
-  -->
 
   <!-- Modal de Erro de Data -->
   <div id="error-modal" data-cotacao-target="errorModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
@@ -174,7 +163,7 @@
     </div>
   </div>
 
-  <!-- Modal de Confirmação de Envio da Cotação -->
+  <!-- Modal de Confirmação de Envio -->
   <div id="confirm-modal" data-cotacao-target="confirmModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded w-1/3">
       <h3 class="text-lg font-bold mb-2">Confirmação</h3>
@@ -185,5 +174,4 @@
       </div>
     </div>
   </div>
-
 </div>

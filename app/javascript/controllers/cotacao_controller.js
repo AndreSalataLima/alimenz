@@ -1,45 +1,79 @@
-// app/javascript/controllers/cotacao_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "unidadeSelect",
-    "quantidade",
-    "modal",
     "errorModal",
     "errorMessage",
-    "confirmModal"
+    "confirmModal",
+    "submitButton",
+    "summaryTable"
   ]
 
   connect() {
-    console.log("Cotacao Controller conectado");
+    this.produtosAdicionados = new Set();
   }
 
-  atualizarUnidades(event) {
-    const produtoId = event.target.value;
-    const produto = window.PRODUCTS.find(p => p.id === parseInt(produtoId));
-    if (produto) {
-      const opcoes = produto.opcoes_unidades?.length > 0
-        ? produto.opcoes_unidades
-        : [produto.unidade_sugerida];
-      this.preencherUnidades(opcoes);
+
+
+  verificarCampos(event) {
+    // Obtém a linha (row) do produto a partir do elemento que disparou o evento
+    const row = event.currentTarget.closest("tr.product-item");
+    const selectField = row.querySelector("select[data-cotacao-target='unidadeSelect']");
+    const inputField = row.querySelector("input[name*='[quantity]']");
+    const addButton = row.querySelector(".adicionar-lista-btn");
+
+    const unidade = selectField.value;
+    const quantidade = parseInt(inputField.value) || 0;
+
+    if (unidade !== "" && quantidade > 0) {
+      addButton.classList.remove("hidden");
+    } else {
+      addButton.classList.add("hidden");
     }
   }
 
-  preencherUnidades(opcoes) {
-    this.unidadeSelectTarget.innerHTML = '<option value="">Selecione a unidade</option>';
-    opcoes.forEach(opcao => {
-      const option = document.createElement("option");
-      option.value = opcao;
-      option.text = opcao;
-      const numerico = parseFloat(opcao.match(/[\d\.]+/)?.[0]) || 0;
-      option.dataset.numerico = numerico;
-      this.unidadeSelectTarget.appendChild(option);
-    });
+  adicionarProduto(event) {
+    const button = event.currentTarget;
+    const row = button.closest("tr.product-item");
+    const productId = row.dataset.productId;
+
+    // Evita duplicidade na adição
+    if (this.produtosAdicionados.has(productId)) {
+      return;
+    }
+
+    // Obtém os dados do produto
+    const productName = row.querySelector("td[data-controller='custom-name'] span[data-custom-name-target='label']").textContent.trim();
+    const selectField = row.querySelector("select[data-cotacao-target='unidadeSelect']");
+    const inputField = row.querySelector("input[name*='[quantity]']");
+    const unidade = selectField.value;
+    const quantidade = inputField.value;
+
+    // Cria uma nova linha para a tabela de resumo (informativa)
+    const summaryRow = document.createElement("tr");
+    summaryRow.innerHTML = `
+      <td class="px-2 py-1">${productName}</td>
+      <td class="px-2 py-1">${quantidade}</td>
+      <td class="px-2 py-1">${unidade}</td>
+    `;
+
+    // Adiciona a linha à tabela de resumo
+    this.summaryTableTarget.appendChild(summaryRow);
+
+    // Marca o produto como adicionado
+    this.produtosAdicionados.add(productId);
+
+    // Desabilita os campos do produto na tabela principal para evitar alterações
+    selectField.disabled = true;
+    inputField.disabled = true;
+    button.classList.add("hidden");
+
+    // Exibe o botão de envio, se ainda estiver oculto
+    this.submitButtonTarget.classList.remove("hidden");
   }
 
-  // Intercepta o submit do formulário para validar a data
   submitForm(event) {
+    // Valida a data de validade da cotação
     const dateField = this.element.querySelector("input[type='date'][name='quotation[expiration_date]']");
     if (!dateField || !dateField.value) {
       event.preventDefault();
@@ -54,7 +88,6 @@ export default class extends Controller {
       this.showErrorModal("A data de validade deve ser uma data futura.");
       return;
     }
-    // Se a data estiver correta, exibe o modal de confirmação
     event.preventDefault();
     this.showConfirmModal();
   }
@@ -82,13 +115,5 @@ export default class extends Controller {
     if (form) {
       form.submit();
     }
-  }
-
-  mostrarModal() {
-    this.modalTarget.classList.remove("hidden");
-  }
-
-  fecharModal() {
-    this.modalTarget.classList.add("hidden");
   }
 }
