@@ -60,18 +60,19 @@
       </div>
 
       <!-- Modal para alerta de preços zerados (agora dentro do form) -->
+      <!-- Modal para alerta de preços zerados (apenas aviso) -->
       <div data-price-alert-target="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
           <h2 class="text-lg font-bold mb-2">Atenção</h2>
           <p>Os seguintes produtos possuem preço R$0,00:</p>
           <ul data-price-alert-target="modalList" class="list-disc ml-6 mb-4 text-red-500 font-semibold"></ul>
-          <p>Deseja continuar mesmo assim?</p>
-          <div class="flex justify-end space-x-4 mt-4">
-            <button data-action="click->price-alert#confirm" class="bg-green-500 text-white px-4 py-2 rounded">Sim</button>
-            <button type="button" data-action="click->price-alert#cancel" class="bg-red-500 text-white px-4 py-2 rounded">Não, revisar preços</button>
+          <p>Por favor, insira um preço válido para cada produto.</p>
+          <div class="flex justify-end mt-4">
+            <button type="button" data-action="click->price-alert#closeModal" class="bg-blue-500 text-white px-4 py-2 rounded">Fechar</button>
           </div>
         </div>
       </div>
+
     <% end %>
   </div>
 </div>

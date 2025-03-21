@@ -10,24 +10,11 @@
   <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
     <!-- Data de Validade com Stimulus -->
-    <div data-controller="date-picker" class="flex items-center space-x-2 mb-4">
-      <label class="font-medium">Data de validade da cotação:</label>
-      <select id="data-dia"
-              data-date-picker-target="day"
-              data-action="change->date-picker#updateDate"
-              class="border rounded px-2 py-1"></select>
-      <select id="data-mes"
-              data-date-picker-target="month"
-              data-action="change->date-picker#updateDate"
-              class="border rounded px-2 py-1"></select>
-      <select id="data-ano"
-              data-date-picker-target="year"
-              data-action="change->date-picker#updateDate"
-              class="border rounded px-2 py-1"></select>
-      <input type="hidden" name="quotation[expiration_date]" data-date-picker-target="hiddenInput">
-      <span data-date-picker-target="error" class="text-red-600 hidden"></span>
+    <div class="mt-6">
+      <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>
+      <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
+      <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
     </div>
-
 
     <div class="mt-6">
       <%= f.submit "Concluir cotação",
