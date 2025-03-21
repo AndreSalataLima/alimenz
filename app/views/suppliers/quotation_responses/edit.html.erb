@@ -4,6 +4,24 @@
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <p class="text-gray-700">Preencha os valores e disponibilidade dos produtos para responder à cotação.</p>
 
+    <% quotation = @quotation_response.quotation %>
+
+    <!-- Observações Gerais -->
+    <% if quotation.general_comment.present? %>
+      <div class="bg-gray-100 border rounded p-4 mb-4">
+        <strong>Observações Gerais do Cliente:</strong>
+        <p class="mt-1 text-gray-800"><%= quotation.general_comment %></p>
+      </div>
+    <% end %>
+
+    <!-- Validade da cotação -->
+    <div class="mb-4">
+      <p class="text-sm text-gray-600">
+        <strong>Validade da Cotação:</strong>
+        <%= quotation.expiration_date.strftime('%d/%m/%Y') %>
+      </p>
+    </div>
+
     <%= form_with model: @quotation_response, url: suppliers_quotation_response_path(@quotation_response), method: :patch,
                   data: { controller: "price-alert", price_alert_target: "form" }, local: true do |f| %>
 
@@ -21,14 +39,24 @@
           <tbody class="divide-y divide-gray-200">
             <%= f.fields_for :quotation_response_items do |item_fields| %>
               <%= item_fields.hidden_field :quotation_item_id, value: item_fields.object.quotation_item_id %>
-              <% product = (item_fields.object.quotation_item || QuotationItem.find(item_fields.object.quotation_item_id)).product %>
+              <% quotation_item = item_fields.object.quotation_item || QuotationItem.find(item_fields.object.quotation_item_id) %>
+              <% product = quotation_item.product %>
+              <% customer = quotation.customer %>
+              <% customized = customer.customized_products.find_by(product_id: product.id) %>
+              <% nome = customized&.custom_name.presence || product.generic_name %>
+
               <tr class="hover:bg-gray-50" data-controller="availability">
-                <td class="px-4 py-2 font-medium"><%= product.generic_name %></td>
-                <td class="px-4 py-2 text-center"><%= item_fields.object.quotation_item.selected_unit %></td>
-                <td class="px-4 py-2 text-center"><%= item_fields.object.quotation_item.quantity %></td>
+                <td class="px-4 py-2 font-medium">
+                  <%= nome %>
+                  <% if quotation_item.product_comment.present? %>
+                    <p class="text-sm text-gray-500 italic mt-1">Obs: <%= quotation_item.product_comment %></p>
+                  <% end %>
+                </td>
+                <td class="px-4 py-2 text-center"><%= quotation_item.selected_unit %></td>
+                <td class="px-4 py-2 text-center"><%= quotation_item.quantity %></td>
                 <td class="px-4 py-2 text-center">
                   <%= item_fields.number_field :price, step: 0.01, class: "border rounded px-3 py-1 w-24 text-center",
-                        data: { price_alert_target: "priceInput", product_name: product.generic_name,
+                        data: { price_alert_target: "priceInput", product_name: nome,
                                 availability_target: "price" } %>
                 </td>
                 <td class="px-4 py-2 text-center">
@@ -59,7 +87,6 @@
         <%= f.submit "Responder Cotação", class: "bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700" %>
       </div>
 
-      <!-- Modal para alerta de preços zerados (agora dentro do form) -->
       <!-- Modal para alerta de preços zerados (apenas aviso) -->
       <div data-price-alert-target="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">

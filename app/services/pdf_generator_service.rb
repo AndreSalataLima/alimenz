@@ -65,7 +65,10 @@ class PdfGeneratorService
       product    = quotation_item.product
       quantity   = quotation_item.quantity
       unit       = quotation_item.selected_unit
-      description = product.generic_name
+      customer = @response.quotation.customer
+      customized = customer.customized_products.find_by(product_id: product.id)
+      custom_name = customized&.custom_name
+      description = custom_name.presence || product.generic_name
       unit_price = item.price
       total      = quantity * unit_price
 

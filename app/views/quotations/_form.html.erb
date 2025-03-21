@@ -9,13 +9,20 @@
 
   <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
-    <!-- Data de Validade com Stimulus -->
+    <!-- Data de Validade -->
     <div class="mt-6">
       <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>
       <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
       <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
     </div>
 
+    <!-- Observações Gerais -->
+    <div class="mt-6">
+      <%= f.label :general_comment, "Observações Gerais", class: "block font-medium text-gray-800" %>
+      <%= f.text_area :general_comment, placeholder: "Condições específicas de pagamento, faturamento, entrega, comunicação ou requisitos especiais", class: "border rounded px-3 py-2 w-full mt-1", rows: 3 %>
+    </div>
+
+    <!-- Botão Concluir Cotação -->
     <div class="mt-6">
       <%= f.submit "Concluir cotação",
         class: "bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
@@ -35,6 +42,8 @@
       <thead>
         <tr class="bg-gray-100 border-b">
           <th class="px-2 py-2 text-left">Produto</th>
+          <th class="px-2 py-2 text-left">Observação</th>
+          <!--
           <th class="px-2 py-2 text-left">Manter nome genérico
             <span class="ml-2 cursor-pointer text-blue-600"
                   data-action="click->cotacao#mostrarModal"
@@ -42,9 +51,9 @@
               &#9432;
             </span>
           </th>
+          -->
           <th class="px-2 py-2 text-left">Unidade</th>
           <th class="px-2 py-2 text-left">Quantidade</th>
-          <th class="px-2 py-2 text-left">Total</th>
         </tr>
       </thead>
       <tbody id="itens">
@@ -52,22 +61,73 @@
           <% item = quotation.quotation_items.build(product: product) %>
           <%= f.fields_for :quotation_items, item do |item_form| %>
             <tr class="product-item border-b" data-product-id="<%= product.id %>">
-              <td class="px-2 py-2 font-medium">
-                <%= product.generic_name %>
-                <% if product.brand.present? %>
-                  <span class="text-sm text-gray-500">(<%= product.brand %>)</span>
-                <% end %>
-                <%= item_form.hidden_field :product_id, value: product.id %>
+<td class="px-2 py-2 font-medium" data-controller="custom-name">
+  <% customized = current_user.customized_products.find_by(product_id: product.id) %>
+  <% nome_personalizado = customized&.custom_name.present? ? customized.custom_name : product.generic_name %>
+
+  <!-- Nome visível -->
+  <span data-custom-name-target="label" id="product-name-<%= product.id %>">
+    <%= nome_personalizado %>
+  </span>
+
+<!-- Campo de edição com botões inline -->
+<div class="hidden flex items-center space-x-2" data-custom-name-target="actions">
+  <input type="text"
+         name="customized_products[<%= product.id %>]"
+         value="<%= customized&.custom_name %>"
+         placeholder="<%= product.generic_name %>"
+         class="border rounded px-2 py-1 w-auto"
+         data-custom-name-target="input"
+         data-product-id="<%= product.id %>">
+
+  <button type="button"
+          class="text-green-600 hover:text-green-800 text-sm"
+          title="Salvar"
+          data-action="click->custom-name#saveClick">
+    💾
+  </button>
+  <button type="button"
+          class="text-red-600 hover:text-red-800 text-sm"
+          title="Cancelar"
+          data-action="click->custom-name#cancel">
+    🚫
+  </button>
+</div>
+
+
+  <!-- Botão lápis -->
+  <button type="button"
+          class="ml-2 text-gray-500 hover:text-blue-600 text-sm"
+          data-action="click->custom-name#toggle"
+          title="Editar nome do produto"
+          data-custom-name-target="editButton">
+    ✏️
+  </button>
+
+  <!-- Mensagem de status -->
+  <div class="text-xs text-green-600 mt-1" data-custom-name-target="status"></div>
+
+  <%= item_form.hidden_field :product_id, value: product.id %>
+</td>
+
+
+
+
+
+              <!-- Coluna para observação específica do produto -->
+              <td class="px-2 py-2">
+                <%= item_form.text_field :product_comment, placeholder: "Marcas ou especificações.", class: "border rounded px-2 py-1" %>
               </td>
 
+              <!--
               <td class="px-2 py-2 text-center">
                 <%= item_form.check_box :keep_generic_name, { class: "mr-1" }, "true", "false" %>
               </td>
+              -->
 
               <td class="px-2 py-2">
                 <select name="<%= item_form.object_name %>[selected_unit]"
                         data-cotacao-target="unidadeSelect"
-                        data-action="change->cotacao#calcularTotal"
                         class="border rounded px-2 py-1">
                   <option value="">Selecione</option>
                   <% product.unit_options.each do |unit| %>
@@ -79,12 +139,8 @@
               <td class="px-2 py-2">
                 <%= item_form.number_field :quantity,
                   min: 0, step: 1, value: 0,
-                  data: { cotacao_target: "quantidade", action: "input->cotacao#calcularTotal" },
+                  data: { cotacao_target: "quantidade" },
                   class: "border rounded px-2 py-1 w-20" %>
-              </td>
-
-              <td class="px-2 py-2">
-                <span data-cotacao-target="total">0</span>
               </td>
             </tr>
           <% end %>
@@ -94,7 +150,8 @@
 
   <% end %>
 
-  <!-- Modal explicativo -->
+  <!--
+  Modal explicativo sobre "Manter nome genérico"
   <div id="modal-info" data-cotacao-target="modal"
        class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded w-1/3">
@@ -106,6 +163,7 @@
               class="px-4 py-2 bg-gray-300 rounded">Fechar</button>
     </div>
   </div>
+  -->
 
   <!-- Modal de Erro de Data -->
   <div id="error-modal" data-cotacao-target="errorModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">

@@ -24,15 +24,19 @@ class PdfPurchaseOrderService
       product = item.product
       quantity = item.quantity.to_f
       unit_price = item.price.to_f
+      customer = @purchase_order.customer
+      customized = customer.customized_products.find_by(product_id: product.id)
+      product_name = customized&.custom_name.presence || product.generic_name
       total_item = quantity * unit_price
 
       data << [
-        product.generic_name,
+        product_name,
         quantity,
         item.unit,
         "R$ #{'%.2f' % unit_price}",
         "R$ #{'%.2f' % total_item}"
       ]
+
     end
 
     if data.size > 1

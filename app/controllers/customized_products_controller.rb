@@ -8,9 +8,9 @@ class CustomizedProductsController < ApplicationController
     custom.custom_name = params[:custom_name]
 
     if custom.save
-      redirect_to @product, notice: "Custom name saved."
+      head :ok
     else
-      redirect_to @product, alert: "Failed to save custom name."
+      render json: { error: "Erro ao salvar nome personalizado" }, status: :unprocessable_entity
     end
   end
 

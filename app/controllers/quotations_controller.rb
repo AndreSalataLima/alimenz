@@ -28,12 +28,27 @@ class QuotationsController < ApplicationController
 
   def create
     @quotation = current_user.quotations.build(quotation_params)
+
     if @quotation.save
-      redirect_to @quotation, notice: "Quotation created successfully."
+      if params[:customized_products].present?
+        params[:customized_products].each do |product_id, custom_name|
+          next if custom_name.blank?
+
+          customized = CustomizedProduct.find_or_initialize_by(
+            customer: current_user,
+            product_id: product_id
+          )
+          customized.custom_name = custom_name
+          customized.save
+        end
+      end
+
+      redirect_to @quotation, notice: "Cotação criada com sucesso."
     else
       redirect_to customer_home_path, alert: @quotation.errors.full_messages.join(", ")
     end
   end
+
 
   # Step 4: Display table for selecting items with suppliers
   def select_orders
@@ -145,8 +160,8 @@ class QuotationsController < ApplicationController
   private
 
   def quotation_params
-    params.require(:quotation).permit(:expiration_date,
-      quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name ]
+    params.require(:quotation).permit(:expiration_date, :general_comment,
+      quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name, :product_comment ]
     )
   end
 

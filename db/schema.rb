@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_19_131642) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_21_143423) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,6 +102,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_19_131642) do
     t.boolean "keep_generic_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "product_comment"
     t.index ["product_id"], name: "index_quotation_items_on_product_id"
     t.index ["quotation_id"], name: "index_quotation_items_on_quotation_id"
   end
@@ -136,6 +137,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_19_131642) do
     t.string "status", default: "pendente", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "general_comment"
     t.index ["customer_id"], name: "index_quotations_on_customer_id"
   end
 

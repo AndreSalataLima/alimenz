@@ -22,7 +22,9 @@
         <tbody class="divide-y divide-gray-200">
           <% @quotation.quotation_items.each do |item| %>
             <tr class="hover:bg-gray-50">
-              <td class="px-4 py-2"><%= item.product.generic_name %></td>
+              <% customized = current_user.customized_products.find_by(product_id: item.product_id) %>
+              <% nome = customized&.custom_name.presence || item.product.generic_name %>
+              <td class="px-4 py-2"><%= nome %></td>
               <td class="px-4 py-2"><%= item.quantity %></td>
               <td class="px-4 py-2"><%= item.selected_unit %></td>
             </tr>
