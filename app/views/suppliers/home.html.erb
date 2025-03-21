@@ -6,7 +6,7 @@
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <h2 class="text-xl font-bold text-gray-800 mb-4">Pedidos de Compra Recebidos</h2>
 
-    <% if @pedidos.present? %>
+    <% if @purchase_orders.present? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -19,14 +19,14 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <% @pedidos.each do |pedido| %>
+            <% @purchase_orders.each do |purchase_order| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
-                <td class="px-4 py-2"><%= pedido.customer.name %></td>
-                <td class="px-4 py-2"><%= real_currency(pedido.total_value) %></td>
-                <td class="px-4 py-2"><%= pedido.expiration_date.strftime("%d/%m/%Y") if pedido.expiration_date %></td>
+                <td class="px-4 py-2 font-medium"><%= "Pedido ##{purchase_order.id}" %></td>
+                <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
+                <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
+                <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(purchase_order), target: "_blank", class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>
@@ -36,6 +36,7 @@
     <% else %>
       <p class="text-gray-500">Não há pedidos de compra.</p>
     <% end %>
+
   </div>
 
   <!-- Cotações Disponíveis -->
