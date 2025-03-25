@@ -9,6 +9,19 @@
 
   <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
+    <!-- Data de Validade -->
+    <div class="mt-6">
+      <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>
+      <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
+      <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
+    </div>
+
+    <!-- Observações Gerais -->
+    <div class="mt-6">
+      <%= f.label :general_comment, "Observações Gerais", class: "block font-medium text-gray-800" %>
+      <%= f.text_area :general_comment, placeholder: "Condições específicas de pagamento, faturamento, entrega, comunicação ou requisitos especiais", class: "border rounded px-3 py-2 w-full mt-1", rows: 3 %>
+    </div>
+
     <!-- Produtos selecionados (resumo não editável) -->
     <div class="my-6">
       <h2 class="text-lg font-semibold text-gray-700 mb-2">Produtos Selecionados</h2>
@@ -22,19 +35,6 @@
         </thead>
         <tbody data-cotacao-target="summaryTable"></tbody>
       </table>
-    </div>
-
-    <!-- Data de Validade -->
-    <div class="mt-6">
-      <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>
-      <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
-      <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
-    </div>
-
-    <!-- Observações Gerais -->
-    <div class="mt-6">
-      <%= f.label :general_comment, "Observações Gerais", class: "block font-medium text-gray-800" %>
-      <%= f.text_area :general_comment, placeholder: "Condições específicas de pagamento, faturamento, entrega, comunicação ou requisitos especiais", class: "border rounded px-3 py-2 w-full mt-1", rows: 3 %>
     </div>
 
     <!-- Botão Concluir Cotação -->
