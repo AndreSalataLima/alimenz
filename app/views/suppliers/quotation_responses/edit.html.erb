@@ -32,10 +32,12 @@
               <th class="px-4 py-2 text-left">Produto</th>
               <th class="px-4 py-2 text-center">Unidade</th>
               <th class="px-4 py-2 text-center">Quantidade</th>
-              <th class="px-4 py-2 text-center">Preço (R$)</th>
+              <th class="px-4 py-2 text-center">Preço Unitário (R$)</th>
+              <th class="px-4 py-2 text-center">Preço Total (R$)</th>
               <th class="px-4 py-2 text-center">Disponível?</th>
             </tr>
           </thead>
+
           <tbody class="divide-y divide-gray-200">
             <%= f.fields_for :quotation_response_items do |item_fields| %>
               <%= item_fields.hidden_field :quotation_item_id, value: item_fields.object.quotation_item_id %>
@@ -53,11 +55,17 @@
                   <% end %>
                 </td>
                 <td class="px-4 py-2 text-center"><%= quotation_item.selected_unit %></td>
-                <td class="px-4 py-2 text-center"><%= quotation_item.quantity %></td>
+                <td class="px-4 py-2 text-center" data-price-alert-target="quantity"><%= quotation_item.quantity %></td>
                 <td class="px-4 py-2 text-center">
-                  <%= item_fields.number_field :price, step: 0.01, class: "border rounded px-3 py-1 w-24 text-center",
+                  <%= item_fields.number_field :price, step: 0.01, min: 0,
+                        class: "border rounded px-3 py-1 w-24 text-center",
                         data: { price_alert_target: "priceInput", product_name: nome,
-                                availability_target: "price" } %>
+                                availability_target: "price", action: "input->price-alert#updateTotal" } %>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <span data-price-alert-target="total" class="text-gray-700">R$0,00</span>
+                </td>
+
                 </td>
                 <td class="px-4 py-2 text-center">
                   <%= item_fields.check_box :available, class: "rounded border-gray-300 focus:ring-indigo-500",

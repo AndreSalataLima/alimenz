@@ -9,6 +9,12 @@
 
   <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
 
+    <!-- Título da Cotação -->
+    <div class="mt-6">
+      <%= f.label :title, "Título", class: "block font-medium text-gray-800" %>
+      <%= f.text_field :title, placeholder: "Ex: SC 580, Solicitação de compra 580", class: "border rounded px-3 py-2 w-full mt-1" %>
+    </div>
+
     <!-- Data de Validade -->
     <div class="mt-6">
       <%= f.label :expiration_date, "Data de validade da cotação", class: "block font-medium text-gray-800" %>

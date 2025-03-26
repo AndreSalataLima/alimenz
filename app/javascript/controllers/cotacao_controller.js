@@ -32,45 +32,47 @@ export default class extends Controller {
     }
   }
 
-  adicionarProduto(event) {
-    const button = event.currentTarget;
-    const row = button.closest("tr.product-item");
-    const productId = row.dataset.productId;
+adicionarProduto(event) {
+  const button = event.currentTarget;
+  const row = button.closest("tr.product-item");
+  const productId = row.dataset.productId;
 
-    // Evita duplicidade na adição
-    if (this.produtosAdicionados.has(productId)) {
-      return;
-    }
+  if (this.produtosAdicionados.has(productId)) return;
 
-    // Obtém os dados do produto
-    const productName = row.querySelector("td[data-controller='custom-name'] span[data-custom-name-target='label']").textContent.trim();
-    const selectField = row.querySelector("select[data-cotacao-target='unidadeSelect']");
-    const inputField = row.querySelector("input[name*='[quantity]']");
-    const unidade = selectField.value;
-    const quantidade = inputField.value;
+  const unidadeSelect = row.querySelector("select");
+  const quantidadeInput = row.querySelector("input[type='number']");
 
-    // Cria uma nova linha para a tabela de resumo (informativa)
-    const summaryRow = document.createElement("tr");
-    summaryRow.innerHTML = `
-      <td class="px-2 py-1">${productName}</td>
-      <td class="px-2 py-1">${quantidade}</td>
-      <td class="px-2 py-1">${unidade}</td>
-    `;
+  // Garante que os campos sejam incluídos no POST
+  unidadeSelect.disabled = false;
+  quantidadeInput.disabled = false;
 
-    // Adiciona a linha à tabela de resumo
-    this.summaryTableTarget.appendChild(summaryRow);
+  // Remove readonly ou outras alterações
+  unidadeSelect.removeAttribute("disabled");
+  quantidadeInput.removeAttribute("disabled");
 
-    // Marca o produto como adicionado
-    this.produtosAdicionados.add(productId);
+  // Exibe na tabela de resumo
+  const productName = row.querySelector("span[data-custom-name-target='label']").textContent.trim();
+  const unidade = unidadeSelect.value;
+  const quantidade = quantidadeInput.value;
 
-    // Desabilita os campos do produto na tabela principal para evitar alterações
-    selectField.disabled = true;
-    inputField.disabled = true;
-    button.classList.add("hidden");
+  const summaryRow = document.createElement("tr");
+  summaryRow.innerHTML = `
+    <td class="px-2 py-1">${productName}</td>
+    <td class="px-2 py-1">${quantidade}</td>
+    <td class="px-2 py-1">${unidade}</td>
+  `;
+  this.summaryTableTarget.appendChild(summaryRow);
 
-    // Exibe o botão de envio, se ainda estiver oculto
-    this.submitButtonTarget.classList.remove("hidden");
-  }
+  this.produtosAdicionados.add(productId);
+
+  // Oculta o botão depois de adicionar
+  button.classList.add("hidden");
+
+  // Exibe botão de concluir cotação
+  this.submitButtonTarget.classList.remove("hidden");
+}
+
+
 
   submitForm(event) {
     // Valida a data de validade da cotação
