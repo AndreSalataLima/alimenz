@@ -48,6 +48,8 @@ gem "pundit"
 gem "prawn", "~> 2.4"
 gem "prawn-table"
 
+gem 'combine_pdf'
+
 gem "inline_svg"
 
 group :development, :test do
