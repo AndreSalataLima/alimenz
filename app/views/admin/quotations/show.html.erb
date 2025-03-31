@@ -6,7 +6,7 @@
 
     <div class="space-y-4">
       <p><strong>Cliente:</strong> <%= @quotation.customer.name %></p>
-      <p><strong>Data de Validade:</strong> <%= @quotation.expiration_date.strftime("%d/%m/%Y") if @quotation.expiration_date %></p>
+      <p><strong>Data limite de conclusão de compra:</strong> <%= @quotation.expiration_date.strftime("%d/%m/%Y") if @quotation.expiration_date %></p>
       <p><strong>Status:</strong> <%= @quotation.status.capitalize %></p>
     </div>
 

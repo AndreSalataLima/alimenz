@@ -21,7 +21,7 @@ class PdfGeneratorService
     end
 
     pdf.move_down 10
-    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Validade: #{@response.quotation.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 10
+    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Data limite de conclusão de compra: #{@response.quotation.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 10
     pdf.move_down 10
     pdf.stroke_horizontal_rule
     pdf.move_down 10
