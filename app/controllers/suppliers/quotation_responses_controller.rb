@@ -19,7 +19,10 @@ module Suppliers
           new_item.quotation_item = item
         end
       end
+
+      @quotation_response.expiration_date ||= @quotation_response.quotation.expiration_date
     end
+
 
     def update
       use_pre_registered_signature = (params[:quotation_response][:use_pre_registered_signature] == "1")
