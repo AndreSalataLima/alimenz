@@ -67,33 +67,36 @@
                 </td>
                 <td class="px-4 py-2"><%= quotation_response.status.capitalize %></td>
                 <td class="px-4 py-2">
-                  <% if quotation_response.status == "aguardando assinatura" %>
-                    <div class="flex flex-col space-y-1">
-                      <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response),
-                          class: "text-blue-600 hover:underline" %>
+<% if quotation_response.status == "aguardando assinatura" %>
+  <div class="flex flex-col space-y-1">
+    <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response),
+        class: "text-blue-600 hover:underline" %>
 
-                      <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
-                          class: "text-green-600 hover:underline" %>
+    <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
+        class: "text-blue-600 hover:underline" %>
 
-                      <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response),
-                          target: "_blank", class: "text-purple-600 hover:underline" %>
+    <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response),
+        target: "_blank", class: "text-blue-600 hover:underline" %>
 
-                      <div class="flex items-center space-x-1">
-                        <%= link_to "Assinar digitalmente", "https://assinador.iti.br/assinatura/index.xhtml",
-                            class: "text-red-600 hover:underline", target: "_blank" %>
+    <div class="flex items-center space-x-1">
+      <%= link_to "Assinar digitalmente", "https://assinador.iti.br/assinatura/index.xhtml",
+          class: "text-blue-600 hover:underline", target: "_blank" %>
 
-                        <%= link_to "?", "https://www.gov.br/governodigital/pt-br/identidade/assinatura-eletronica",
-                            class: "text-sm text-gray-400 hover:text-blue-700 align-super", target: "_blank",
-                            title: "Ajuda sobre assinatura digital" %>
-                      </div>
+      <%= link_to "?", "https://www.gov.br/governodigital/pt-br/identidade/assinatura-eletronica",
+          class: "text-sm text-gray-400 hover:text-blue-700 align-super", target: "_blank",
+          title: "Ajuda sobre assinatura digital" %>
+    </div>
+  </div>
                     </div>
-                  <% elsif quotation_response.status == "finalizado" %>
-                    <div class="flex flex-col space-y-1">
-                      <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
-                      class: "text-blue-600 hover:underline" %>
-                      <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"), target: "_blank",
-                      class: "text-green-600 hover:underline" %>
-                      </div>
+<% elsif quotation_response.status == "finalizado" %>
+  <div class="flex flex-col space-y-1">
+    <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
+      class: "text-blue-600 hover:underline" %>
+
+    <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"),
+      target: "_blank", class: "text-blue-600 hover:underline" %>
+  </div>
+
                   <% else %>
                     <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
                   <% end %>
