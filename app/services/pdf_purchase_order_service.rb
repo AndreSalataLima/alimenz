@@ -8,73 +8,90 @@ class PdfPurchaseOrderService
   end
 
   def generate
+    @purchase_order.reload
     pdf = Prawn::Document.new(page_size: "A4", margin: 50)
 
-    # Título com título da cotação (se houver)
-    title = @purchase_order.quotation&.title
-    if title.present?
-      pdf.text title, size: 20, style: :bold, align: :center
-      pdf.move_down 5
-      pdf.text "Pedido de Compra ##{@purchase_order.id}", size: 14, style: :italic, align: :center
-    else
-      pdf.text "Pedido de Compra ##{@purchase_order.id}", size: 20, style: :bold, align: :center
+    # Cabeçalho
+    pdf.text "PEDIDO DE COMPRA", size: 20, style: :bold, align: :center
+    # if @purchase_order.quotation&.title.present?
+    #   pdf.move_down 5
+    #   pdf.text @purchase_order.quotation.title, size: 14, style: :italic, align: :center
+    # end
+
+    pdf.move_down 10
+    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}", align: :center, size: 10
+    pdf.move_down 10
+    pdf.stroke_horizontal_rule
+    pdf.move_down 10
+
+    customer = @purchase_order.customer
+    supplier = @purchase_order.supplier
+
+    # Blocos lado a lado com alinhamento vertical
+    y_position = pdf.cursor
+
+    pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
+      pdf.text "Cliente:", style: :bold
+      pdf.text "Nome: #{customer.name}"
+      pdf.text "Nome Fantasia: #{customer.trade_name}" if customer.trade_name.present?
+      pdf.text "CNPJ: #{customer.cnpj}"
+      pdf.text "Endereço: #{customer.address}"
+      pdf.text "Telefone: #{customer.phone}"
+    end
+
+    pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
+      pdf.text "Fornecedor:", style: :bold
+      pdf.text "Nome: #{supplier.name}"
+      pdf.text "Nome Fantasia: #{supplier.trade_name}" if supplier.trade_name.present?
+      pdf.text "CNPJ: #{supplier.cnpj}"
+      pdf.text "Endereço: #{supplier.address}"
+      pdf.text "Telefone: #{supplier.phone}"
+      pdf.text "Responsável: #{supplier.responsible}"
     end
 
     pdf.move_down 20
-
-    supplier = @purchase_order.supplier
-    customer = @purchase_order.customer
-
-    # Dados do fornecedor
-    pdf.text "Fornecedor:", style: :bold
-    pdf.text "Nome: #{supplier.name}"
-    pdf.text "Nome Fantasia: #{supplier.trade_name}" if supplier.trade_name.present?
-    pdf.text "CNPJ: #{supplier.cnpj}"
-    pdf.text "Endereço: #{supplier.address}"
-    pdf.text "Telefone: #{supplier.phone}"
-    pdf.text "Responsável: #{supplier.responsible}"
-    pdf.move_down 10
-
-    # Dados do cliente
-    pdf.text "Cliente:", style: :bold
-    pdf.text "Nome: #{customer.name}"
-    pdf.text "Nome Fantasia: #{customer.trade_name}" if customer.trade_name.present?
-    pdf.text "CNPJ: #{customer.cnpj}"
-    pdf.text "Endereço: #{customer.address}"
-    pdf.text "Telefone: #{customer.phone}"
+    pdf.stroke_horizontal_rule
     pdf.move_down 20
 
-    # Tabela de produtos: ITEM, DESCRIÇÃO, UNID, QUANTIDADE
-    data = [["ITEM", "DESCRIÇÃO", "UNID", "QUANTIDADE"]]
-    @purchase_order.purchase_order_items.each_with_index do |item, index|
+    # Tabela de Itens
+    table_data = [["ITEM", "DESCRIÇÃO", "QUANT", "UNID", "PREÇO UNI (R$)", "TOTAL (R$)"]]
+    item_index = 1
+
+    @purchase_order.purchase_order_items.each do |item|
       product = item.product
       customized = customer.customized_products.find_by(product_id: product.id)
       description = customized&.custom_name.presence || product.generic_name
+      quantity = item.quantity
+      unit = item.unit
+      unit_price = item.price
+      total = quantity * unit_price
 
-      data << [
-        index + 1,
+      table_data << [
+        item_index,
         description,
-        item.unit,
-        item.quantity
+        quantity,
+        unit,
+        "R$ #{'%.2f' % unit_price}",
+        "R$ #{'%.2f' % total}"
       ]
+      item_index += 1
     end
 
-    if data.size > 1
-      pdf.table(data, header: true, cell_style: { borders: [:bottom], padding: 5 }) do |t|
-        t.row(0).background_color = "DDDDDD"
-        t.row(0).font_style = :bold
+
+    if table_data.size > 1
+      pdf.table(table_data, header: true, width: pdf.bounds.width) do |table|
+        table.row(0).background_color = "DDDDDD"
+        table.row(0).font_style = :bold
+        table.columns(4..5).align = :right
+        table.column(0).align = :center
       end
     else
-      pdf.text "Nenhum item no pedido de compra."
+      pdf.text "Nenhum item no pedido de compra.", align: :center
     end
 
     pdf.move_down 40
     pdf.stroke_horizontal_rule
     pdf.move_down 30
-
-    # Rodapé: Assinatura
-    pdf.text "Assinatura: ______________________________", align: :left
-    pdf.text "Responsável: #{supplier.responsible}", align: :left
 
     pdf.render
   end

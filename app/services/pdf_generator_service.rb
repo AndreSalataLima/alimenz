@@ -21,7 +21,7 @@ class PdfGeneratorService
     end
 
     pdf.move_down 10
-    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Data limite de conclusão de compra: #{@response.quotation.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 10
+    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Válido até: #{@response.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 10
     pdf.move_down 10
     pdf.stroke_horizontal_rule
     pdf.move_down 10
@@ -55,8 +55,8 @@ class PdfGeneratorService
     pdf.stroke_horizontal_rule
     pdf.move_down 20
 
-    # Tabela de Cotacão de Preços
-    table_data = [["ITEM", "QUANT", "UNID", "DESCRIÇÃO", "PREÇO UNI (R$)", "TOTAL (R$)"]]
+    # Tabela de Cotação de Preços
+    table_data = [["ITEM", "DESCRIÇÃO", "QUANT", "UNID", "PREÇO UNI (R$)", "TOTAL (R$)"]]
     item_index = 1
 
     @response.quotation_response_items.includes(:quotation_item).each do |item|
@@ -73,9 +73,9 @@ class PdfGeneratorService
 
       table_data << [
         item_index,
+        description,
         quantity,
         unit,
-        description,
         "R$ #{'%.2f' % unit_price}",
         "R$ #{'%.2f' % total}"
       ]
