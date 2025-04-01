@@ -49,6 +49,7 @@
           <thead class="bg-gray-100">
             <tr>
               <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Entidade Participante</th>
               <th class="px-4 py-2 text-left">Data de Validade</th>
               <th class="px-4 py-2 text-left">Status</th>
               <th class="px-4 py-2 text-left">Ações</th>
@@ -58,6 +59,7 @@
             <% @quotation_responses.each do |quotation_response| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2 font-medium"><%= "Cotação ##{quotation_response.quotation.id}" %></td>
+                <td class="px-4 py-2"><%= quotation_response.quotation.customer.name %></td>
                 <td class="px-4 py-2">
                   <% if quotation_response.quotation.expiration_date.present? %>
                     <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>

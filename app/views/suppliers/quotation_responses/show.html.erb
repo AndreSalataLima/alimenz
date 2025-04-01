@@ -12,6 +12,7 @@
     <thead>
       <tr class="bg-gray-100 border-b">
         <th class="px-2 py-2">Cotação</th>
+        <th class="px-2 py-2">Entidade Participante</th>
         <th class="px-2 py-2">Data limite</th>
         <th class="px-2 py-2">Status</th>
         <th class="px-2 py-2">Ações</th>
@@ -23,6 +24,8 @@
           <td class="px-2 py-2">
             <%= "Cotação ##{quotation_response.quotation.id}" %>
           </td>
+          <td class="px-2 py-2"><%= quotation_response.quotation.customer.name %></td>
+
           <td class="px-2 py-2">
             <% if quotation_response.quotation.expiration_date.present? %>
               <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>
