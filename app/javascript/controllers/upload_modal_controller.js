@@ -75,8 +75,26 @@ export default class extends Controller {
 
   openModal(event) {
     event.preventDefault(); // Impede o envio imediato
+
+    // Itera pelos inputs de arquivo e verifica se pelo menos um arquivo foi selecionado
+    const fileInputs = this.fileFieldsContainerTarget.querySelectorAll("input[type='file']");
+    let fileSelected = false;
+    fileInputs.forEach((input) => {
+      if (input.files && input.files.length > 0) {
+        fileSelected = true;
+      }
+    });
+
+    if (!fileSelected) {
+      // Exibe uma mensagem de alerta se nenhum arquivo estiver selecionado
+      alert("Por favor, selecione um arquivo JPG, PNG ou PDF para enviar.");
+      return;
+    }
+
+    // Se pelo menos um arquivo foi selecionado, abre o modal de confirmação
     this.modalTarget.classList.remove("hidden");
   }
+
 
   confirm(event) {
     event.preventDefault();

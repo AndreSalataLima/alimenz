@@ -8,6 +8,7 @@ import PriceAlertController from "controllers/price_alert_controller"
 import UploadModalController from "controllers/upload_modal_controller"
 import ApprovalController from "controllers/approval_controller"
 import CustomNameController from "controllers/custom_name_controller"
+import QuotationResponseController from "controllers/quotation_response_controller"
 
 const application = Application.start()
 
@@ -19,3 +20,4 @@ application.register("price-alert", PriceAlertController)
 application.register("upload-modal", UploadModalController)
 application.register("approval", ApprovalController)
 application.register("custom-name", CustomNameController)
+application.register("quotation-response", QuotationResponseController)
