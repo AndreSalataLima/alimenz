@@ -22,8 +22,9 @@ ENV RAILS_ENV="production" \
 FROM base AS build
 
 # Cria usuário rails antes de instalar gems (IMPORTANTE!)
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash rails
+RUN getent group rails || groupadd --system --gid 1000 rails && \
+    id -u rails || useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash rails
+
 
 # Instala dependências para compilar gems
 RUN apt-get update -qq && \
