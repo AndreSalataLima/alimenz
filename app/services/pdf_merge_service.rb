@@ -1,5 +1,4 @@
 require "prawn"
-require "combine_pdf"
 require "stringio"
 
 class PdfMergeService
