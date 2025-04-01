@@ -21,9 +21,8 @@ ENV RAILS_ENV="production" \
 # Etapa intermediária para build
 FROM base AS build
 
-# Cria usuário rails antes de instalar gems (IMPORTANTE!)
-RUN getent group rails || groupadd --system --gid 1000 rails && \
-    id -u rails || useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash rails
+# Cria usuário rails antes de instalar gems
+RUN id -u rails 2>/dev/null || adduser --disabled-password --gecos "" rails
 
 
 # Instala dependências para compilar gems
