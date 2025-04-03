@@ -5,16 +5,30 @@
     <p class="mb-4 text-gray-700">
       Revise os valores informados pelos fornecedores para cada item da sua cotação.
     </p>
+
+    <div class="mb-6">
+      <% @suppliers.each do |supplier| %>
+        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
+        <% if response&.signed_document.attached? %>
+          <p class="text-sm text-gray-700 mb-1">
+            <strong><%= supplier.name %></strong>:
+            <%= link_to "Visualizar Cotação", rails_blob_path(response.signed_document, disposition: "inline"), target: "_blank", class: "text-indigo-600 hover:underline" %>
+          </p>
+        <% end %>
+      <% end %>
+    </div>
+
+
     <% if @quotation.general_comment.present? %>
       <p class="mb-4 text-gray-700">
         <strong>Observações gerais da cotação:</strong> <%= @quotation.general_comment %>
       </p>
     <% end %>
-
-    <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false } do |f| %>
+    <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false, controller: "update-total", action: "submit->update-total#checkSelection" } do |f| %>
       <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
 
-      <div class="overflow-x-auto rounded-lg border border-gray-200" data-controller="update-total">
+      <div class="overflow-x-auto rounded-lg border border-gray-200">
+
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>

@@ -6,7 +6,7 @@ export default class extends Controller {
   connect() {
     console.log("UpdateTotalController connected")
   }
-  
+
   update() {
     let total = 0
     this.checkboxTargets.forEach(cb => {
@@ -22,5 +22,14 @@ export default class extends Controller {
       style: "currency",
       currency: "BRL"
     }).format(total)
+  }
+
+  checkSelection(event) {
+    const anyChecked = this.checkboxTargets.some(cb => cb.checked)
+
+    if (!anyChecked) {
+      event.preventDefault()
+      alert("Você precisa selecionar pelo menos um item para prosseguir.")
+    }
   }
 }
