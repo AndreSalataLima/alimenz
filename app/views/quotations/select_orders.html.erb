@@ -5,6 +5,12 @@
     <p class="mb-4 text-gray-700">
       Revise os valores informados pelos fornecedores para cada item da sua cotação.
     </p>
+    <% if @quotation.general_comment.present? %>
+      <p class="mb-4 text-gray-700">
+        <strong>Observações gerais da cotação:</strong> <%= @quotation.general_comment %>
+      </p>
+    <% end %>
+
 
     <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false } do |f| %>
       <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
@@ -24,7 +30,12 @@
           <tbody class="divide-y divide-gray-200">
             <% @items.each do |item| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 text-left"><%= item.product.generic_name %></td>
+                <td class="px-4 py-2 text-left">
+                  <%= item.product.generic_name %>
+                  <% if item.product_comment.present? %>
+                    <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
+                  <% end %>
+                </td>
                 <td class="px-4 py-2 text-center"><%= item.quantity %></td>
                 <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
                 <% @suppliers.each do |supplier| %>

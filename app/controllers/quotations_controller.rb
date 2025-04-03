@@ -134,6 +134,7 @@ class QuotationsController < ApplicationController
         supplier_id: supplier_id,
         total_value: total_value,
         expiration_date: @quotation.expiration_date,
+        quotation_id: @quotation.id,
         status: "pendente"
       )
 
@@ -152,7 +153,7 @@ class QuotationsController < ApplicationController
 
     # 🛠️ Tentar atualizar o status das respostas de cotação
     selected_responses.each do |response|
-      response.update!(status: "pedido_finalizado")
+      response.update!(status: "finalizado")
     end
 
     redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."

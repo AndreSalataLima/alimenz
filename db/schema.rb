@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_26_120008) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_03_142335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,7 +90,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_26_120008) do
     t.bigint "supplier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "quotation_id", null: false
     t.index ["customer_id"], name: "index_purchase_orders_on_customer_id"
+    t.index ["quotation_id"], name: "index_purchase_orders_on_quotation_id"
     t.index ["supplier_id"], name: "index_purchase_orders_on_supplier_id"
   end
 
@@ -184,6 +186,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_26_120008) do
   add_foreign_key "products", "categories"
   add_foreign_key "purchase_order_items", "products"
   add_foreign_key "purchase_order_items", "purchase_orders"
+  add_foreign_key "purchase_orders", "quotations"
   add_foreign_key "purchase_orders", "users", column: "customer_id"
   add_foreign_key "purchase_orders", "users", column: "supplier_id"
   add_foreign_key "quotation_items", "products"
