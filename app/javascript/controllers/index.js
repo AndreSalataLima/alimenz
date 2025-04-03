@@ -9,7 +9,8 @@ import UploadModalController from "controllers/upload_modal_controller"
 import ApprovalController from "controllers/approval_controller"
 import CustomNameController from "controllers/custom_name_controller"
 import QuotationResponseController from "controllers/quotation_response_controller"
-
+import UpdateTotalController from "controllers/update_total_controller"
+;
 const application = Application.start()
 
 application.register("cotacao", CotacaoController)
@@ -21,3 +22,4 @@ application.register("upload-modal", UploadModalController)
 application.register("approval", ApprovalController)
 application.register("custom-name", CustomNameController)
 application.register("quotation-response", QuotationResponseController)
+application.register("update-total", UpdateTotalController)

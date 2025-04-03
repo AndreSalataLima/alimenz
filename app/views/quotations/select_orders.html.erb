@@ -11,11 +11,10 @@
       </p>
     <% end %>
 
-
     <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false } do |f| %>
       <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
 
-      <div class="overflow-x-auto rounded-lg border border-gray-200">
+      <div class="overflow-x-auto rounded-lg border border-gray-200" data-controller="update-total">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
@@ -51,7 +50,12 @@
                           <%= check_box_tag "selected[#{response.id}][#{item.id}]",
                                             "1",
                                             false,
-                                            class: "mr-2 rounded border-gray-300 focus:ring-indigo-500" %>
+                                            class: "mr-2 rounded border-gray-300 focus:ring-indigo-500",
+                                            data: {
+                                              "update-total-target": "checkbox",
+                                              price: (response_item.price.to_f * item.quantity.to_f).round(2),
+                                              action: "update-total#update"
+                                            } %>
                           <%= label_tag "selected_#{response.id}_#{item.id}",
                                         "Comprar",
                                         class: "text-gray-700" %>
@@ -68,6 +72,11 @@
             <% end %>
           </tbody>
         </table>
+
+        <!-- Total parcial da seleção -->
+        <div class="mt-4 text-right text-lg font-semibold text-gray-800">
+          Total parcial da seleção: <span data-update-total-target="total">R$ 0,00</span>
+        </div>
       </div>
 
       <div class="mt-6">
