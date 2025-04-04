@@ -18,17 +18,16 @@
       <% end %>
     </div>
 
-
     <% if @quotation.general_comment.present? %>
       <p class="mb-4 text-gray-700">
         <strong>Observações gerais da cotação:</strong> <%= @quotation.general_comment %>
       </p>
     <% end %>
+
     <%= form_with url: orders_summary_quotation_path(@quotation), method: :post, local: true, data: { turbo: false, controller: "update-total", action: "submit->update-total#checkSelection" } do |f| %>
       <input type="hidden" name="quotation_id" value="<%= @quotation.id %>">
 
       <div class="overflow-x-auto rounded-lg border border-gray-200">
-
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
@@ -40,51 +39,75 @@
               <% end %>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% @items.each do |item| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 text-left">
-                  <%= item.product.generic_name %>
-                  <% if item.product_comment.present? %>
-                    <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
-                  <% end %>
-                </td>
-                <td class="px-4 py-2 text-center"><%= item.quantity %></td>
-                <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
-                <% @suppliers.each do |supplier| %>
-                  <td class="px-4 py-2 text-center">
-                    <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
-                    <% if response.present? %>
-                      <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
-                      <% if response_item.present? && response_item.available %>
-                        <p class="font-medium text-gray-800">
-                          <%= real_currency(response_item.price.to_f * item.quantity.to_f) %>
-                        </p>
-                        <div class="flex items-center justify-center mt-2">
-                          <%= check_box_tag "selected[#{response.id}][#{item.id}]",
-                                            "1",
-                                            false,
-                                            class: "mr-2 rounded border-gray-300 focus:ring-indigo-500",
-                                            data: {
-                                              "update-total-target": "checkbox",
-                                              price: (response_item.price.to_f * item.quantity.to_f).round(2),
-                                              action: "update-total#update"
-                                            } %>
-                          <%= label_tag "selected_#{response.id}_#{item.id}",
-                                        "Comprar",
-                                        class: "text-gray-700" %>
-                        </div>
-                      <% else %>
-                        <span class="text-sm text-red-500">Indisponível</span>
-                      <% end %>
-                    <% else %>
-                      <span class="text-gray-400">Indisponível</span>
-                    <% end %>
-                  </td>
-                <% end %>
-              </tr>
+<tbody class="divide-y divide-gray-200">
+  <% @items.each do |item| %>
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-2 text-left">
+        <%= item.product.generic_name %>
+        <% if item.product_comment.present? %>
+          <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
+        <% end %>
+      </td>
+
+      <!-- Coluna quantidade (agora com campo editável) -->
+      <td class="px-4 py-2 text-center">
+<input type="number"
+       name="quantidades[<%= item.id %>]"
+       value="<%= item.quantity %>"
+       step="0.01"
+       min="0"
+       data-update-total-target="quantity"
+       data-item-id="<%= item.id %>"
+       class="w-24 text-sm text-center border rounded"
+       data-action="input->update-total#update"/>
+
+      </td>
+
+      <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
+
+      <% @suppliers.each do |supplier| %>
+        <td class="px-4 py-2 text-center">
+          <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
+          <% if response.present? %>
+            <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
+            <% if response_item.present? && response_item.available %>
+              <% unit_price = response_item.price.to_f %>
+              <div class="space-y-1 flex flex-col items-center">
+<span class="font-medium text-gray-800" data-update-total-target="productTotal"
+      data-item-id="<%= item.id %>"
+      data-response-id="<%= response.id %>">
+  <%= real_currency(unit_price * item.quantity.to_f) %>
+</span>
+
+
+                <%= check_box_tag "selected[#{response.id}][#{item.id}]",
+                                  "1",
+                                  false,
+                                  class: "rounded border-gray-300 focus:ring-indigo-500",
+  data: {
+    "update-total-target": "checkbox",
+    "price": unit_price.to_s,
+    "item-id": item.id,
+    "response-id": response.id,
+    action: "update-total#update"
+  } %>
+
+                <%= label_tag "selected_#{response.id}_#{item.id}",
+                              "Comprar",
+                              class: "text-gray-700 text-sm" %>
+              </div>
+            <% else %>
+              <span class="text-sm text-red-500">Indisponível</span>
             <% end %>
-          </tbody>
+          <% else %>
+            <span class="text-gray-400">Indisponível</span>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+</tbody>
+
         </table>
 
         <!-- Total parcial da seleção -->
