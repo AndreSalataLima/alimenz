@@ -7,6 +7,8 @@ Rails.application.routes.draw do
     resources :suppliers, only: [ :index, :show, :edit, :update ]
     resources :quotations, only: [ :index, :show ]
     resources :dashboard, only: [ :index ]
+    resources :purchase_orders, only: [:index, :show]
+
 
     resources :quotation_responses, only: [ :index, :show ] do
       member do
