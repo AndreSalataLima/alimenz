@@ -28,7 +28,7 @@
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-2 font-medium"><%= "Pedido ##{purchase_order.id}" %></td>
                   <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
-                  <td class="px-4 py-2"><%= number_to_currency(purchase_order.total_value) %></td>
+                  <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                   <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                   <td class="px-4 py-2">
                     <%= link_to "Visualizar PDF", pdf_purchase_order_path(purchase_order), target: "_blank", class: "text-blue-600 hover:underline" %>
@@ -53,7 +53,6 @@
               <th class="px-4 py-2 text-left">Fornecedor</th>
               <th class="px-4 py-2 text-left">Valor Total</th>
               <th class="px-4 py-2 text-left">Data de Validade</th>
-              <th class="px-4 py-2 text-left">Status</th>
               <th class="px-4 py-2 text-left">Ações</th>
             </tr>
           </thead>
@@ -61,9 +60,8 @@
             <% @purchase_orders.each do |purchase_order| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2"><%= purchase_order.supplier.name %></td>
-                <td class="px-4 py-2"><%= number_to_currency(purchase_order.total_value) %></td>
+                <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                 <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime('%d/%m/%Y') %></td>
-                <td class="px-4 py-2 capitalize"><%= purchase_order.status %></td>
                 <td class="px-4 py-2">
                   <%= link_to "Ver Detalhes", purchase_order_path(purchase_order), class: "text-blue-500 underline hover:text-blue-700" %>
                 </td>

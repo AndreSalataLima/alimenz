@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_27_184324) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_03_142335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "categories", force: :cascade do |t|
     t.string "name"
@@ -62,7 +90,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_184324) do
     t.bigint "supplier_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "quotation_id", null: false
     t.index ["customer_id"], name: "index_purchase_orders_on_customer_id"
+    t.index ["quotation_id"], name: "index_purchase_orders_on_quotation_id"
     t.index ["supplier_id"], name: "index_purchase_orders_on_supplier_id"
   end
 
@@ -74,6 +104,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_184324) do
     t.boolean "keep_generic_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "product_comment"
     t.index ["product_id"], name: "index_quotation_items_on_product_id"
     t.index ["quotation_id"], name: "index_quotation_items_on_quotation_id"
   end
@@ -108,6 +139,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_184324) do
     t.string "status", default: "pendente", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "general_comment"
+    t.string "title"
     t.index ["customer_id"], name: "index_quotations_on_customer_id"
   end
 
@@ -141,15 +174,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_27_184324) do
     t.string "phone", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "trade_name"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "customized_products", "products"
   add_foreign_key "customized_products", "users", column: "customer_id"
   add_foreign_key "products", "categories"
   add_foreign_key "purchase_order_items", "products"
   add_foreign_key "purchase_order_items", "purchase_orders"
+  add_foreign_key "purchase_orders", "quotations"
   add_foreign_key "purchase_orders", "users", column: "customer_id"
   add_foreign_key "purchase_orders", "users", column: "supplier_id"
   add_foreign_key "quotation_items", "products"

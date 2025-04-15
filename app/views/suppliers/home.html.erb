@@ -6,7 +6,7 @@
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <h2 class="text-xl font-bold text-gray-800 mb-4">Pedidos de Compra Recebidos</h2>
 
-    <% if @pedidos.present? %>
+    <% if @purchase_orders.present? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -19,14 +19,14 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <% @pedidos.each do |pedido| %>
+            <% @purchase_orders.each do |purchase_order| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 font-medium"><%= "Pedido ##{pedido.id}" %></td>
-                <td class="px-4 py-2"><%= pedido.customer.name %></td>
-                <td class="px-4 py-2"><%= number_to_currency(pedido.total_value) %></td>
-                <td class="px-4 py-2"><%= pedido.expiration_date.strftime("%d/%m/%Y") if pedido.expiration_date %></td>
+                <td class="px-4 py-2 font-medium"><%= "Pedido ##{purchase_order.id}" %></td>
+                <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
+                <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
+                <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(pedido), target: "_blank", class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(purchase_order), target: "_blank", class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>
@@ -36,6 +36,7 @@
     <% else %>
       <p class="text-gray-500">Não há pedidos de compra.</p>
     <% end %>
+
   </div>
 
   <!-- Cotações Disponíveis -->
@@ -48,6 +49,7 @@
           <thead class="bg-gray-100">
             <tr>
               <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Entidade Participante</th>
               <th class="px-4 py-2 text-left">Data de Validade</th>
               <th class="px-4 py-2 text-left">Status</th>
               <th class="px-4 py-2 text-left">Ações</th>
@@ -57,6 +59,7 @@
             <% @quotation_responses.each do |quotation_response| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2 font-medium"><%= "Cotação ##{quotation_response.quotation.id}" %></td>
+                <td class="px-4 py-2"><%= quotation_response.quotation.customer.name %></td>
                 <td class="px-4 py-2">
                   <% if quotation_response.quotation.expiration_date.present? %>
                     <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>
@@ -65,12 +68,34 @@
                 <td class="px-4 py-2"><%= quotation_response.status.capitalize %></td>
                 <td class="px-4 py-2">
                   <% if quotation_response.status == "aguardando assinatura" %>
-                    <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
-                    <%= link_to "Upload Documento Assinado", upload_document_for_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600 hover:underline" %>
-                    <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response), target: "_blank", class: "ml-4 text-purple-600 hover:underline" %>
+                    <div class="flex flex-col space-y-1">
+                      <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response),
+                          class: "text-blue-600 hover:underline" %>
+
+                      <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
+                          class: "text-blue-600 hover:underline" %>
+
+                      <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response),
+                          target: "_blank", class: "text-blue-600 hover:underline" %>
+
+                      <div class="flex items-center space-x-1">
+                        <%= link_to "Assinar digitalmente", "https://assinador.iti.br/assinatura/index.xhtml",
+                            class: "text-blue-600 hover:underline", target: "_blank" %>
+
+                        <%= link_to "?", "https://www.gov.br/governodigital/pt-br/identidade/assinatura-eletronica",
+                            class: "text-sm text-gray-400 hover:text-blue-700 align-super", target: "_blank",
+                            title: "Ajuda sobre assinatura digital" %>
+                      </div>
+                    </div>
+                  </div>
                   <% elsif quotation_response.status == "finalizado" %>
-                    <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"), class: "text-blue-600 hover:underline" %>
-                    <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "ml-4 text-green-600 hover:underline" %>
+                    <div class="flex flex-col space-y-1">
+                      <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
+                        class: "text-blue-600 hover:underline" %>
+
+                      <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"),
+                        target: "_blank", class: "text-blue-600 hover:underline" %>
+                    </div>
                   <% else %>
                     <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
                   <% end %>

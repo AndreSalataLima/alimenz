@@ -16,7 +16,7 @@ export default class extends Controller {
     newField.classList.add("mt-4", "file-field");
     newField.innerHTML = `
       <label class="file-label">Selecione a ${this.pageNumber + 1}ª página do documento</label>
-      <input type="file" name="resposta_de_cotacao[documentos_assinados][]" class="border rounded px-2 py-1 file-input" data-action="change->upload-modal#handleFileSelection">
+      <input type="file" name="quotation_response[signed_documents][]" class="border rounded px-2 py-1 file-input" data-action="change->upload-modal#handleFileSelection">
       <span class="file-name hidden"></span>
     `;
 
@@ -75,8 +75,26 @@ export default class extends Controller {
 
   openModal(event) {
     event.preventDefault(); // Impede o envio imediato
+
+    // Itera pelos inputs de arquivo e verifica se pelo menos um arquivo foi selecionado
+    const fileInputs = this.fileFieldsContainerTarget.querySelectorAll("input[type='file']");
+    let fileSelected = false;
+    fileInputs.forEach((input) => {
+      if (input.files && input.files.length > 0) {
+        fileSelected = true;
+      }
+    });
+
+    if (!fileSelected) {
+      // Exibe uma mensagem de alerta se nenhum arquivo estiver selecionado
+      alert("Por favor, selecione um arquivo JPG, PNG ou PDF para enviar.");
+      return;
+    }
+
+    // Se pelo menos um arquivo foi selecionado, abre o modal de confirmação
     this.modalTarget.classList.remove("hidden");
   }
+
 
   confirm(event) {
     event.preventDefault();

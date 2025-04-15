@@ -1,20 +1,20 @@
+// app/javascript/controllers/price_alert_controller.js
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["form", "priceInput", "modal", "modalList"];
+  static targets = ["form", "priceInput", "modal", "modalList", "total", "quantity"];
 
   connect() {
     console.log("Price Alert Controller connected");
     this.element.addEventListener("submit", this.checkPrices.bind(this));
+    this.updateAllTotals(); // Atualiza todos os totais na conexão
   }
 
   checkPrices(event) {
     const priceInputs = this.priceInputTargets;
     let zeroPriceItems = [];
     priceInputs.forEach(input => {
-      // Se o input estiver desabilitado, significa que o produto está indisponível
       if (!input.disabled && parseFloat(input.value) === 0) {
-        // Obter o nome do produto a partir do data attribute
         zeroPriceItems.push(input.dataset.productName);
       }
     });
@@ -25,7 +25,6 @@ export default class extends Controller {
     }
   }
 
-
   populateModal(items) {
     this.modalListTarget.innerHTML = "";
     items.forEach(name => {
@@ -35,31 +34,37 @@ export default class extends Controller {
     });
   }
 
-  confirm(event) {
-    // Se o fornecedor confirmar, remova o listener para evitar loop e submeta o formulário.
-    this.modalTarget.classList.add("hidden");
-    // Remover o listener temporariamente para permitir o submit
-    this.element.removeEventListener("submit", this.checkPrices.bind(this));
-    this.element.submit();
-  }
-
-  cancel(event) {
-    // Apenas fecha o modal para que o fornecedor possa revisar os preços
+  closeModal() {
     this.modalTarget.classList.add("hidden");
   }
 
-  togglePriceInput(event) {
-    const checkbox = event.currentTarget;
-    // Encontre o input de preço na mesma linha (você pode ajustar esse seletor conforme sua estrutura)
-    const row = checkbox.closest("tr");
-    const priceInput = row.querySelector('input[type="number"][data-price-alert-target="priceInput"]');
-    if (checkbox.checked) {
-      // Se estiver marcado (disponível), habilita o campo
-      priceInput.disabled = false;
-    } else {
-      // Se não estiver disponível, desabilita o campo e limpa o valor (ou mantém o valor anterior)
-      priceInput.disabled = true;
+  updateTotal(event) {
+    const input = event.target;
+    let price = parseFloat(input.value) || 0;
+
+    if (price < 0) {
+      price = 0;
+      input.value = "0.00";
+    }
+
+    const row = input.closest("tr");
+    const quantity = parseFloat(row.querySelector("[data-price-alert-target='quantity']")?.textContent) || 0;
+    const total = price * quantity;
+
+    const totalSpan = row.querySelector("[data-price-alert-target='total']");
+    if (totalSpan) {
+      totalSpan.textContent = total.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
     }
   }
 
+
+  updateAllTotals() {
+    this.priceInputTargets.forEach(input => {
+      const event = new Event("input");
+      input.dispatchEvent(event);
+    });
+  }
 }

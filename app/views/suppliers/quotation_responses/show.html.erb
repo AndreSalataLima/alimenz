@@ -12,7 +12,8 @@
     <thead>
       <tr class="bg-gray-100 border-b">
         <th class="px-2 py-2">Cotação</th>
-        <th class="px-2 py-2">Data de Validade da Cotação</th>
+        <th class="px-2 py-2">Entidade Participante</th>
+        <th class="px-2 py-2">Data limite</th>
         <th class="px-2 py-2">Status</th>
         <th class="px-2 py-2">Ações</th>
       </tr>
@@ -23,6 +24,8 @@
           <td class="px-2 py-2">
             <%= "Cotação ##{quotation_response.quotation.id}" %>
           </td>
+          <td class="px-2 py-2"><%= quotation_response.quotation.customer.name %></td>
+
           <td class="px-2 py-2">
             <% if quotation_response.quotation.expiration_date.present? %>
               <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>
@@ -32,7 +35,7 @@
           <td class="px-2 py-2">
             <% if quotation_response.status == "aguardando assinatura" %>
               <%= link_to "Imprimir PDF", pdf_suppliers_quotation_response_path(quotation_response), class: "text-blue-600" %>
-              <%= link_to "Upload do Documento Assinado", upload_document_for_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600" %>
+              <%= link_to "Upload do Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response), class: "ml-4 text-green-600" %>
             <% elsif quotation_response.status == "finalizado" %>
               <%= link_to "Imprimir PDF", pdf_suppliers_quotation_response_path(quotation_response), class: "text-blue-600" %>
             <% else %>

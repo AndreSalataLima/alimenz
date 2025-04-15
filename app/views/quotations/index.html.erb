@@ -26,9 +26,10 @@
     <table class="min-w-full text-left border-collapse">
       <thead class="bg-gray-100 border-b border-gray-200">
         <tr>
-          <th class="px-4 py-2 font-medium text-gray-700">ID</th>
-          <th class="px-4 py-2 font-medium text-gray-700">Data de Criação</th>
-          <th class="px-4 py-2 font-medium text-gray-700">Data de Validade</th>
+          <%# <th class="px-4 py-2 font-medium text-gray-700">ID</th> %>
+          <th class="px-4 py-2 font-medium text-gray-700">Título</th>
+          <th class="px-4 py-2 font-medium text-gray-700">Data de criação</th>
+          <th class="px-4 py-2 font-medium text-gray-700">Data limite de conclusão de compra</th>
           <th class="px-4 py-2 font-medium text-gray-700">Status</th>
           <th class="px-4 py-2 font-medium text-gray-700">Ações</th>
         </tr>
@@ -36,7 +37,9 @@
       <tbody class="divide-y divide-gray-200">
         <% @quotations.each do |quotation| %>
           <tr class="hover:bg-gray-50">
-            <td class="px-4 py-2"><%= quotation.id %></td>
+          <td class="px-4 py-2">
+            <%= quotation.title.present? ? quotation.title : content_tag(:span, "Sem título", class: "text-gray-400 italic") %>
+          </td>
             <td class="px-4 py-2">
               <%= quotation.created_at.strftime("%d/%m/%Y") %>
             </td>
@@ -50,9 +53,13 @@
               <%= link_to 'Visualizar',
                   quotation_path(quotation),
                   class: "text-blue-600 hover:text-blue-800 mr-2" %>
-              <%= link_to 'Selecionar Pedidos',
-                  select_orders_quotation_path(quotation),
-                  class: "text-green-600 hover:text-green-800" %>
+              <% if quotation.quotation_responses.where(status: "finalizado", analysis_status: "aprovado").exists? %>
+                <%= link_to 'Selecionar Pedidos',
+                    select_orders_quotation_path(quotation),
+                    class: "text-green-600 hover:text-green-800" %>
+              <% else %>
+                <span class="text-gray-400">Aguardando fornecedores</span>
+              <% end %>
             </td>
           </tr>
         <% end %>

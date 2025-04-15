@@ -19,7 +19,10 @@ module Suppliers
           new_item.quotation_item = item
         end
       end
+
+      @quotation_response.expiration_date ||= @quotation_response.quotation.expiration_date
     end
+
 
     def update
       use_pre_registered_signature = (params[:quotation_response][:use_pre_registered_signature] == "1")
@@ -52,23 +55,31 @@ module Suppliers
 
     def confirm_upload
       @quotation_response = QuotationResponse.find(params[:id])
+      uploaded_files = params[:quotation_response][:signed_documents]
 
-      if params[:quotation_response][:signed_documents].present?
-        merged_pdf = PdfMergeService.merge_files(params[:quotation_response][:signed_documents])
-
-        @quotation_response.signed_document.attach(
-          io: merged_pdf,
-          filename: "quotation_#{@quotation_response.id}.pdf",
-          content_type: "application/pdf"
-        )
-
-        @quotation_response.update(status: "finalizado", analysis_status: "pendente_de_analise")
-
-        redirect_to supplier_home_path, notice: "Quotation sent successfully!"
-      else
-        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "No document selected."
+      if uploaded_files.blank?
+        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Nenhum documento foi selecionado."
+        return
       end
+
+      unless uploaded_files.all? { |f| f.content_type =~ /\A(application\/pdf|image\/(png|jpeg|jpg))\z/ }
+        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Apenas arquivos PDF ou imagens (JPG, PNG) são aceitos."
+        return
+      end
+
+      merged_pdf = PdfMergeService.merge_files(uploaded_files)
+
+      @quotation_response.signed_document.attach(
+        io: merged_pdf,
+        filename: "quotation_#{@quotation_response.id}.pdf",
+        content_type: "application/pdf"
+      )
+
+      @quotation_response.update(status: "finalizado", analysis_status: "pendente_de_analise")
+
+      redirect_to supplier_home_path, notice: "Proposta enviada com sucesso!"
     end
+
 
     def sign
       # Action to force PDF generation (for preview, for example)

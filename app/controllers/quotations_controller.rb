@@ -4,7 +4,6 @@ class QuotationsController < ApplicationController
 
   def preview_pdf_data
     @quotation = Quotation.find(params[:id])
-    # Assume the desired response is the first with status "finalizado"
     @quotation_response = @quotation.quotation_responses.find_by(status: "finalizado")
     unless @quotation_response
       redirect_to @quotation, alert: "No finalizado response found for this quotation."
@@ -27,9 +26,25 @@ class QuotationsController < ApplicationController
   end
 
   def create
+    puts params[:quotation][:quotation_items_attributes].inspect
+
     @quotation = current_user.quotations.build(quotation_params)
+
     if @quotation.save
-      redirect_to @quotation, notice: "Quotation created successfully."
+      if params[:customized_products].present?
+        params[:customized_products].each do |product_id, custom_name|
+          next if custom_name.blank?
+
+          customized = CustomizedProduct.find_or_initialize_by(
+            customer: current_user,
+            product_id: product_id
+          )
+          customized.custom_name = custom_name
+          customized.save
+        end
+      end
+
+      redirect_to @quotation, notice: "Cotação criada com sucesso."
     else
       redirect_to customer_home_path, alert: @quotation.errors.full_messages.join(", ")
     end
@@ -39,7 +54,12 @@ class QuotationsController < ApplicationController
   def select_orders
     @quotation = Quotation.find(params[:id])
     @items = @quotation.quotation_items.includes(:product)
-    supplier_ids = @quotation.quotation_responses.where(status: "finalizado").pluck(:supplier_id).uniq
+
+    supplier_ids = @quotation.quotation_responses
+                             .where(status: "finalizado", analysis_status: "aprovado")
+                             .pluck(:supplier_id)
+                             .uniq
+
     @suppliers = User.where(id: supplier_ids)
   end
 
@@ -47,6 +67,7 @@ class QuotationsController < ApplicationController
   def orders_summary
     @quotation = Quotation.find(params[:id])
     selected = params[:selected] || {}
+    @quantidades = params[:quantidades] || {}
 
     @selected_responses = QuotationResponse.where(id: selected.keys)
     @responses_by_supplier = @selected_responses.group_by(&:supplier_id)
@@ -54,16 +75,15 @@ class QuotationsController < ApplicationController
     @items_by_response = {}
     @selected_responses.each do |response|
       selected_item_ids = selected[response.id.to_s]&.keys || []
-      filtered_items = response.quotation_response_items.select do |r_item|
-        selected_item_ids.include?(r_item.quotation_item.id.to_s)
-      end
+      filtered_items = response.quotation_response_items.where(quotation_item_id: selected_item_ids)
       @items_by_response[response.id] = filtered_items
     end
 
     @summaries = {}
     @selected_responses.each do |response|
       total = @items_by_response[response.id].sum do |item|
-        item.price.to_f * item.quotation_item.quantity.to_f
+        quantity = @quantidades[item.quotation_item.id.to_s]&.to_f || item.quotation_item.quantity.to_f
+        item.price.to_f * quantity
       end
       @summaries[response.supplier_id] ||= 0
       @summaries[response.supplier_id] += total
@@ -74,7 +94,10 @@ class QuotationsController < ApplicationController
   def finalize_orders
     @quotation = Quotation.find(params[:id])
     selected = params[:selected] || {}
+    quantidades = params[:quantidades] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
+
+    puts "Selected responses IDs: #{selected_responses.pluck(:id, :status, :analysis_status)}"
 
     items_by_response = {}
     selected_responses.each do |response|
@@ -88,7 +111,7 @@ class QuotationsController < ApplicationController
     responses_by_supplier = selected_responses.group_by(&:supplier_id)
     @created_orders = []
 
-    confirmations = params[:confirmations] || {}
+    confirmations = params[:confirmacoes] || {}
 
     responses_by_supplier.each do |supplier_id, responses|
       next unless confirmations[supplier_id.to_s] == "1"
@@ -98,20 +121,26 @@ class QuotationsController < ApplicationController
         items.concat(items_by_response[response.id])
       end
 
-      total_value = items.sum { |item| item.price.to_f * item.quotation_item.quantity.to_f }
+      total_value = items.sum do |item|
+        quantity = quantidades[item.quotation_item.id.to_s]&.to_f || item.quotation_item.quantity.to_f
+        item.price.to_f * quantity
+      end
 
       order = current_user.purchase_orders.create!(
         supplier_id: supplier_id,
         total_value: total_value,
         expiration_date: @quotation.expiration_date,
+        quotation_id: @quotation.id,
         status: "pendente"
       )
 
       items.each do |i|
+        quantity = quantidades[i.quotation_item.id.to_s]&.to_f || i.quotation_item.quantity.to_f
+
         PurchaseOrderItem.create!(
           purchase_order_id: order.id,
           product_id: i.quotation_item.product_id,
-          quantity: i.quotation_item.quantity,
+          quantity: quantity,
           price: i.price,
           unit: i.quotation_item.selected_unit
         )
@@ -120,14 +149,18 @@ class QuotationsController < ApplicationController
       @created_orders << order
     end
 
-    redirect_to purchase_orders_path, notice: "Purchase orders generated successfully."
+    selected_responses.each do |response|
+      response.update!(status: "finalizado")
+    end
+
+    redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
   end
 
   private
 
   def quotation_params
-    params.require(:quotation).permit(:expiration_date,
-      quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name ]
+    params.require(:quotation).permit(:title, :expiration_date, :general_comment,
+      quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name, :product_comment ]
     )
   end
 

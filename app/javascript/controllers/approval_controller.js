@@ -4,6 +4,10 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["modalAprovar", "modalReprovar"]
 
+  connect() {
+    console.log("Approval Controller connected")
+  }
+
   selecionarTodos() {
     this.element.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
       checkbox.checked = true
@@ -12,7 +16,8 @@ export default class extends Controller {
 
   showAprovarModal(event) {
     event.preventDefault()
-
+    console.log("Botão de aprovação clicado!")
+    
     const checkCarimbo = this.element.querySelector("#check_carimbo").checked
     const checkData = this.element.querySelector("#check_data").checked
     const checkProdutos = this.element.querySelector("#check_produtos").checked

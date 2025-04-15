@@ -2,7 +2,7 @@
 
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Lista de Respostas de Cotação</h2>
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Lista de respostas de cotação</h2>
 
     <% if @quotation_responses.any? %>
       <div class="overflow-x-auto">
@@ -13,8 +13,8 @@
               <th class="px-4 py-2 text-left">Fornecedor</th>
               <th class="px-4 py-2 text-left">Cotação</th>
               <th class="px-4 py-2 text-left">Data de Validade</th>
-              <th class="px-4 py-2 text-left">Status Fornecedor</th>
-              <th class="px-4 py-2 text-left">Análise Admin</th>
+              <th class="px-4 py-2 text-left">Status fornecedor</th>
+              <th class="px-4 py-2 text-left">Análise admin</th>
               <th class="px-4 py-2 text-left">Ações</th>
             </tr>
           </thead>
@@ -45,15 +45,15 @@
                   <% end %>
                 </td>
                 <td class="px-4 py-2">
-                  <% if qr.status_analise == "pendente_de_analise" %>
+                  <% if qr.analysis_status == "pendente_de_analise" %>
                     <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
                       🟡 Pendente de Análise
                     </span>
-                  <% elsif qr.status_analise == "aprovado" %>
+                  <% elsif qr.analysis_status == "aprovado" %>
                     <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
                       ✅ Aprovado
                     </span>
-                  <% elsif qr.status_analise == "cotacao_nao_aceita" %>
+                  <% elsif qr.analysis_status == "cotacao_nao_aceita" %>
                     <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
                       ❌ Cotação não aceita
                     </span>

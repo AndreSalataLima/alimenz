@@ -19,7 +19,7 @@ class Admin::UsersController < ApplicationController
     # Atribuição explícita do role
     @user.role = params[:user][:role] if params[:user][:role].present?
     if @user.save
-      redirect_to admin_user_path(@user), notice: "User created successfully."
+      redirect_to admin_customers_path, notice: "Usuário criado com sucesso."
     else
       render :new
     end
@@ -52,7 +52,7 @@ class Admin::UsersController < ApplicationController
   def user_params
     # Removemos :role daqui para evitar que ele seja atribuído via mass assignment
     params.require(:user).permit(
-      :name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation,
+      :name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation, :trade_name, :role,
       signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],
       category_ids: []
     )

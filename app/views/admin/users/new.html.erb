@@ -17,15 +17,56 @@
     <% end %>
 
     <%= form_with model: @user, url: admin_users_path, local: true, class: "space-y-4" do |f| %>
-      <!-- DADOS BÁSICOS -->
+      <!-- DADOS DA EMPRESA -->
       <div class="border-b pb-4">
-        <h3 class="text-lg font-semibold text-gray-700">Dados Básicos</h3>
+        <h3 class="text-lg font-semibold text-gray-700">Dados da Empresa</h3>
 
-        <!-- Nome -->
+        <!-- Responsável -->
         <div>
-          <%= f.label :name, "Nome", class: "block font-semibold text-gray-700" %>
+          <%= f.label :responsible, "Nome do Responsável", class: "block font-semibold text-gray-700" %>
+          <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+
+        <!-- Razão Social (usa o campo :name) -->
+        <div>
+          <%= f.label :name, "Razão Social da Empresa", class: "block font-semibold text-gray-700" %>
           <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
         </div>
+
+        <!-- Nome Fantasia -->
+        <div>
+          <%= f.label :trade_name, "Nome Fantasia", class: "block font-semibold text-gray-700" %>
+          <%= f.text_field :trade_name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+
+        <!-- CNPJ -->
+        <div>
+          <%= f.label :cnpj, "CNPJ", class: "block font-semibold text-gray-700" %>
+          <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+
+        <!-- Telefone -->
+        <div>
+          <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
+          <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+
+        <!-- Endereço -->
+        <div>
+          <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
+          <%= f.text_area :address, rows: 2, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+
+        <!-- Logo -->
+        <div>
+          <%= f.label :logo, "Logo da Empresa", class: "block font-semibold text-gray-700" %>
+          <%= f.file_field :logo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        </div>
+      </div>
+
+      <!-- DADOS DE ACESSO -->
+      <div class="border-b pb-4">
+        <h3 class="text-lg font-semibold text-gray-700">Dados de Acesso</h3>
 
         <!-- Email -->
         <div>
@@ -43,49 +84,9 @@
         <div>
           <%= f.label :role, "Tipo de Usuário", class: "block font-semibold text-gray-700" %>
           <%= f.select :role,
-                [['Administrador', 'admin'], ['Cliente', 'cliente'], ['Fornecedor', 'supplier']],
+                [['Administrador', 'admin'], ['Cliente', 'customer'], ['Fornecedor', 'supplier']],
                 { prompt: "Selecione um papel" },
                 class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm bg-white focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
-        </div>
-      </div>
-
-      <!-- DADOS DE CONTATO -->
-      <div class="border-b pb-4">
-        <h3 class="text-lg font-semibold text-gray-700">Contato</h3>
-
-        <!-- Telefone -->
-        <div>
-          <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
-        </div>
-
-        <!-- Endereço -->
-        <div>
-          <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
-          <%= f.text_area :address, rows: 2, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
-        </div>
-      </div>
-
-      <!-- DADOS DA EMPRESA -->
-      <div>
-        <h3 class="text-lg font-semibold text-gray-700">Dados da Empresa</h3>
-
-        <!-- CNPJ -->
-        <div>
-          <%= f.label :cnpj, "CNPJ", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
-        </div>
-
-        <!-- Responsável -->
-        <div>
-          <%= f.label :responsible, "Nome do Responsável", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
-        </div>
-
-        <!-- Logo -->
-        <div>
-          <%= f.label :logo, "Logo da Empresa", class: "block font-semibold text-gray-700" %>
-          <%= f.file_field :logo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
         </div>
       </div>
 

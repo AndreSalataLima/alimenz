@@ -1,5 +1,7 @@
 class Quotation < ApplicationRecord
   validates :expiration_date, presence: true
+  validate :expiration_date_must_be_future
+
 
   belongs_to :customer, class_name: "User", foreign_key: "customer_id"
   has_many :quotation_items, dependent: :destroy
@@ -30,4 +32,12 @@ class Quotation < ApplicationRecord
       )
     end
   end
+
+  def expiration_date_must_be_future
+    return if expiration_date.blank?
+    if expiration_date <= Date.today
+      errors.add(:expiration_date, "deve ser uma data futura")
+    end
+  end
+
 end

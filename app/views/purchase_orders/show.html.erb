@@ -3,7 +3,7 @@
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <p class="mb-4 text-gray-700"><strong>Fornecedor:</strong> <%= @purchase_order.supplier.name %></p>
-    <p class="mb-4 text-gray-700"><strong>Valor Total:</strong> <%= number_to_currency(@purchase_order.total_value) %></p>
+    <p class="mb-4 text-gray-700"><strong>Valor Total:</strong> <%= real_currency(@purchase_order.total_value) %></p>
     <p class="mb-4 text-gray-700"><strong>Data de Validade:</strong> <%= @purchase_order.expiration_date.strftime('%d/%m/%Y') if @purchase_order.expiration_date %></p>
     <p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @purchase_order.status.capitalize %></p>
 
@@ -25,7 +25,7 @@
                 <td class="px-4 py-2"><%= item.product.generic_name %></td>
                 <td class="px-4 py-2"><%= item.quantity %></td>
                 <td class="px-4 py-2"><%= item.unit %></td>
-                <td class="px-4 py-2"><%= number_to_currency(item.price) %></td>
+                <td class="px-4 py-2"><%= real_currency(item.price) %></td>
               </tr>
             <% end %>
           </tbody>

@@ -4,7 +4,7 @@
   <div class="bg-white shadow-lg rounded-xl p-6">
     <h1 class="text-xl font-bold text-gray-800 mb-4">Upload do Documento Assinado</h1>
 
-    <%= form_with model: @quotation_response, url: confirm_upload_for_suppliers_quotation_response_path(@quotation_response), local: true, method: :post, multipart: true, data: { controller: "upload-modal" } do |f| %>
+    <%= form_with model: @quotation_response, url: confirm_upload_suppliers_quotation_response_path(@quotation_response), local: true, method: :post, multipart: true, data: { controller: "upload-modal" } do |f| %>
       <div data-upload-modal-target="fileFieldsContainer">
         <div class="mt-4 file-field">
           <label class="file-label font-medium text-gray-700">Selecione a cotação assinada ou a primeira página do documento</label>
