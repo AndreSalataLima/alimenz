@@ -1,0 +1,33 @@
+<%= render 'admin/shared/navbar', titulo: "Produtos Cadastrados" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold text-gray-800">Lista de Produtos</h2>
+    <%= link_to "Novo Produto", new_admin_product_path,
+      class: "bg-green-600 text-white px-4 py-2 rounded-md shadow hover:bg-green-700 transition" %>
+  </div>
+
+  <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50 text-left text-gray-700">
+        <tr>
+          <th class="px-4 py-3">Nome Genérico</th>
+          <th class="px-4 py-3">Unidades</th>
+          <th class="px-4 py-3">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @products.each do |product| %>
+          <tr>
+            <td class="px-4 py-2"><%= product.generic_name %></td>
+            <td class="px-4 py-2"><%= product.unit_options&.join(", ") %></td>
+            <td class="px-4 py-2 space-x-2">
+              <%= link_to "Ver", admin_product_path(product), class: "text-blue-600 hover:underline" %>
+              <%= link_to "Editar", edit_admin_product_path(product), class: "text-green-600 hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

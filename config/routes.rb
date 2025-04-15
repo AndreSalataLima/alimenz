@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resources :dashboard, only: [ :index ]
     resources :purchase_orders, only: [:index, :show]
     resources :categories, only: [:index, :new, :create, :edit, :update]
+    resources :products
 
 
     resources :quotation_responses, only: [ :index, :show ] do
