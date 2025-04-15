@@ -1,17 +1,20 @@
-<%= render 'admin/shared/navbar', titulo: "Detalhes do Cliente" %>
+<%= render 'admin/shared/navbar', titulo: "Cliente: #{@customer.name}" %>
 
 <div class="container mx-auto py-6 px-4">
   <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4"><%= @customer.name %></h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Informações do Cliente</h2>
 
-    <div class="space-y-4">
-      <p><strong>Email:</strong> <%= @customer.email %></p>
-      <p><strong>Telefone:</strong> <%= @customer.phone.presence || "Não informado" %></p>
-      <p><strong>Endereço:</strong> <%= @customer.address.presence || "Não informado" %></p>
-    </div>
+    <ul class="space-y-2 text-gray-700">
+      <li><strong>Nome:</strong> <%= @customer.name %></li>
+      <li><strong>Email:</strong> <%= @customer.email %></li>
+      <li><strong>Telefone:</strong> <%= @customer.phone.presence || "Não informado" %></li>
+      <li><strong>CNPJ:</strong> <%= @customer.cnpj.presence || "Não informado" %></li>
+      <li><strong>Responsável:</strong> <%= @customer.responsible.presence || "Não informado" %></li>
+      <li><strong>Endereço:</strong> <%= @customer.address.presence || "Não informado" %></li>
+    </ul>
 
-    <div class="mt-6 flex space-x-4">
-      <%= link_to "Editar", edit_admin_customer_path(@customer), class: "px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700" %>
+    <div class="mt-8 flex space-x-4">
+      <%= link_to "Editar Cliente", edit_admin_customer_path(@customer), class: "px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700" %>
       <%= link_to "Voltar", admin_customers_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
     </div>
   </div>

@@ -17,12 +17,20 @@ module Admin
     end
 
     def update
-      if @supplier.update(supplier_params)
-        redirect_to admin_supplier_path(@supplier), notice: "Supplier updated successfully!"
+      # Atualiza as categorias evitando valores vazios
+      if params[:user][:category_ids]
+        @supplier.category_ids = params[:user][:category_ids].reject(&:blank?)
+      end
+
+      # Atualiza os demais campos
+      if @supplier.update(supplier_params.except(:category_ids))
+        redirect_to admin_supplier_path(@supplier), notice: "Fornecedor atualizado com sucesso."
       else
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_entity, formats: [:html]
       end
     end
+
+
 
     private
 
@@ -31,8 +39,11 @@ module Admin
     end
 
     def supplier_params
-      params.require(:user).permit(:phone, signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ])
-    end
+      params.require(:user).permit(
+        :name, :email, :cnpj, :responsible, :address, :logo, :phone, :trade_name,
+        signature_attributes: [:id, :signature_image, :stamp_image, :_destroy],
+        category_ids: []
+      )    end
 
     def verify_admin
       redirect_to root_path, alert: "Access denied." unless current_user.role == "admin"

@@ -1,39 +1,62 @@
-<%= render 'admin/shared/navbar', titulo: "Detalhes do Fornecedor" %>
+<%= render 'admin/shared/navbar', titulo: "Fornecedor: #{@supplier.name}" %>
 
 <div class="container mx-auto py-6 px-4">
-  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4"><%= @supplier.name %></h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <div class="space-y-4">
-      <p><strong>Email:</strong> <%= @supplier.email %></p>
-      <p><strong>Telefone:</strong> <%= @supplier.phone.presence || "Não informado" %></p>
-
-      <div>
-        <h3 class="font-semibold text-gray-700">Assinatura:</h3>
-        <% if @supplier.signature&.signature_image&.attached? %>
-          <div class="border p-2 rounded-lg inline-block shadow-sm">
-            <%= image_tag @supplier.signature.signature_image, width: 200, class: "rounded-lg" %>
-          </div>
-        <% else %>
-          <p class="text-gray-500">Nenhuma assinatura cadastrada.</p>
-        <% end %>
-      </div>
-
-      <div>
-        <h3 class="font-semibold text-gray-700">Carimbo:</h3>
-        <% if @supplier.signature&.stamp_image&.attached? %>
-          <div class="border p-2 rounded-lg inline-block shadow-sm">
-            <%= image_tag @supplier.signature.stamp_image, width: 200, class: "rounded-lg" %>
-          </div>
-        <% else %>
-          <p class="text-gray-500">Nenhum carimbo cadastrado.</p>
-        <% end %>
-      </div>
+    <!-- Bloco de dados gerais -->
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Informações Gerais</h2>
+      <ul class="space-y-2 text-gray-700">
+        <li><strong>Nome:</strong> <%= @supplier.name %></li>
+        <li><strong>Nome Fantasia:</strong> <%= @supplier.trade_name.presence || "Não informado" %></li>
+        <li><strong>Email:</strong> <%= @supplier.email %></li>
+        <li><strong>Telefone:</strong> <%= @supplier.phone.presence || "Não informado" %></li>
+        <li><strong>CNPJ:</strong> <%= @supplier.cnpj.presence || "Não informado" %></li>
+        <li><strong>Responsável:</strong> <%= @supplier.responsible.presence || "Não informado" %></li>
+        <li><strong>Endereço:</strong> <%= @supplier.address.presence || "Não informado" %></li>
+      </ul>
     </div>
 
-    <div class="mt-6 flex space-x-4">
-      <%= link_to "Editar", edit_admin_supplier_path(@supplier), class: "px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700" %>
-      <%= link_to "Voltar", admin_suppliers_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+    <!-- Bloco de categorias -->
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Categorias</h2>
+      <% if @supplier.categories.any? %>
+        <ul class="list-disc list-inside text-gray-700">
+          <% @supplier.categories.each do |category| %>
+            <li><%= category.name %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-gray-500">Nenhuma categoria atribuída.</p>
+      <% end %>
     </div>
+
+    <!-- Bloco de assinatura
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Assinatura</h2>
+      <% if @supplier.signature&.signature_image&.attached? %>
+        <%= image_tag @supplier.signature.signature_image, width: 300, class: "rounded-lg shadow" %>
+      <% else %>
+        <p class="text-gray-500">Nenhuma assinatura cadastrada.</p>
+      <% end %>
+    </div>
+    -->
+    
+    <!-- Bloco de carimbo
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Carimbo</h2>
+      <% if @supplier.signature&.stamp_image&.attached? %>
+        <%= image_tag @supplier.signature.stamp_image, width: 300, class: "rounded-lg shadow" %>
+      <% else %>
+        <p class="text-gray-500">Nenhum carimbo cadastrado.</p>
+      <% end %>
+    </div>
+  </div>
+    -->
+
+  <!-- Botões de ação -->
+  <div class="mt-8 flex space-x-4">
+    <%= link_to "Editar Fornecedor", edit_admin_supplier_path(@supplier), class: "px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700" %>
+    <%= link_to "Voltar", admin_suppliers_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
   </div>
 </div>

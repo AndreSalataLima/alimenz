@@ -2,24 +2,73 @@
 
 <div class="container mx-auto py-6 px-4">
   <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Editar Fornecedor</h2>
+      <%= form_with model: [:admin, @supplier], scope: :user, local: true, multipart: true, url: admin_supplier_path(@supplier), method: :patch, class: "space-y-4" do |f| %>
 
-    <%= form_with model: [:admin, @supplier], local: true, multipart: true, class: "space-y-4" do |f| %>
-
-      <!-- Telefone -->
+      <!-- Dados gerais -->
       <div>
-        <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
-        <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        <%= f.label :name, "Nome", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
+      <div>
+        <%= f.label :email, "Email", class: "block font-semibold text-gray-700" %>
+        <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :cnpj, "CNPJ", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :responsible, "Responsável", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
+        <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+      <!--
+      <div>
+        <%= f.label :logo, "Logo (URL ou caminho)", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :logo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+      -->
+
+      <div>
+        <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <div>
+        <%= f.label :trade_name, "Nome Fantasia", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :trade_name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <!-- Categorias -->
+<div>
+  <%= f.label :category_ids, "Categorias", class: "block font-semibold text-gray-700" %>
+  <div class="grid grid-cols-2 gap-2 mt-2">
+    <% Category.all.each do |category| %>
+      <label class="inline-flex items-center">
+        <%= check_box_tag "user[category_ids][]", category.id, @supplier.category_ids.include?(category.id), class: "mr-2" %>
+        <span><%= category.name %></span>
+      </label>
+    <% end %>
+  </div>
+</div>
+
+
+
       <!-- Assinatura e Carimbo -->
+        <!--
       <div>
         <% signature = @supplier.signature || @supplier.build_signature %>
 
         <h3 class="text-lg font-semibold text-gray-700">Assinatura</h3>
         <% if signature.signature_image.attached? %>
-          <p class="text-sm text-gray-600">Assinatura atual:</p>
-          <div class="border p-2 rounded-lg inline-block shadow-sm">
+          <div class="border p-2 rounded-lg inline-block shadow-sm mb-2">
             <%= image_tag signature.signature_image, width: 200, class: "rounded-lg" %>
           </div>
         <% else %>
@@ -28,8 +77,7 @@
 
         <h3 class="text-lg font-semibold text-gray-700 mt-4">Carimbo</h3>
         <% if signature.stamp_image.attached? %>
-          <p class="text-sm text-gray-600">Carimbo atual:</p>
-          <div class="border p-2 rounded-lg inline-block shadow-sm">
+          <div class="border p-2 rounded-lg inline-block shadow-sm mb-2">
             <%= image_tag signature.stamp_image, width: 200, class: "rounded-lg" %>
           </div>
         <% else %>
@@ -39,15 +87,16 @@
         <%= f.fields_for :signature_attributes, signature do |af| %>
           <%= af.hidden_field :id %>
           <div class="mt-2">
-            <%= af.label :signature_image, "Upload de nova assinatura (imagem)", class: "block font-semibold text-gray-700" %>
-            <%= af.file_field :signature_image, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+            <%= af.label :signature_image, "Upload de nova assinatura", class: "block font-semibold text-gray-700" %>
+            <%= af.file_field :signature_image, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
           </div>
           <div class="mt-2">
-            <%= af.label :stamp_image, "Upload de novo carimbo (imagem)", class: "block font-semibold text-gray-700" %>
-            <%= af.file_field :stamp_image, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+            <%= af.label :stamp_image, "Upload de novo carimbo", class: "block font-semibold text-gray-700" %>
+            <%= af.file_field :stamp_image, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
           </div>
         <% end %>
       </div>
+       -->
 
       <!-- Botões -->
       <div class="flex justify-between mt-6">

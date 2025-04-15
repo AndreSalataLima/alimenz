@@ -29,14 +29,23 @@ class Admin::UsersController < ApplicationController
   end
 
   def update
-    # Mescla os parâmetros permitidos com o role explicitamente atribuído
     new_params = user_params.merge(role: params[:user][:role])
-    if @user.update(new_params)
+
+    # Remove valores vazios e atualiza categorias manualmente para evitar duplicações
+    if params[:user][:category_ids]
+      @user.category_ids = params[:user][:category_ids].reject(&:blank?)
+    end
+
+    # Faz o update com os demais atributos, exceto category_ids
+    if @user.update(new_params.except(:category_ids))
       redirect_to admin_user_path(@user), notice: "User updated successfully."
     else
-      render :edit
+      Rails.logger.debug "ERROS: #{@user.errors.full_messages}"
+      render :edit, status: :unprocessable_entity, formats: [:html]
     end
+
   end
+
 
   def destroy
     @user.destroy

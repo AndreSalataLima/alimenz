@@ -1,0 +1,12 @@
+<%= form_with model: [:admin, category], local: true, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :name, "Nome", class: "block font-semibold text-gray-700" %>
+    <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+  </div>
+
+  <div class="flex justify-between mt-6">
+    <%= link_to "Voltar", admin_categories_path,
+      class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+<%= f.submit category.persisted? ? "Atualizar Categoria" : "Criar Categoria", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
+  </div>
+<% end %>

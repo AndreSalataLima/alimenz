@@ -1,0 +1,9 @@
+<%= render 'admin/shared/navbar', titulo: "Nova Categoria" %>
+
+<div class="container mx-auto py-6 px-4">
+  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Nova Categoria</h2>
+
+    <%= render "form", category: @category %>
+  </div>
+</div>
