@@ -2,32 +2,44 @@
 
 <div class="container mx-auto py-6 px-4">
   <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Editar Cliente</h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Editar Cliente</h2>
 
-    <%= form_with model: [:admin, @customer], local: true, class: "space-y-4" do |f| %>
+      <%= form_with model: [:admin, @customer], scope: :user, url: admin_customer_path(@customer), method: :patch, local: true, class: "space-y-4" do |f| %>
 
       <!-- Nome -->
       <div>
         <%= f.label :name, "Nome", class: "block font-semibold text-gray-700" %>
-        <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
       <!-- Email -->
       <div>
         <%= f.label :email, "Email", class: "block font-semibold text-gray-700" %>
-        <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
       <!-- Telefone -->
       <div>
         <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
-        <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <!-- CNPJ -->
+      <div>
+        <%= f.label :cnpj, "CNPJ", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+      </div>
+
+      <!-- Responsável -->
+      <div>
+        <%= f.label :responsible, "Responsável", class: "block font-semibold text-gray-700" %>
+        <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
       <!-- Endereço -->
       <div>
         <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
-        <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+        <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
       <!-- Botões -->

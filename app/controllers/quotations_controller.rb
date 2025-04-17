@@ -18,8 +18,26 @@ class QuotationsController < ApplicationController
   def new
     @quotation = Quotation.new
     @quotation.quotation_items.build
-    @products = Product.all
+    @categories = Category.order(:name)
+
+    @selected_category = params[:category_id]
+    @search_term = params[:search]
+
+    products = Product.all
+    products = products.where(category_id: @selected_category) if @selected_category.present?
+    products = products.where("generic_name ILIKE ?", "%#{@search_term}%") if @search_term.present?
+
+    @pagy, @products = pagy(products.order(:generic_name), items: 15)
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream {
+        render partial: "quotations/product_list", locals: { f: nil }
+      }
+    end
   end
+
+
 
   def show
     @quotation = Quotation.find(params[:id])

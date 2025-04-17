@@ -31,7 +31,9 @@ module Admin
     end
 
     def customer_params
-      params.require(:user).permit(:phone, signature_attributes: [ :signature_image, :stamp_image, :_destroy ])
+      params.require(:user).permit(
+        :name, :email, :phone, :cnpj, :responsible, :address
+      )
     end
 
     def verify_admin

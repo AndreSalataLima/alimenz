@@ -1,35 +1,49 @@
-<!-- app/views/quotations/_form.html.erb -->
 <div data-controller="cotacao">
-  <script>
-    window.PRODUCTS = <%= raw Product.order(:generic_name).to_json(
-      only: [:id, :generic_name, :brand],
-      methods: [:unit_options]
-    ) %>;
-  </script>
+  <!-- Filtros: formulário separado (GET para new) -->
+  <%= form_with url: new_quotation_path, method: :get, data: { turbo_frame: "produtos" }, local: true, html: { class: "mb-4" } do %>
+    <div class="flex gap-4 items-end" data-controller="auto-submit">
+      <div>
+        <label class="font-medium">Categoria</label>
+        <%= select_tag :category_id,
+              options_from_collection_for_select(@categories, :id, :name, @selected_category),
+              include_blank: "Todas",
+              class: "border rounded px-3 py-2",
+              data: { action: "change->auto-submit#submit" } %>
+      </div>
 
-  <%= form_with(model: quotation, url: quotations_path, local: true, data: { action: "submit->cotacao#submitForm" }) do |f| %>
+      <div>
+        <label class="font-medium">Buscar produto</label>
+        <%= text_field_tag :search, @search_term, placeholder: "Digite o nome...",
+              class: "border rounded px-3 py-2",
+              data: { auto_submit_target: "search", action: "input->auto-submit#submit" } %>
+      </div>
+    </div>
+  <% end %>
 
-    <!-- Título da Cotação -->
+  <!-- Formulário principal da cotação -->
+  <%= form_with(model: quotation, url: quotations_path, local: true, id: "form-cotacao", data: { action: "submit->cotacao#submitForm" }) do |f| %>
+    <!-- Campos escondidos dos produtos selecionados -->
+    <div id="campos-selecionados" style="display: none;"></div>
+
+    <!-- Título, Data, Observações -->
     <div class="mt-6">
       <%= f.label :title, "Título", class: "block font-medium text-gray-800" %>
-      <%= f.text_field :title, placeholder: "Ex: SC 580, Solicitação de compra 580", class: "border rounded px-3 py-2 w-full mt-1" %>
+      <%= f.text_field :title, placeholder: "Ex: SC 580", class: "border rounded px-3 py-2 w-full mt-1" %>
     </div>
 
-    <!-- Data de Validade -->
     <div class="mt-6">
       <%= f.label :expiration_date, "Data limite de conclusão de compra", class: "block font-medium text-gray-800" %>
       <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
       <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
     </div>
 
-    <!-- Observações Gerais -->
     <div class="mt-6">
       <%= f.label :general_comment, "Observações Gerais", class: "block font-medium text-gray-800" %>
-      <%= f.text_area :general_comment, placeholder: "Condições específicas de pagamento, faturamento, entrega, comunicação ou requisitos especiais", class: "border rounded px-3 py-2 w-full mt-1", rows: 3 %>
+      <%= f.text_area :general_comment, placeholder: "Condições específicas...", class: "border rounded px-3 py-2 w-full mt-1", rows: 3 %>
     </div>
 
-    <!-- Produtos selecionados (resumo não editável) -->
-    <div class="my-6">
+    <!-- Produtos selecionados -->
+    <div class="my-6 hidden" data-cotacao-target="resumo">
       <h2 class="text-lg font-semibold text-gray-700 mb-2">Produtos Selecionados</h2>
       <table class="w-full border text-sm">
         <thead>
@@ -37,53 +51,38 @@
             <th class="px-2 py-1 text-left">Produto</th>
             <th class="px-2 py-1 text-left">Quantidade</th>
             <th class="px-2 py-1 text-left">Unidade</th>
+            <th class="px-2 py-1 text-left">Remover</th>
           </tr>
         </thead>
         <tbody data-cotacao-target="summaryTable"></tbody>
       </table>
     </div>
 
-    <!-- Botão Concluir Cotação -->
     <div class="mt-6 hidden" data-cotacao-target="submitButton">
-      <%= f.submit "Concluir cotação",
-        class: "bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
+      <%= f.submit "Concluir cotação", class: "bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
     </div>
 
-    <!-- Buscar produto -->
-    <div data-controller="product-search" class="my-4">
-      <label class="font-medium">Buscar produto:</label>
-      <input type="text"
-             data-product-search-target="input"
-             data-action="input->product-search#filtrar"
-             placeholder="Digite o nome do produto"
-             class="border rounded px-3 py-2 w-full">
-    </div>
-
-    <table class="table-auto w-full border-collapse">
-      <thead>
-        <tr class="bg-gray-100 border-b">
-          <th class="px-2 py-2 text-left">Produto</th>
-          <th class="px-2 py-2 text-left">Observação</th>
-          <th class="px-2 py-2 text-left">Unidade</th>
-          <th class="px-2 py-2 text-left">Quantidade</th>
-          <th class="px-2 py-2 text-left"></th>
-        </tr>
-      </thead>
-      <tbody id="itens">
-        <% Product.order(:generic_name).each do |product| %>
-          <% item = quotation.quotation_items.build(product: product) %>
-          <%= f.fields_for :quotation_items, item do |item_form| %>
-            <tr class="product-item border-b" data-product-id="<%= product.id %>">
+    <!-- TURBO FRAME: tabela de produtos -->
+    <turbo-frame id="produtos">
+      <table class="table-auto w-full border-collapse pt-6">
+        <thead>
+          <tr class="bg-gray-100 border-b">
+            <th class="px-2 py-2 text-left">Produto</th>
+            <th class="px-2 py-2 text-left">Observação</th>
+            <th class="px-2 py-2 text-left">Unidade</th>
+            <th class="px-2 py-2 text-left">Quantidade</th>
+            <th class="px-2 py-2 text-left"></th>
+          </tr>
+        </thead>
+        <tbody id="itens">
+          <% @products.each do |product| %>
+            <tr class="product-item border-b" data-product-id="<%= product.id %>" data-cotacao-target="produtoForm">
+              <!-- Nome do produto -->
               <td class="px-2 py-2 font-medium" data-controller="custom-name">
                 <% customized = current_user.customized_products.find_by(product_id: product.id) %>
-                <% nome_personalizado = customized&.custom_name.present? ? customized.custom_name : product.generic_name %>
+                <% nome_personalizado = customized&.custom_name.presence || product.generic_name %>
+                <span data-custom-name-target="label" id="product-name-<%= product.id %>"><%= nome_personalizado %></span>
 
-                <!-- Nome visível -->
-                <span data-custom-name-target="label" id="product-name-<%= product.id %>">
-                  <%= nome_personalizado %>
-                </span>
-
-                <!-- Campo de edição com botões -->
                 <div class="hidden flex items-center space-x-2" data-custom-name-target="actions">
                   <input type="text"
                          name="customized_products[<%= product.id %>]"
@@ -93,44 +92,28 @@
                          data-custom-name-target="input"
                          data-product-id="<%= product.id %>">
 
-                  <button type="button"
-                          class="text-green-600 hover:text-green-800 text-sm"
-                          title="Salvar"
-                          data-action="click->custom-name#saveClick">
-                    💾
-                  </button>
-                  <button type="button"
-                          class="text-red-600 hover:text-red-800 text-sm"
-                          title="Cancelar"
-                          data-action="click->custom-name#cancel">
-                    🚫
-                  </button>
+                  <button type="button" class="text-green-600 hover:text-green-800 text-sm" title="Salvar" data-action="click->custom-name#saveClick">💾</button>
+                  <button type="button" class="text-red-600 hover:text-red-800 text-sm" title="Cancelar" data-action="click->custom-name#cancel">🚫</button>
                 </div>
 
-                <!-- Botão lápis -->
-                <button type="button"
-                        class="ml-2 text-gray-500 hover:text-blue-600 text-sm"
-                        data-action="click->custom-name#toggle"
-                        title="Editar nome do produto"
-                        data-custom-name-target="editButton">
-                  ✏️
-                </button>
-
-                <!-- Mensagem de status -->
+                <button type="button" class="ml-2 text-gray-500 hover:text-blue-600 text-sm" data-action="click->custom-name#toggle" title="Editar" data-custom-name-target="editButton">✏️</button>
                 <div class="text-xs text-green-600 mt-1" data-custom-name-target="status"></div>
-
-                <%= item_form.hidden_field :product_id, value: product.id %>
               </td>
 
+              <!-- Observação -->
               <td class="px-2 py-2">
-                <%= item_form.text_field :product_comment, placeholder: "Especificações do produto.", class: "border rounded px-2 py-1" %>
+                <input type="text"
+                       placeholder="Especificações do produto."
+                       name="quotation[quotation_items_attributes][<%= product.id %>][product_comment]"
+                       class="border rounded px-2 py-1" />
               </td>
 
+              <!-- Unidade -->
               <td class="px-2 py-2">
-                <select name="<%= item_form.object_name %>[selected_unit]"
+                <select class="border rounded px-2 py-1"
+                        name="quotation[quotation_items_attributes][<%= product.id %>][selected_unit]"
                         data-cotacao-target="unidadeSelect"
-                        class="border rounded px-2 py-1"
-                        data-action="change->cotacao#verificarCampos">
+                        data-action="change->cotacao#verificarCampos change->cotacao#atualizarCamposOcultos">
                   <option value="">Selecione</option>
                   <% product.unit_options.each do |unit| %>
                     <option value="<%= unit %>"><%= unit %></option>
@@ -138,13 +121,17 @@
                 </select>
               </td>
 
+              <!-- Quantidade -->
               <td class="px-2 py-2">
-                <%= item_form.number_field :quantity,
-                  min: 0, step: 1, value: 0,
-                  class: "border rounded px-2 py-1 w-20",
-                  data: { action: "input->cotacao#verificarCampos", cotacao_target: "quantidade" } %>
+                <input type="number"
+                       min="0" step="1" value="0"
+                       name="quotation[quotation_items_attributes][<%= product.id %>][quantity]"
+                       class="border rounded px-2 py-1 w-20"
+                       data-action="input->cotacao#verificarCampos input->cotacao#atualizarCamposOcultos"
+                       data-cotacao-target="quantidade" />
               </td>
 
+              <!-- Botão Adicionar -->
               <td class="px-2 py-2">
                 <button type="button"
                         class="adicionar-lista-btn text-sm text-blue-600 hidden"
@@ -154,13 +141,18 @@
               </td>
             </tr>
           <% end %>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
 
+      <% if defined?(@pagy) && @pagy&.pages.to_i > 1 %>
+        <div class="mt-4">
+          <%= pagy_tailwind_nav(@pagy) %>
+        </div>
+      <% end %>
+    </turbo-frame>
   <% end %>
 
-  <!-- Modal de Erro de Data -->
+  <!-- Modais (erro + confirmação) -->
   <div id="error-modal" data-cotacao-target="errorModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded w-1/3">
       <h3 class="text-lg font-bold mb-2">Atenção</h3>
@@ -169,7 +161,6 @@
     </div>
   </div>
 
-  <!-- Modal de Confirmação de Envio -->
   <div id="confirm-modal" data-cotacao-target="confirmModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded w-1/3">
       <h3 class="text-lg font-bold mb-2">Confirmação</h3>
