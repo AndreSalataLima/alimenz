@@ -2,120 +2,194 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "errorModal",
-    "errorMessage",
-    "confirmModal",
-    "submitButton",
-    "summaryTable"
+    "errorModal", "errorMessage", "confirmModal", "submitButton",
+    "summaryTable", "resumo", "produtoForm",
   ]
 
   connect() {
-    this.produtosAdicionados = new Set();
+    this.produtosAdicionados = new Set()
   }
-
-
 
   verificarCampos(event) {
-    // Obtém a linha (row) do produto a partir do elemento que disparou o evento
-    const row = event.currentTarget.closest("tr.product-item");
-    const selectField = row.querySelector("select[data-cotacao-target='unidadeSelect']");
-    const inputField = row.querySelector("input[name*='[quantity]']");
-    const addButton = row.querySelector(".adicionar-lista-btn");
+    const row = event.currentTarget.closest("tr.product-item")
+    const unidade = row.querySelector("select").value
+    const quantidade = parseFloat(row.querySelector("input[type='number']").value || 0)
+    const botao = row.querySelector(".adicionar-lista-btn")
 
-    const unidade = selectField.value;
-    const quantidade = parseInt(inputField.value) || 0;
-
-    if (unidade !== "" && quantidade > 0) {
-      addButton.classList.remove("hidden");
+    if (unidade && quantidade > 0) {
+      botao.classList.remove("hidden")
     } else {
-      addButton.classList.add("hidden");
+      botao.classList.add("hidden")
     }
   }
 
-adicionarProduto(event) {
-  const button = event.currentTarget;
-  const row = button.closest("tr.product-item");
-  const productId = row.dataset.productId;
+  adicionarProduto(event) {
+    const row = event.currentTarget.closest("tr.product-item")
+    const productId = row.dataset.productId
 
-  if (this.produtosAdicionados.has(productId)) return;
+    if (this.produtosAdicionados.has(productId)) return
 
-  const unidadeSelect = row.querySelector("select");
-  const quantidadeInput = row.querySelector("input[type='number']");
+    const nome = row.querySelector("[data-custom-name-target='label']").textContent.trim()
+    const unidade = row.querySelector("select").value
+    const quantidade = row.querySelector("input[type='number']").value
 
-  // Garante que os campos sejam incluídos no POST
-  unidadeSelect.disabled = false;
-  quantidadeInput.disabled = false;
+    // === Adiciona visualmente ao resumo
+    this.resumoTarget.classList.remove("hidden")
 
-  // Remove readonly ou outras alterações
-  unidadeSelect.removeAttribute("disabled");
-  quantidadeInput.removeAttribute("disabled");
+    const summaryRow = document.createElement("tr")
+    summaryRow.dataset.productId = productId
+    summaryRow.innerHTML = `
+      <td class="px-2 py-1">${nome}</td>
+      <td class="px-2 py-1">${quantidade}</td>
+      <td class="px-2 py-1">${unidade}</td>
+      <td class="px-2 py-1">
+        <button type="button"
+                class="text-red-600 hover:text-red-800 text-sm"
+                data-action="click->cotacao#removerProduto"
+                data-product-id="${productId}">
+          ✖
+        </button>
+      </td>
+    `
+    this.summaryTableTarget.appendChild(summaryRow)
 
-  // Exibe na tabela de resumo
-  const productName = row.querySelector("span[data-custom-name-target='label']").textContent.trim();
-  const unidade = unidadeSelect.value;
-  const quantidade = quantidadeInput.value;
+    // === Cria inputs invisíveis e válidos para o Rails
+    const hiddenFields = document.createElement("div")
+    hiddenFields.dataset.productId = productId
+    hiddenFields.innerHTML = `
+      <input type="hidden" name="quotation[quotation_items_attributes][${productId}][product_id]" value="${productId}">
+      <input type="hidden" name="quotation[quotation_items_attributes][${productId}][quantity]" value="${quantidade}">
+      <input type="hidden" name="quotation[quotation_items_attributes][${productId}][selected_unit]" value="${unidade}">
+    `
+    document.getElementById("campos-selecionados").appendChild(hiddenFields)
 
-  const summaryRow = document.createElement("tr");
-  summaryRow.innerHTML = `
-    <td class="px-2 py-1">${productName}</td>
-    <td class="px-2 py-1">${quantidade}</td>
-    <td class="px-2 py-1">${unidade}</td>
-  `;
-  this.summaryTableTarget.appendChild(summaryRow);
+    // Marcar como adicionado
+    this.produtosAdicionados.add(productId)
 
-  this.produtosAdicionados.add(productId);
+    // Oculta botão de adicionar
+    row.querySelector(".adicionar-lista-btn").classList.add("hidden")
 
-  // Oculta o botão depois de adicionar
-  button.classList.add("hidden");
+    // Garante campos ativos
+    row.querySelector("select").disabled = false
+    row.querySelector("input[type='number']").disabled = false
+    row.style.display = ""
 
-  // Exibe botão de concluir cotação
-  this.submitButtonTarget.classList.remove("hidden");
-}
+    // Exibe botão de submit
+    this.submitButtonTarget.classList.remove("hidden")
+    this.resumoTarget.scrollIntoView({ behavior: "smooth" })
+  }
+
+  removerProduto(event) {
+    const productId = event.currentTarget.dataset.productId
+
+    this.produtosAdicionados.delete(productId)
+
+    // Remove da tabela visual
+    const rowResumo = this.summaryTableTarget.querySelector(`tr[data-product-id="${productId}"]`)
+    if (rowResumo) rowResumo.remove()
+
+    // Remove campos ocultos do form
+    const hidden = document
+      .getElementById("campos-selecionados")
+      .querySelector(`div[data-product-id="${productId}"]`)
+    if (hidden) hidden.remove()
+
+    // Oculta área de resumo se vazia
+    if (this.produtosAdicionados.size === 0) {
+      this.resumoTarget.classList.add("hidden")
+      this.submitButtonTarget.classList.add("hidden")
+    }
+
+    // Se ainda tiver a linha do produto visível, reativa ela
+    const rowProduto = document.querySelector(`tr[data-product-id="${productId}"]`)
+    if (rowProduto) {
+      rowProduto.querySelector(".adicionar-lista-btn")?.classList.remove("hidden")
+      const unidadeSelect = rowProduto.querySelector("select")
+      const quantidadeInput = rowProduto.querySelector("input[type='number']")
+      if (unidadeSelect) unidadeSelect.disabled = false
+      if (quantidadeInput) {
+        quantidadeInput.disabled = false
+        quantidadeInput.value = "0"
+        this.verificarCampos({ currentTarget: quantidadeInput })
+      }
+    }
+  }
+
+
+  atualizarCamposOcultos(event) {
+    const row = event.currentTarget.closest("tr.product-item")
+    const productId = row.dataset.productId
+
+    if (!this.produtosAdicionados.has(productId)) return
+
+    const unidade = row.querySelector("select").value
+    const quantidade = row.querySelector("input[type='number']").value
+
+    const hidden = document
+      .getElementById("campos-selecionados")
+      .querySelector(`div[data-product-id="${productId}"]`)
+
+    if (hidden) {
+      hidden.querySelector(`input[name*="[quantity]"]`).value = quantidade
+      hidden.querySelector(`input[name*="[selected_unit]"]`).value = unidade
+    }
+
+    // Também atualiza visualmente a linha do resumo, se desejar:
+    const rowResumo = this.summaryTableTarget.querySelector(`tr[data-product-id="${productId}"]`)
+    if (rowResumo) {
+      rowResumo.children[1].textContent = quantidade
+      rowResumo.children[2].textContent = unidade
+    }
+  }
 
 
 
+
+  // --- Validação e envio
   submitForm(event) {
-    // Valida a data de validade da cotação
-    const dateField = this.element.querySelector("input[type='date'][name='quotation[expiration_date]']");
-    if (!dateField || !dateField.value) {
-      event.preventDefault();
-      this.showErrorModal("A data de validade da cotação é obrigatória e deve ser futura.");
-      return;
+    const dateField = this.element.querySelector("input[name='quotation[expiration_date]']")
+    const selectedDate = new Date(dateField.value)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (!dateField.value || selectedDate <= today) {
+      event.preventDefault()
+      this.showErrorModal("A data de validade é obrigatória e deve ser futura.")
+      return
     }
-    const selectedDate = new Date(dateField.value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (selectedDate <= today) {
-      event.preventDefault();
-      this.showErrorModal("A data de validade deve ser uma data futura.");
-      return;
-    }
-    event.preventDefault();
-    this.showConfirmModal();
+
+    // 🧼 Remove campos de produtos não adicionados
+    this.produtoFormTargets.forEach((row) => {
+      const productId = row.dataset.productId
+      if (!this.produtosAdicionados.has(productId)) {
+        row.remove()
+      }
+    })
+
+    event.preventDefault()
+    this.showConfirmModal()
   }
+
 
   showErrorModal(message) {
-    this.errorMessageTarget.textContent = message;
-    this.errorModalTarget.classList.remove("hidden");
+    this.errorMessageTarget.textContent = message
+    this.errorModalTarget.classList.remove("hidden")
   }
 
   fecharErrorModal() {
-    this.errorModalTarget.classList.add("hidden");
+    this.errorModalTarget.classList.add("hidden")
   }
 
   showConfirmModal() {
-    this.confirmModalTarget.classList.remove("hidden");
+    this.confirmModalTarget.classList.remove("hidden")
   }
 
   cancelSubmit() {
-    this.confirmModalTarget.classList.add("hidden");
+    this.confirmModalTarget.classList.add("hidden")
   }
 
   confirmSubmit() {
-    this.confirmModalTarget.classList.add("hidden");
-    const form = this.element.querySelector("form");
-    if (form) {
-      form.submit();
-    }
+    this.confirmModalTarget.classList.add("hidden")
+    document.getElementById("form-cotacao").submit()
   }
 }

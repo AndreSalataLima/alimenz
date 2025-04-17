@@ -25,13 +25,14 @@
           class: "bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition" %>
       </div>
 
-      <!-- Card: Criar Produto -->
+      <!-- Card: Consultar Produtos -->
       <div class="bg-green-100 p-6 rounded-lg shadow-md hover:shadow-lg transition">
         <h3 class="text-lg font-semibold text-gray-800 mb-2">Gerenciar Produtos</h3>
-        <p class="text-gray-600 mb-4">Cadastre novos produtos no sistema.</p>
-        <%= link_to "Criar novo produto", new_product_path,
+        <p class="text-gray-600 mb-4">Visualize e edite os produtos cadastrados.</p>
+        <%= link_to "Consultar", admin_products_path,
           class: "bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600 transition" %>
       </div>
+
     </div>
   </div>
 </div>

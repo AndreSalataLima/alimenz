@@ -12,6 +12,7 @@
       <thead class="bg-gray-50 text-left text-gray-700">
         <tr>
           <th class="px-4 py-3">Nome Genérico</th>
+          <th class="px-4 py-3">Categoria</th>
           <th class="px-4 py-3">Unidades</th>
           <th class="px-4 py-3">Ações</th>
         </tr>
@@ -20,6 +21,8 @@
         <% @products.each do |product| %>
           <tr>
             <td class="px-4 py-2"><%= product.generic_name %></td>
+            <td class="px-4 py-2"><%= product.category&.name || "–" %></td>
+
             <td class="px-4 py-2"><%= product.unit_options&.join(", ") %></td>
             <td class="px-4 py-2 space-x-2">
               <%= link_to "Ver", admin_product_path(product), class: "text-blue-600 hover:underline" %>

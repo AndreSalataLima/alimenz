@@ -5,7 +5,7 @@ module Admin
     before_action :set_product, only: [:show, :edit, :update, :destroy]
 
     def index
-      @products = Product.all
+      @products = Product.all.order(:generic_name)
     end
 
     def show; end
@@ -45,7 +45,7 @@ module Admin
     end
 
     def product_params
-      data = params.require(:product).permit(:generic_name, :brand, :unit_options)
+      data = params.require(:product).permit(:generic_name, :brand, :category_id, :unit_options)
       data[:unit_options] = data[:unit_options].split(",").map(&:strip) if data[:unit_options].is_a?(String)
       data
     end
