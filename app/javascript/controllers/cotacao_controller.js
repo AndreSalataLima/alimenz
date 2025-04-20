@@ -32,6 +32,7 @@ export default class extends Controller {
     const nome = row.querySelector("[data-custom-name-target='label']").textContent.trim()
     const unidade = row.querySelector("select").value
     const quantidade = row.querySelector("input[type='number']").value
+    const comentario = row.querySelector('input[name$="[product_comment]"]').value
 
     // === Adiciona visualmente ao resumo
     this.resumoTarget.classList.remove("hidden")
@@ -60,6 +61,7 @@ export default class extends Controller {
       <input type="hidden" name="quotation[quotation_items_attributes][${productId}][product_id]" value="${productId}">
       <input type="hidden" name="quotation[quotation_items_attributes][${productId}][quantity]" value="${quantidade}">
       <input type="hidden" name="quotation[quotation_items_attributes][${productId}][selected_unit]" value="${unidade}">
+      <input type="hidden" name="quotation[quotation_items_attributes][${productId}][product_comment]" value="${comentario}">
     `
     document.getElementById("campos-selecionados").appendChild(hiddenFields)
 
