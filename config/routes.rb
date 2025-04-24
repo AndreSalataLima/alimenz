@@ -26,11 +26,8 @@ Rails.application.routes.draw do
   get "supplier_home", to: "suppliers#home"
   get "customer_home", to: "customers#home"
 
-  resources :purchase_orders, only: [ :index, :show, :new, :create ] do
-    member do
-      get :pdf, to: "purchase_orders#pdf", as: :pdf
-    end
-  end
+  resources :purchase_orders, only: [ :index, :show, :new, :create ]
+
 
   resources :products do
     resources :customized_products, only: [ :create ]
@@ -48,7 +45,6 @@ Rails.application.routes.draw do
   namespace :suppliers do
     resources :quotation_responses, only: [ :index, :show, :edit, :update ] do
       member do
-        get "pdf", to: "quotation_responses#pdf"
         get "upload_document", to: "quotation_responses#upload_document"
         post "confirm_upload", to: "quotation_responses#confirm_upload"
       end
@@ -56,6 +52,10 @@ Rails.application.routes.draw do
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
+  get "/suppliers/quotation_responses/secure/:signed_id/pdf", to: "suppliers/quotation_responses#secure_pdf", as: :secure_pdf_suppliers_quotation_response
+  get "/suppliers/quotation_responses/secure/:signed_id/document", to: "suppliers/quotation_responses#secure_document", as: :secure_document_suppliers_quotation_response
+  get "/purchase_orders/secure/:signed_id/pdf", to: "purchase_orders#secure_pdf", as: :secure_purchase_order_pdf
+
 
   # Defines the root path route ("/")
   root to: redirect("/users/sign_in")

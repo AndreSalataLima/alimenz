@@ -43,6 +43,17 @@ class PurchaseOrdersController < ApplicationController
               disposition: "inline"
   end
 
+  def secure_pdf
+    @purchase_order = PurchaseOrder.find_signed!(params[:signed_id])
+    authorize @purchase_order
+    pdf = PdfPurchaseOrderService.new(@purchase_order).generate
+
+    send_data pdf,
+              filename: "purchase_order_#{@purchase_order.id}.pdf",
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
 
   private
 

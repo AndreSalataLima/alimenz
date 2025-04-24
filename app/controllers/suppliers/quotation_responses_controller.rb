@@ -101,6 +101,30 @@ module Suppliers
                 disposition: "inline"
     end
 
+
+
+    def secure_pdf
+      @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
+      authorize @quotation_response
+      pdf_content = PdfGeneratorService.new(@quotation_response).generate
+
+      send_data pdf_content,
+                filename: "quotation_response_#{@quotation_response.id}.pdf",
+                type: "application/pdf",
+                disposition: "inline"
+    end
+
+    def secure_document
+      @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
+      authorize @quotation_response
+
+      if @quotation_response.signed_document.attached?
+        redirect_to rails_blob_path(@quotation_response.signed_document, disposition: :inline)
+      else
+        redirect_to supplier_home_path, alert: "Documento não encontrado."
+      end
+    end
+
     private
 
     def set_and_authorize_quotation_response

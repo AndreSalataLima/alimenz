@@ -12,6 +12,17 @@ class QuotationResponsePolicy < ApplicationPolicy
       (user.role == 'supplier' && record.supplier_id == user.id && record.status == 'pendente')
   end
 
+
+  def secure_document?
+    show?
+  end
+
+  def secure_pdf?
+    show?
+  end
+
+
+
   # 3) Scope para index
   class Scope < Scope
     def resolve

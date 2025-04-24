@@ -6,6 +6,10 @@ class PurchaseOrderPolicy < ApplicationPolicy
   end
   alias_method :pdf?, :show?
 
+  def secure_pdf?
+    show?
+  end
+
   class Scope < Scope
     def resolve
       return scope.all if user.role == 'admin'

@@ -24,4 +24,9 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_in, keys: [ :name, :role ])
   end
+
+  def user_not_authorized
+    redirect_to root_path, alert: "Você não tem permissão para acessar este recurso."
+  end
+  
 end
