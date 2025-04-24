@@ -2,10 +2,12 @@ module Suppliers
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_supplier
-    before_action :set_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
+    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
 
     def index
-      @quotation_responses = current_user.quotation_responses.includes(:quotation)
+      @quotation_responses = policy_scope(QuotationResponse)
+                             .includes(:quotation)
+                             .order(created_at: :desc)
     end
 
     def show
@@ -92,7 +94,6 @@ module Suppliers
     end
 
     def pdf
-      @quotation_response = QuotationResponse.find(params[:id])
       pdf_content = PdfGeneratorService.new(@quotation_response).generate
       send_data pdf_content,
                 filename: "quotation_response_#{@quotation_response.id}.pdf",
@@ -102,9 +103,16 @@ module Suppliers
 
     private
 
-    def set_quotation_response
-      @quotation_response = QuotationResponse.find(params[:id])
+    def set_and_authorize_quotation_response
+      @quotation_response = policy_scope(QuotationResponse).find_by(id: params[:id])
+
+      if @quotation_response.nil?
+        redirect_to supplier_home_path, alert: "Cotação não encontrada ou acesso não autorizado."
+      else
+        authorize @quotation_response
+      end
     end
+
 
     def quotation_response_params
       params.require(:quotation_response).permit(
