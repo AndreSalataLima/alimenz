@@ -122,7 +122,11 @@ module Suppliers
     end
 
     def verify_supplier
-      redirect_to root_path, alert: "Access denied." unless current_user.role == "supplier"
+      unless current_user.role.in?(%w[supplier admin])
+        redirect_to root_path, alert: "Acesso negado."
+      end
     end
+
+
   end
 end
