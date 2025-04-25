@@ -41,13 +41,16 @@ module Suppliers
         @quotation_response.reload
 
         if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
-          pdf_content = PdfGeneratorService.new(@quotation_response, use_pre_registered_signature: true).generate
+          pdf_service = PdfGeneratorService.new(@quotation_response, use_pre_registered_signature: true)
+          pdf_content = pdf_service.generate
+
           @quotation_response.signed_document.attach(
             io: StringIO.new(pdf_content),
-            filename: "quotation_response_#{@quotation_response.id}.pdf",
+            filename: pdf_service.filename,
             content_type: "application/pdf"
           )
         end
+
 
         redirect_to supplier_home_path, notice: "Quotation responded successfully! Status: #{new_status.capitalize}"
       else
@@ -56,31 +59,34 @@ module Suppliers
     end
 
     def confirm_upload
-      @quotation_response = QuotationResponse.find(params[:id])
       uploaded_files = params[:quotation_response][:signed_documents]
 
       if uploaded_files.blank?
-        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Nenhum documento foi selecionado."
-        return
+        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Nenhum documento foi selecionado." and return
       end
 
       unless uploaded_files.all? { |f| f.content_type =~ /\A(application\/pdf|image\/(png|jpeg|jpg))\z/ }
-        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Apenas arquivos PDF ou imagens (JPG, PNG) são aceitos."
-        return
+        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Apenas arquivos PDF ou imagens (JPG, PNG) são aceitos." and return
       end
 
       merged_pdf = PdfMergeService.merge_files(uploaded_files)
 
+      pdf_service = PdfGeneratorService.new(@quotation_response)
+
       @quotation_response.signed_document.attach(
         io: merged_pdf,
-        filename: "quotation_#{@quotation_response.id}.pdf",
+        filename: pdf_service.filename,
         content_type: "application/pdf"
       )
 
-      @quotation_response.update(status: "finalizado", analysis_status: "pendente_de_analise")
+      @quotation_response.update!(
+        status: "finalizado",
+        analysis_status: "pendente_de_analise"
+      )
 
       redirect_to supplier_home_path, notice: "Proposta enviada com sucesso!"
     end
+
 
 
     def sign
@@ -94,9 +100,11 @@ module Suppliers
     end
 
     def pdf
-      pdf_content = PdfGeneratorService.new(@quotation_response).generate
+      pdf_service   = PdfGeneratorService.new(@quotation_response)
+      pdf_content   = pdf_service.generate
+
       send_data pdf_content,
-                filename: "quotation_response_#{@quotation_response.id}.pdf",
+                filename: pdf_service.filename,
                 type: "application/pdf",
                 disposition: "inline"
     end
@@ -106,13 +114,16 @@ module Suppliers
     def secure_pdf
       @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
       authorize @quotation_response
-      pdf_content = PdfGeneratorService.new(@quotation_response).generate
+
+      pdf_service = PdfGeneratorService.new(@quotation_response)
+      pdf_content = pdf_service.generate
 
       send_data pdf_content,
-                filename: "quotation_response_#{@quotation_response.id}.pdf",
+                filename: pdf_service.filename,
                 type: "application/pdf",
                 disposition: "inline"
     end
+
 
     def secure_document
       @quotation_response = QuotationResponse.find_signed!(params[:signed_id])

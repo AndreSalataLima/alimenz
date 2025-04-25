@@ -26,7 +26,7 @@
                 <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                 <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Visualizar PDF", secure_pdf_purchase_order_path(purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Visualizar PDF", secure_purchase_order_pdf_path(purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>

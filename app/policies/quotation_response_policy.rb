@@ -1,12 +1,11 @@
 class QuotationResponsePolicy < ApplicationPolicy
-  # 1) Define quem pode ver um registro específico
+
   def show?
     user.role == 'admin' ||
       (user.role == 'supplier' && record.supplier_id == user.id)
   end
   alias_method :pdf?, :show?
 
-  # 2) Define quem pode editar/atualizar
   def update?
     user.role == 'admin' ||
       (user.role == 'supplier' && record.supplier_id == user.id && record.status == 'pendente')
@@ -21,7 +20,16 @@ class QuotationResponsePolicy < ApplicationPolicy
     show?
   end
 
+  def upload_document?
+    show?
+  end
 
+  def confirm_upload?
+    user.role == 'admin' ||
+      (user.role == 'supplier' &&
+       record.supplier_id == user.id &&
+       record.status == 'aguardando assinatura')
+  end
 
   # 3) Scope para index
   class Scope < Scope

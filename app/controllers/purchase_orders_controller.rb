@@ -38,7 +38,7 @@ class PurchaseOrdersController < ApplicationController
     pdf = PdfPurchaseOrderService.new(@purchase_order).generate
 
     send_data pdf,
-              filename: "purchase_order_#{@purchase_order.id}.pdf",
+              filename: PdfPurchaseOrderService.new(@purchase_order).filename,
               type: "application/pdf",
               disposition: "inline"
   end
@@ -46,10 +46,11 @@ class PurchaseOrdersController < ApplicationController
   def secure_pdf
     @purchase_order = PurchaseOrder.find_signed!(params[:signed_id])
     authorize @purchase_order
-    pdf = PdfPurchaseOrderService.new(@purchase_order).generate
+    service = PdfPurchaseOrderService.new(@purchase_order)
+    pdf = service.generate
 
     send_data pdf,
-              filename: "purchase_order_#{@purchase_order.id}.pdf",
+              filename: PdfPurchaseOrderService.new(@purchase_order).filename,
               type: "application/pdf",
               disposition: "inline"
   end
