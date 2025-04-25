@@ -99,4 +99,24 @@ class PdfGeneratorService
 
     pdf.render
   end
+
+  def filename
+    title = @response.quotation.title.presence
+    if title.present?
+      "cotacao_#{parameterize_title(title)}.pdf"
+    else
+      customer = @response.quotation.customer.name.parameterize(separator: '_')
+      supplier = @response.supplier.name.parameterize(separator: '_')
+      date = I18n.l(@response.created_at.to_date, format: "%d.%m")
+      "cotacao_#{customer}_#{supplier}_#{date}.pdf"
+    end
+  end
+
+
+  private
+
+  def parameterize_title(title)
+    title.downcase.strip.gsub(/[^a-z0-9\s]/i, '').gsub(/[\s_]+/, '_')
+  end
+
 end

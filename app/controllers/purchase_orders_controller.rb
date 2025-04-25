@@ -1,5 +1,6 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_and_authorize_purchase_order, only: [:show, :pdf]
 
   def index
     if current_user.role == "supplier"
@@ -34,16 +35,39 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def pdf
-    @purchase_orders = PurchaseOrder.includes(:purchase_order_items).find(params[:id])
-    pdf = PdfPurchaseOrderService.new(@purchase_orders).generate
+    pdf = PdfPurchaseOrderService.new(@purchase_order).generate
 
     send_data pdf,
-              filename: "purchase_order_#{@purchase_orders.id}.pdf",
+              filename: PdfPurchaseOrderService.new(@purchase_order).filename,
               type: "application/pdf",
               disposition: "inline"
   end
 
+  def secure_pdf
+    @purchase_order = PurchaseOrder.find_signed!(params[:signed_id])
+    authorize @purchase_order
+    service = PdfPurchaseOrderService.new(@purchase_order)
+    pdf = service.generate
+
+    send_data pdf,
+              filename: PdfPurchaseOrderService.new(@purchase_order).filename,
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
+
   private
+
+  def set_and_authorize_purchase_order
+    @purchase_order = policy_scope(PurchaseOrder).find_by(id: params[:id])
+
+    if @purchase_order.nil?
+      redirect_to purchase_orders_path, alert: "Pedido de compra não encontrado ou acesso não autorizado."
+    else
+      authorize @purchase_order
+    end
+  end
+
 
   def purchase_order_params
     params.require(:purchase_order).permit(

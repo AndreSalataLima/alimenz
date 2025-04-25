@@ -50,7 +50,7 @@
                       <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
                           class: "text-blue-600 hover:underline" %>
 
-                      <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response),
+                      <%= link_to "Visualizar PDF", secure_pdf_suppliers_quotation_response_path(quotation_response.signed_id),
                           target: "_blank", class: "text-blue-600 hover:underline" %>
 
                       <div class="flex items-center space-x-1">
@@ -68,7 +68,7 @@
                       <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
                         class: "text-blue-600 hover:underline" %>
 
-                      <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"),
+                      <%= link_to "Visualizar Cotação", secure_document_suppliers_quotation_response_path(quotation_response.signed_id),
                         target: "_blank", class: "text-blue-600 hover:underline" %>
                     </div>
                   <% else %>

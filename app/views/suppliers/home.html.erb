@@ -26,7 +26,7 @@
                 <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                 <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Visualizar PDF", pdf_purchase_order_path(purchase_order), target: "_blank", class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Visualizar PDF", secure_purchase_order_pdf_path(purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>
@@ -75,7 +75,8 @@
                       <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
                           class: "text-blue-600 hover:underline" %>
 
-                      <%= link_to "Visualizar PDF", pdf_suppliers_quotation_response_path(quotation_response),
+
+                      <%= link_to "Visualizar PDF", secure_pdf_suppliers_quotation_response_path(quotation_response.signed_id),
                           target: "_blank", class: "text-blue-600 hover:underline" %>
 
                       <div class="flex items-center space-x-1">
@@ -92,9 +93,9 @@
                     <div class="flex flex-col space-y-1">
                       <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
                         class: "text-blue-600 hover:underline" %>
-
-                      <%= link_to "Visualizar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "inline"),
+                      <%= link_to "Visualizar Cotação", secure_document_suppliers_quotation_response_path(quotation_response.signed_id),
                         target: "_blank", class: "text-blue-600 hover:underline" %>
+
                     </div>
                   <% else %>
                     <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>

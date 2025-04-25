@@ -110,4 +110,24 @@ class PdfPurchaseOrderService
 
     pdf.render
   end
+
+  def filename
+    title = @purchase_order.quotation&.title.presence
+    if title.present?
+      "solic_de_compra_#{parameterize_title(title)}.pdf"
+    else
+      customer = @purchase_order.customer.name.parameterize(separator: '_')
+      supplier = @purchase_order.supplier.name.parameterize(separator: '_')
+      date = I18n.l(@purchase_order.created_at.to_date, format: "%d.%m")
+      "solic_de_compra_#{customer}_#{supplier}_#{date}.pdf"
+    end
+  end
+
+  private
+
+  def parameterize_title(title)
+    title.downcase.strip.gsub(/[^a-z0-9\s]/i, '').gsub(/[\s_]+/, '_')
+  end
+  
+
 end
