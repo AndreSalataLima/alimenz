@@ -46,7 +46,6 @@ accessories:
   db:
     image: postgres:15.3
     host: 49.12.36.132
-    port: 5432
     env:
       clear:
         POSTGRES_DB: alimenz_production
