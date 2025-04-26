@@ -56,7 +56,16 @@
         <tbody class="divide-y divide-gray-200">
           <% @quotation_response.quotation_response_items.each do |item| %>
             <tr class="hover:bg-gray-50">
-              <td class="px-4 py-2"><%= item.quotation_item.product.generic_name %></td>
+              <td class="px-4 py-2">
+                <div>
+                  <%= item.quotation_item.product.generic_name %>
+                  <% if item.quotation_item.product_comment.present? %>
+                    <div class="text-gray-500 italic text-sm mt-1">
+                      Obs: <%= item.quotation_item.product_comment %>
+                    </div>
+                  <% end %>
+                </div>
+              </td>
               <td class="px-4 py-2"><%= item.quotation_item.quantity %></td>
               <td class="px-4 py-2"><%= item.quotation_item.selected_unit %></td>
               <td class="px-4 py-2">
@@ -91,7 +100,7 @@
 
       <tr>
         <td colspan="5" class="px-4 py-2 text-left font-semibold">
-          
+
         </td>
         <td class="px-4 py-2 text-left font-bold">
           R$ <%= number_with_precision(total_quotation, precision: 2) %>
