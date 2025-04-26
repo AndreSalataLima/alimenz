@@ -38,6 +38,8 @@
       <% end %>
     </div>
 
+
+
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 mt-2">
@@ -48,6 +50,7 @@
             <th class="px-4 py-2 text-left">Unidade</th>
             <th class="px-4 py-2 text-left">Preço</th>
             <th class="px-4 py-2 text-left">Disponível?</th>
+            <th class="px-4 py-2 text-left">Total</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -70,8 +73,31 @@
                   ❌
                 <% end %>
               </td>
+              <td class="px-4 py-2">
+                <% if item.available %>
+                  <span class="font-semibold">R$ <%= number_with_precision(item.price * item.quotation_item.quantity, precision: 2) %></span>
+                <% else %>
+                  –
+                <% end %>
+              </td>
+
             </tr>
           <% end %>
+
+      <!-- Total da Cotação -->
+      <% total_quotation = @quotation_response
+        .quotation_response_items
+        .sum { |item| item.price * item.quotation_item.quantity } %>
+
+      <tr>
+        <td colspan="5" class="px-4 py-2 text-left font-semibold">
+          
+        </td>
+        <td class="px-4 py-2 text-left font-bold">
+          R$ <%= number_with_precision(total_quotation, precision: 2) %>
+        </td>
+      </tr>
+
         </tbody>
       </table>
     </div>
