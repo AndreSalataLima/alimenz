@@ -23,12 +23,22 @@
         <tbody class="divide-y divide-gray-200">
           <% @quotation.quotation_items.each do |item| %>
             <tr class="hover:bg-gray-50">
-              <td class="px-4 py-2"><%= item.product.generic_name %></td>
+              <td class="px-4 py-2">
+                <%= item.product.generic_name %>
+                <% if item.product_comment.present? %>
+                  <div class="text-gray-600 italic text-sm mt-1">
+                    Obs: <%= item.product_comment %>
+                  </div>
+                <% end %>
+              </td>
               <td class="px-4 py-2"><%= item.quantity %></td>
               <td class="px-4 py-2"><%= item.selected_unit %></td>
             </tr>
           <% end %>
         </tbody>
+
+
+
       </table>
     </div>
 
@@ -44,7 +54,7 @@
               <th class="px-4 py-2 text-left">Ações</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200">
+          <tbody >
             <% @quotation.quotation_responses.each do |response| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2"><%= response.supplier.name %></td>

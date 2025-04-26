@@ -22,7 +22,17 @@
           <tbody class="divide-y divide-gray-200">
             <% @purchase_order.purchase_order_items.each do |item| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= item.product.generic_name %></td>
+                <td class="px-4 py-2">
+                  <div>
+                    <%= item.product.generic_name %>
+                    <% comment = @purchase_order.quotation.quotation_items.find_by(product_id: item.product_id)&.product_comment %>
+                    <% if comment.present? %>
+                      <div class="text-gray-500 italic text-sm mt-1">
+                        Obs: <%= comment %>
+                      </div>
+                    <% end %>
+                  </div>
+                </td>
                 <td class="px-4 py-2"><%= item.quantity %></td>
                 <td class="px-4 py-2"><%= item.unit %></td>
                 <td class="px-4 py-2"><%= real_currency(item.price) %></td>
