@@ -8,15 +8,16 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    
+
     <%= turbo_include_tags %>
 
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= asset_path 'favicon-16x16.png' %>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= asset_path 'favicon-32x32.png' %>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= asset_path 'apple-touch-icon.png' %>">
+
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
