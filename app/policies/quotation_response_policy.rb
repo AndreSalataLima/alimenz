@@ -8,9 +8,15 @@ class QuotationResponsePolicy < ApplicationPolicy
 
   def update?
     user.role == 'admin' ||
-      (user.role == 'supplier' && record.supplier_id == user.id && record.status == 'pendente')
+      (user.role == 'supplier' && record.supplier_id == user.id)
   end
 
+
+
+
+  def edit?
+    record.supplier_id == user.id
+  end
 
   def secure_document?
     show?

@@ -51,12 +51,18 @@ module Suppliers
           )
         end
 
-
-        redirect_to supplier_home_path, notice: "Quotation responded successfully! Status: #{new_status.capitalize}"
+        respond_to do |format|
+          format.html { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
+          format.turbo_stream { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
+        end
       else
-        render :edit, status: :unprocessable_entity
+        respond_to do |format|
+          format.html { render :edit, status: :unprocessable_entity }
+          format.turbo_stream { render :edit, status: :unprocessable_entity }
+        end
       end
     end
+
 
     def confirm_upload
       uploaded_files = params[:quotation_response][:signed_documents]
