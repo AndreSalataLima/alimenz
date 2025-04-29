@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_28_134625) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_29_150212) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_134625) do
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "supplier_snapshot"
     t.index ["quotation_id"], name: "index_quotation_responses_on_quotation_id"
     t.index ["supplier_id"], name: "index_quotation_responses_on_supplier_id"
   end
@@ -151,6 +152,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_134625) do
     t.datetime "updated_at", null: false
     t.text "general_comment"
     t.string "title"
+    t.jsonb "customer_snapshot"
     t.index ["customer_id"], name: "index_quotations_on_customer_id"
   end
 
