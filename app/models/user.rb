@@ -7,7 +7,22 @@ class User < ApplicationRecord
   has_many :purchase_orders, foreign_key: "customer_id", class_name: "PurchaseOrder"
   has_many :customized_products, foreign_key: :customer_id, dependent: :destroy
 
-  
+  has_many :blocked_supplier_relationships,
+           class_name: 'BlockedSupplier',
+           foreign_key: :customer_id,
+           dependent: :destroy
+  has_many :blocked_suppliers,
+           through: :blocked_supplier_relationships,
+           source: :supplier
+
+  has_many :blocked_by_relationships,
+           class_name: 'BlockedSupplier',
+           foreign_key: :supplier_id,
+           dependent: :destroy
+  has_many :blocker_customers,
+           through: :blocked_by_relationships,
+           source: :customer
+
   accepts_nested_attributes_for :signature
 
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable

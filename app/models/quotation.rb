@@ -21,6 +21,7 @@ class Quotation < ApplicationRecord
 
     suppliers = User.joins(:supplier_categories)
                     .where(role: "supplier", supplier_categories: { category_id: category_ids })
+                    .where.not(id: customer.blocked_supplier_ids) # EXCLUI BLOQUEADOS
                     .distinct
 
     suppliers.each do |supplier|
@@ -28,10 +29,30 @@ class Quotation < ApplicationRecord
         quotation: self,
         supplier: supplier,
         status: "pendente",
-        expiration_date: self.expiration_date
+        expiration_date: expiration_date
       )
     end
   end
+
+
+  def generate_quotation_responses
+    category_ids = quotation_items.map { |item| item.product.category_id }.uniq
+
+    suppliers = User.joins(:supplier_categories)
+                    .where(role: "supplier", supplier_categories: { category_id: category_ids })
+                    .where.not(id: customer.blocked_supplier_ids) # EXCLUI BLOQUEADOS
+                    .distinct
+
+    suppliers.each do |supplier|
+      QuotationResponse.create!(
+        quotation: self,
+        supplier: supplier,
+        status: "pendente",
+        expiration_date: expiration_date
+      )
+    end
+  end
+
 
   def expiration_date_must_be_future
     return if expiration_date.blank?

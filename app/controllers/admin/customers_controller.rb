@@ -17,12 +17,21 @@ module Admin
     end
 
     def update
+      # Separamos manualmente os bloqueios antes de atualizar
+      blocked_supplier_ids = customer_params.delete(:blocked_supplier_ids) || []
+
       if @customer.update(customer_params)
+        @customer.blocked_supplier_relationships.destroy_all
+        blocked_supplier_ids.each do |supplier_id|
+          @customer.blocked_supplier_relationships.create!(supplier_id: supplier_id)
+        end
+
         redirect_to admin_customer_path(@customer), notice: "Customer updated successfully!"
       else
         render :edit, status: :unprocessable_entity
       end
     end
+
 
     private
 
@@ -32,7 +41,8 @@ module Admin
 
     def customer_params
       params.require(:user).permit(
-        :name, :email, :phone, :cnpj, :responsible, :address
+        :name, :email, :phone, :cnpj, :responsible, :address, blocked_supplier_ids: []
+
       )
     end
 

@@ -1,5 +1,6 @@
 <%= render 'suppliers/shared/navbar', titulo: "Responder Cotação" %>
 
+
 <div class="container mx-auto py-6 px-4">
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8">
     <p class="text-gray-700">Preencha os valores e disponibilidade dos produtos para responder à cotação.</p>
@@ -42,16 +43,24 @@
           </thead>
 
           <tbody class="divide-y divide-gray-200">
-            <%= f.fields_for :quotation_response_items do |item_fields| %>
-              <%= item_fields.hidden_field :quotation_item_id, value: item_fields.object.quotation_item_id %>
-              <% quotation_item = item_fields.object.quotation_item || QuotationItem.find(item_fields.object.quotation_item_id) %>
-              <% product = quotation_item.product %>
-              <% customer = quotation.customer %>
-              <% customized = customer.customized_products.find_by(product_id: product.id) %>
-              <% nome = customized&.custom_name.presence || product.generic_name %>
+            <% allowed_category_ids = @quotation_response.supplier.categories.pluck(:id) %>
 
+            <%= f.fields_for :quotation_response_items do |item_fields| %>
+              <% quotation_item = item_fields.object.quotation_item || (item_fields.object.quotation_item_id.present? && QuotationItem.find(item_fields.object.quotation_item_id)) %>
+              <% product = quotation_item.product %>
+
+              <%= item_fields.hidden_field :quotation_item_id, value: item_fields.object.quotation_item_id || quotation_item.id %>
+
+              <% if !allowed_category_ids.include?(product.category_id) %>
+                <!-- Produto fora da categoria do fornecedor: gera hidden e pula -->
+                <%= item_fields.hidden_field :available, value: false %>
+                <% next %>
+              <% end %>
+
+              <!-- Produto permitido, exibe normalmente -->
               <tr class="hover:bg-gray-50" data-controller="availability">
                 <td class="px-4 py-2 font-medium">
+                  <% nome = (@quotation_response.quotation.customer.customized_products.find_by(product_id: product.id)&.custom_name.presence || product.generic_name) %>
                   <%= nome %>
                   <% if quotation_item.product_comment.present? %>
                     <p class="text-sm text-gray-500 italic mt-1">Obs: <%= quotation_item.product_comment %></p>
@@ -63,17 +72,22 @@
                   <%= item_fields.number_field :price, step: 0.01, min: 0,
                         class: "border rounded px-3 py-1 w-24 text-center",
                         data: { price_alert_target: "priceInput", product_name: nome,
-                                availability_target: "price", action: "input->price-alert#updateTotal" } %>
+                                availability_target: "price",
+                                action: "input->price-alert#updateTotal" } %>
                 </td>
                 <td class="px-4 py-2 text-center">
                   <span data-price-alert-target="total" class="text-gray-700">R$0,00</span>
                 </td>
                 <td class="px-4 py-2 text-center">
-                  <%= item_fields.check_box :available, class: "rounded border-gray-300 focus:ring-indigo-500",
-                        data: { availability_target: "checkbox", action: "change->availability#toggle" } %>
+                  <%= item_fields.check_box :available,
+                        class: "rounded border-gray-300 focus:ring-indigo-500",
+                        data: { availability_target: "checkbox",
+                                action: "change->availability#toggle" } %>
                 </td>
               </tr>
             <% end %>
+
+
           </tbody>
         </table>
       </div>

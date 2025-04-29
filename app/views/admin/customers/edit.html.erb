@@ -42,6 +42,25 @@
         <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
+      <!-- Fornecedores Bloqueados -->
+<!-- Fornecedores Bloqueados (como checklist) -->
+<div>
+  <%= f.label :blocked_supplier_ids, "Fornecedores Bloqueados", class: "block font-semibold text-gray-700 mb-2" %>
+
+  <div class="grid grid-cols-1 gap-2">
+    <% User.suppliers.order(:name).each do |supplier| %>
+      <div class="flex items-center">
+        <%= check_box_tag "user[blocked_supplier_ids][]", supplier.id, @customer.blocked_supplier_ids.include?(supplier.id),
+              id: "user_blocked_supplier_ids_#{supplier.id}",
+              class: "mr-2" %>
+        <%= label_tag "user_blocked_supplier_ids_#{supplier.id}", supplier.name, class: "text-gray-700" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
       <!-- Botões -->
       <div class="flex justify-between mt-6">
         <%= link_to "Cancelar", admin_customer_path(@customer), class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
