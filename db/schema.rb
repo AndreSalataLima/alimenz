@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_03_142335) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_28_134625) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_142335) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "blocked_suppliers", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.bigint "supplier_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id", "supplier_id"], name: "index_blocked_on_customer_and_supplier", unique: true
+    t.index ["customer_id"], name: "index_blocked_suppliers_on_customer_id"
+    t.index ["supplier_id"], name: "index_blocked_suppliers_on_supplier_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -181,6 +191,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_03_142335) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "blocked_suppliers", "users", column: "customer_id"
+  add_foreign_key "blocked_suppliers", "users", column: "supplier_id"
   add_foreign_key "customized_products", "products"
   add_foreign_key "customized_products", "users", column: "customer_id"
   add_foreign_key "products", "categories"

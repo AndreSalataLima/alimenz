@@ -6,6 +6,8 @@ class SupplierCategory < ApplicationRecord
 
   def include_supplier_in_open_quotations
     Quotation.where("expiration_date >= ?", Date.today).find_each do |quotation|
+      next if quotation.customer.blocked_supplier_ids.include?(supplier_id) # IGNORA se cliente bloqueou o supplier
+
       # só interessa se a cotação já tiver items dessa nova categoria
       if quotation.quotation_items.joins(:product)
                    .where(products: { category_id: category_id })
@@ -27,4 +29,5 @@ class SupplierCategory < ApplicationRecord
       end
     end
   end
+
 end
