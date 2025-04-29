@@ -41,6 +41,7 @@ export default class extends Controller {
     summaryRow.dataset.productId = productId
     summaryRow.innerHTML = `
       <td class="px-2 py-1">${nome}</td>
+      <td class="px-2 py-1">${comentario}</td>
       <td class="px-2 py-1">${quantidade}</td>
       <td class="px-2 py-1">${unidade}</td>
       <td class="px-2 py-1">
@@ -121,30 +122,31 @@ export default class extends Controller {
   atualizarCamposOcultos(event) {
     const row = event.currentTarget.closest("tr.product-item")
     const productId = row.dataset.productId
-
     if (!this.produtosAdicionados.has(productId)) return
 
-    const unidade = row.querySelector("select").value
+    const unidade    = row.querySelector("select").value
     const quantidade = row.querySelector("input[type='number']").value
+    const comentario = row.querySelector('input[name$="[product_comment]"]').value
 
+    // Atualiza campos ocultos do Rails
     const hidden = document
       .getElementById("campos-selecionados")
       .querySelector(`div[data-product-id="${productId}"]`)
 
     if (hidden) {
-      hidden.querySelector(`input[name*="[quantity]"]`).value = quantidade
-      hidden.querySelector(`input[name*="[selected_unit]"]`).value = unidade
+      hidden.querySelector(`input[name*="[quantity]"]`).value        = quantidade
+      hidden.querySelector(`input[name*="[selected_unit]"]`).value   = unidade
+      hidden.querySelector(`input[name*="[product_comment]"]`).value = comentario
     }
 
-    // Também atualiza visualmente a linha do resumo, se desejar:
+    // Atualiza a linha do card de resumo
     const rowResumo = this.summaryTableTarget.querySelector(`tr[data-product-id="${productId}"]`)
     if (rowResumo) {
-      rowResumo.children[1].textContent = quantidade
-      rowResumo.children[2].textContent = unidade
+      rowResumo.children[1].textContent = comentario   // coluna Observação
+      rowResumo.children[2].textContent = quantidade  // coluna Quantidade
+      rowResumo.children[3].textContent = unidade     // coluna Unidade
     }
   }
-
-
 
 
   // --- Validação e envio
