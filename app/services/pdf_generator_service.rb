@@ -26,29 +26,33 @@ class PdfGeneratorService
     pdf.stroke_horizontal_rule
     pdf.move_down 10
 
-    customer = @response.quotation.customer
-    supplier = @response.supplier
+    quotation = @response.quotation
+    customer_data = quotation.customer_snapshot.symbolize_keys
+    supplier_data = @response.supplier_snapshot.present? ? @response.supplier_snapshot.symbolize_keys : @response.supplier.attributes.symbolize_keys
+
 
     # Blocos lado a lado com alinhamento vertical
     y_position = pdf.cursor
 
     pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Entidade Participante:", style: :bold
-      pdf.text "Nome: #{customer.name}"
-      pdf.text "Nome Fantasia: #{customer.trade_name}" if customer.trade_name.present?
-      pdf.text "CNPJ: #{customer.cnpj}"
-      pdf.text "Endereço: #{customer.address}"
-      pdf.text "Telefone: #{customer.phone}"
+      pdf.text "Nome: #{customer_data[:name]}"
+      pdf.text "Nome Fantasia: #{customer_data[:trade_name]}" if customer_data[:trade_name].present?
+      pdf.text "CNPJ: #{customer_data[:cnpj]}"
+      pdf.text "Endereço: #{customer_data[:address]}"
+      pdf.text "Telefone: #{customer_data[:phone]}"
+
     end
 
     pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Empresa Proponente:", style: :bold
-      pdf.text "Nome: #{supplier.name}"
-      pdf.text "Nome Fantasia: #{supplier.trade_name}" if supplier.trade_name.present?
-      pdf.text "CNPJ: #{supplier.cnpj}"
-      pdf.text "Endereço: #{supplier.address}"
-      pdf.text "Telefone: #{supplier.phone}"
-      pdf.text "Responsável: #{supplier.responsible}"
+      pdf.text "Nome: #{supplier_data[:name]}"
+      pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}" if supplier_data[:trade_name].present?
+      pdf.text "CNPJ: #{supplier_data[:cnpj]}"
+      pdf.text "Endereço: #{supplier_data[:address]}"
+      pdf.text "Telefone: #{supplier_data[:phone]}"
+      pdf.text "Responsável: #{supplier_data[:responsible]}"
+
     end
 
     pdf.move_down 20
@@ -95,7 +99,7 @@ class PdfGeneratorService
 
     pdf.move_down 60
     pdf.text "_______________________________", align: :center
-    pdf.text supplier.responsible, align: :center, size: 10
+    pdf.text supplier_data[:responsible], align: :center, size: 10
 
     pdf.render
   end

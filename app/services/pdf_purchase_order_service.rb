@@ -19,28 +19,33 @@ class PdfPurchaseOrderService
     pdf.stroke_horizontal_rule
     pdf.move_down 10
 
+    quotation = @purchase_order.quotation
+    customer_data = quotation.customer_snapshot.symbolize_keys
     customer = @purchase_order.customer
-    supplier = @purchase_order.supplier
+    response = quotation.quotation_responses.find_by(supplier_id: @purchase_order.supplier_id, status: "finalizado")
+    supplier_data = response&.supplier_snapshot&.symbolize_keys || @purchase_order.supplier.attributes.symbolize_keys
+
 
     # Dados do Cliente e Fornecedor
     y_position = pdf.cursor
     pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Cliente:", style: :bold
-      pdf.text "Nome: #{customer.name}"
-      pdf.text "Nome Fantasia: #{customer.trade_name}" if customer.trade_name.present?
-      pdf.text "CNPJ: #{customer.cnpj}"
-      pdf.text "Endereço: #{customer.address}"
-      pdf.text "Telefone: #{customer.phone}"
+      pdf.text "Nome: #{customer_data[:name]}"
+      pdf.text "Nome Fantasia: #{customer_data[:trade_name]}" if customer_data[:trade_name].present?
+      pdf.text "CNPJ: #{customer_data[:cnpj]}"
+      pdf.text "Endereço: #{customer_data[:address]}"
+      pdf.text "Telefone: #{customer_data[:phone]}"
+
     end
 
     pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Fornecedor:", style: :bold
-      pdf.text "Nome: #{supplier.name}"
-      pdf.text "Nome Fantasia: #{supplier.trade_name}" if supplier.trade_name.present?
-      pdf.text "CNPJ: #{supplier.cnpj}"
-      pdf.text "Endereço: #{supplier.address}"
-      pdf.text "Telefone: #{supplier.phone}"
-      pdf.text "Responsável: #{supplier.responsible}"
+      pdf.text "Nome: #{supplier_data[:name]}"
+      pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}" if supplier_data[:trade_name].present?
+      pdf.text "CNPJ: #{supplier_data[:cnpj]}"
+      pdf.text "Endereço: #{supplier_data[:address]}"
+      pdf.text "Telefone: #{supplier_data[:phone]}"
+      pdf.text "Responsável: #{supplier_data[:responsible]}"
     end
 
     pdf.move_down 20
@@ -128,6 +133,6 @@ class PdfPurchaseOrderService
   def parameterize_title(title)
     title.downcase.strip.gsub(/[^a-z0-9\s]/i, '').gsub(/[\s_]+/, '_')
   end
-  
+
 
 end

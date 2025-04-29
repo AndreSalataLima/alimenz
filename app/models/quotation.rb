@@ -8,8 +8,9 @@ class Quotation < ApplicationRecord
   has_many :quotation_responses, dependent: :destroy
 
   accepts_nested_attributes_for :quotation_items, allow_destroy: true,
-                                reject_if: proc { |attributes| attributes["quantity"].to_f <= 0 || attributes["selected_unit"].blank? }
+  reject_if: proc { |attributes| attributes["quantity"].to_f <= 0 || attributes["selected_unit"].blank? }
 
+  before_create :capture_customer_snapshot
   after_create :generate_quotation_responses
 
   attribute :status, :string, default: "pendente"
@@ -34,26 +35,12 @@ class Quotation < ApplicationRecord
     end
   end
 
-
-  def generate_quotation_responses
-    category_ids = quotation_items.map { |item| item.product.category_id }.uniq
-
-    suppliers = User.joins(:supplier_categories)
-                    .where(role: "supplier", supplier_categories: { category_id: category_ids })
-                    .where.not(id: customer.blocked_supplier_ids) # EXCLUI BLOQUEADOS
-                    .distinct
-
-    suppliers.each do |supplier|
-      QuotationResponse.create!(
-        quotation: self,
-        supplier: supplier,
-        status: "pendente",
-        expiration_date: expiration_date
-      )
-    end
+  def capture_customer_snapshot
+    self.customer_snapshot = customer.slice(
+      'name', 'email', 'address', 'phone', 'cnpj', 'responsible', 'trade_name'
+    )
   end
-
-
+  
   def expiration_date_must_be_future
     return if expiration_date.blank?
     if expiration_date <= Date.today

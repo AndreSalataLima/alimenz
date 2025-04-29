@@ -11,13 +11,15 @@
               data: { action: "change->auto-submit#submit" } %>
       </div>
 
-      <div>
+      <!-- Aqui: flex-1 para crescer e w-full no input -->
+      <div class="flex-1">
         <label class="font-medium">Buscar produto</label>
         <%= text_field_tag :search, @search_term, placeholder: "Digite o nome...",
-              class: "border rounded px-3 py-2",
+              class: "border rounded px-3 py-2 w-full",
               data: { auto_submit_target: "search", action: "input->auto-submit#submit" } %>
       </div>
     </div>
+
   <% end %>
 
   <!-- Formulário principal da cotação -->
@@ -49,6 +51,7 @@
         <thead>
           <tr class="bg-gray-100">
             <th class="px-2 py-1 text-left">Produto</th>
+            <th class="px-2 py-2 text-left">Observação</th>
             <th class="px-2 py-1 text-left">Quantidade</th>
             <th class="px-2 py-1 text-left">Unidade</th>
             <th class="px-2 py-1 text-left">Remover</th>
@@ -58,8 +61,10 @@
       </table>
     </div>
 
-    <div class="mt-6 hidden" data-cotacao-target="submitButton">
-      <%= f.submit "Concluir cotação", class: "bg-[#615F4A] text-white px-4 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
+
+
+    <div class="flex justify-center mt-6 mb-6 hidden" data-cotacao-target="submitButton">
+      <%= f.submit "Concluir cotação", class: "bg-[#615F4A] text-white px-6 py-2 rounded-lg shadow hover:bg-[#4b493f]" %>
     </div>
 
     <!-- TURBO FRAME: tabela de produtos -->
@@ -103,9 +108,10 @@
               <!-- Observação -->
               <td class="px-2 py-2">
                 <input type="text"
-                       placeholder="Especificações do produto."
-                       name="quotation[quotation_items_attributes][<%= product.id %>][product_comment]"
-                       class="border rounded px-2 py-1" />
+                      placeholder="Especificações do produto."
+                      name="quotation[quotation_items_attributes][<%= product.id %>][product_comment]"
+                      class="border rounded px-2 py-1"
+                        data-action="input->cotacao#atualizarCamposOcultos" />
               </td>
 
               <!-- Unidade -->
