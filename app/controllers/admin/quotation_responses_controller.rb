@@ -29,6 +29,24 @@ module Admin
       redirect_to admin_dashboard_index_path, notice: "Cotação rejeitada. O fornecedor pode reenviar a resposta."
     end
 
+    def liberar_visualizacao
+      @quotation_response = QuotationResponse.find(params[:id])
+
+      if @quotation_response.status == "documento_enviado" && @quotation_response.analysis_status == "aprovado"
+        @quotation_response.update!(status: "visualizacao_liberada")
+
+        # Arquivar outras respostas da mesma cotação que não foram enviadas
+        QuotationResponse.where(quotation_id: @quotation_response.quotation_id)
+                         .where.not(id: @quotation_response.id)
+                         .where(status: ["aberta", "aguardando_assinatura", "revisao_fornecedor"])
+                         .update_all(status: "arquivada")
+
+        redirect_to admin_quotation_path(@quotation_response.quotation), notice: "Resposta liberada para o cliente. Demais respostas arquivadas."
+      else
+        redirect_to admin_quotation_path(@quotation_response.quotation), alert: "Resposta não pode ser liberada. Verifique o status e a análise."
+      end
+    end
+
     private
 
     def set_response

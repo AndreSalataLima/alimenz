@@ -43,6 +43,18 @@
     </div>
 
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Respostas de Fornecedores</h3>
+    <% if @quotation.aberta? || @quotation.resposta_recebida? || @quotation.visualizacao_liberada? %>
+      <%= link_to "Encerrar para novas respostas",
+                  encerrar_respostas_admin_quotation_path(@quotation),
+                  method: :patch,
+                  data: { turbo_method: :patch, turbo_confirm: "Tem certeza de que deseja encerrar esta cotação para novas respostas?" },
+                  class: "inline-block px-4 py-2 rounded-xl text-white font-semibold shadow transition hover:brightness-110",
+                  style: "background-color: #1447E6;" %>
+    <% end %>
+
+
+
+
     <% if @quotation.quotation_responses.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 mt-2">
@@ -74,8 +86,19 @@
                   <% end %>
                 </td>
                 <td class="px-4 py-2"><%= response.expiration_date.strftime("%d/%m/%Y") if response.expiration_date %></td>
-                <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", admin_quotation_response_path(response), class: "text-blue-600 hover:underline" %>
+                <td class="px-4 py-2 space-y-1">
+                  <%= link_to "Ver Detalhes", admin_quotation_response_path(response), class: "text-blue-600 hover:underline block" %>
+
+                  <% if response.status == "documento_enviado" && response.analysis_status == "aprovado" %>
+                    <%= button_to "Liberar para o cliente", liberar_visualizacao_admin_quotation_response_path(response),
+                          method: :patch,
+                          form: { data: { turbo_confirm: "Tem certeza que deseja liberar esta resposta para o cliente?" } },
+                          class: "block text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-sm" %>
+
+                  <% elsif response.status == "finalizado" && response.analysis_status == "pendente_de_analise" %>
+                    <%= link_to "Analisar documento", admin_quotation_response_path(response),
+                          class: "block text-white bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded-md text-sm" %>
+                  <% end %>
                 </td>
               </tr>
             <% end %>

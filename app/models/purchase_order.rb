@@ -7,6 +7,9 @@ class PurchaseOrder < ApplicationRecord
 
   accepts_nested_attributes_for :purchase_order_items, allow_destroy: true
 
-  validates :status, inclusion: { in: %w[pendente confirmado cancelado enviado entregue] }
-
+  enum :status, {
+    aberta: 'aberta',
+    confirmada: 'confirmada',
+    arquivada: 'arquivada',
+  }
 end

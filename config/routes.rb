@@ -5,17 +5,22 @@ Rails.application.routes.draw do
     resources :users, only: [:new, :create, ]
     resources :customers, only: [ :index, :show, :edit, :update ]
     resources :suppliers, only: [ :index, :show, :edit, :update ]
-    resources :quotations, only: [ :index, :show ]
     resources :dashboard, only: [ :index ]
     resources :purchase_orders, only: [:index, :show]
     resources :categories, only: [:index, :new, :create, :edit, :update]
     resources :products
 
+    resources :quotations, only: [ :index, :show ] do
+      member do
+        patch :encerrar_respostas
+      end
+    end
 
     resources :quotation_responses, only: [ :index, :show ] do
       member do
         patch :approve
         patch :reject
+        patch :liberar_visualizacao
       end
     end
 

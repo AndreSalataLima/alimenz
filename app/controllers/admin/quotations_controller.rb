@@ -11,6 +11,13 @@ module Admin
       @quotation = Quotation.find(params[:id])
     end
 
+    def encerrar_respostas
+      @quotation = Quotation.find(params[:id])
+      @quotation.encerrar_para_novas_respostas!
+
+      redirect_to admin_quotation_path(@quotation), notice: "Cotação encerrada para novas respostas."
+    end
+    
     private
 
     def verify_admin
