@@ -6,13 +6,14 @@ Rails.application.routes.draw do
     resources :customers, only: [ :index, :show, :edit, :update ]
     resources :suppliers, only: [ :index, :show, :edit, :update ]
     resources :dashboard, only: [ :index ]
-    resources :purchase_orders, only: [:index, :show]
     resources :categories, only: [:index, :new, :create, :edit, :update]
     resources :products
 
     resources :quotations, only: [ :index, :show ] do
       member do
         patch :encerrar_respostas
+        patch :liberar_visualizacao
+        patch :arquivar
       end
     end
 
@@ -21,6 +22,13 @@ Rails.application.routes.draw do
         patch :approve
         patch :reject
         patch :liberar_visualizacao
+      end
+    end
+
+    resources :purchase_orders, only: [:index, :show] do
+      member do
+        patch :confirmar
+        patch :arquivar
       end
     end
 
@@ -44,6 +52,7 @@ Rails.application.routes.draw do
       get :select_orders        # Step 4: Displays the table with items (rows) x suppliers (columns)
       post :orders_summary      # Step 5: Receives the checkboxes and displays the summary cards
       post :finalize_orders     # Step 7: Generates the Purchase Orders from the confirmed orders
+      patch :arquivar
     end
   end
 

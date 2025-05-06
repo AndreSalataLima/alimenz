@@ -32,7 +32,7 @@ class QuotationResponse < ApplicationRecord
   private
 
   def freezing_state?
-    status_changed? && status == "finalizado"
+    status_changed? && status == "concluida"
   end
 
   def capture_supplier_snapshot

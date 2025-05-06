@@ -30,9 +30,9 @@ module Suppliers
       use_pre_registered_signature = (params[:quotation_response][:use_pre_registered_signature] == "1")
 
       new_status = if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
-        "finalizado"
+        "documento_enviado"
       else
-        "aguardando assinatura"
+        "aguardando_assinatura"
       end
 
       analysis_status_update = (new_status == "finalizado") ? { analysis_status: "pendente_de_analise" } : {}
@@ -86,7 +86,7 @@ module Suppliers
       )
 
       @quotation_response.update!(
-        status: "finalizado",
+        status: "documento_enviado",
         analysis_status: "pendente_de_analise"
       )
 

@@ -25,7 +25,10 @@ module Admin
     end
 
     def reject
-      @quotation_response.update(analysis_status: "cotacao_nao_aceita", status: "pendente")
+      @quotation_response.update!(
+        analysis_status: "reprovado",
+        status: "revisao_fornecedor"
+      )
       redirect_to admin_dashboard_index_path, notice: "Cotação rejeitada. O fornecedor pode reenviar a resposta."
     end
 

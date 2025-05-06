@@ -29,9 +29,22 @@ class Quotation < ApplicationRecord
     where(status: [:aberta, :resposta_recebida, :visualizacao_liberada, :respostas_encerradas])
       .where("expiration_date < ?", Date.today)
       .find_each do |quotation|
+
+      quotation.transaction do
         quotation.update!(status: "expirada")
+
+        quotation.quotation_responses.each do |response|
+          case response.status
+          when "aberta", "aguardando_assinatura", "revisao_fornecedor"
+            response.update!(status: "arquivada")
+          when "documento_enviado", "visualizacao_liberada"
+            response.update!(status: "concluida")
+          end
+        end
       end
+    end
   end
+
 
   def marcar_como_resposta_recebida!
     update!(status: :resposta_recebida) if aberta?

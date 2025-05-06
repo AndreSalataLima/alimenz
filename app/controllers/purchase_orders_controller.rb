@@ -20,16 +20,16 @@ class PurchaseOrdersController < ApplicationController
   end
 
   def new
-    @purchase_orders = current_user.purchase_orders.build
-    @suppliers = current_user.quotation_responses.where(status: "finalizado").map(&:supplier).uniq
+    @purchase_order = current_user.purchase_orders.build
+    @suppliers = current_user.quotation_responses.where(status: "concluida").map(&:supplier).uniq
   end
 
   def create
-    @purchase_orders = current_user.purchase_orders.build(purchase_order_params)
-    if @purchase_orders.save
-      redirect_to @purchase_orders, notice: "Purchase order generated successfully."
+    @purchase_order = current_user.purchase_orders.build(purchase_order_params.merge(status: "aberta"))
+    if @purchase_order.save
+      redirect_to @purchase_order, notice: "Purchase order generated successfully."
     else
-      @suppliers = current_user.quotation_responses.where(status: "finalizado").map(&:supplier).uniq
+      @suppliers = current_user.quotation_responses.where(status: "concluida").map(&:supplier).uniq
       render :new, status: :unprocessable_entity
     end
   end

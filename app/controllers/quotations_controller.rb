@@ -115,8 +115,6 @@ class QuotationsController < ApplicationController
     quantidades = params[:quantidades] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
 
-    puts "Selected responses IDs: #{selected_responses.pluck(:id, :status, :analysis_status)}"
-
     items_by_response = {}
     selected_responses.each do |response|
       selected_item_ids = selected[response.id.to_s]&.keys || []
@@ -134,10 +132,7 @@ class QuotationsController < ApplicationController
     responses_by_supplier.each do |supplier_id, responses|
       next unless confirmations[supplier_id.to_s] == "1"
 
-      items = []
-      responses.each do |response|
-        items.concat(items_by_response[response.id])
-      end
+      items = responses.flat_map { |r| items_by_response[r.id] }
 
       total_value = items.sum do |item|
         quantity = quantidades[item.quotation_item.id.to_s]&.to_f || item.quotation_item.quantity.to_f
@@ -149,7 +144,7 @@ class QuotationsController < ApplicationController
         total_value: total_value,
         expiration_date: @quotation.expiration_date,
         quotation_id: @quotation.id,
-        status: "pendente"
+        status: "aberta"
       )
 
       items.each do |i|
@@ -168,12 +163,25 @@ class QuotationsController < ApplicationController
     end
 
     selected_responses.each do |response|
-      response.update!(status: "finalizado")
+      response.update!(status: "concluida")
     end
 
+    @quotation.update!(status: "concluida")
     redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
   end
 
+  def arquivar
+    @quotation = Quotation.find(params[:id])
+
+    if current_user == @quotation.customer
+      @quotation.update!(status: "arquivada")
+      redirect_to quotations_path, notice: "Cotação arquivada com sucesso."
+    else
+      redirect_to quotations_path, alert: "Você não tem permissão para arquivar esta cotação."
+    end
+  end
+
+  
   private
 
   def quotation_params
