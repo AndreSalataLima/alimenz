@@ -2,13 +2,13 @@ class QuotationsController < ApplicationController
   before_action :authenticate_user!
   before_action :verify_customer, only: [ :new, :create, :select_orders, :orders_summary, :finalize_orders ]
 
-  def preview_pdf_data
-    @quotation = Quotation.find(params[:id])
-    @quotation_response = @quotation.quotation_responses.find_by(status: "finalizado")
-    unless @quotation_response
-      redirect_to @quotation, alert: "No finalizado response found for this quotation."
-    end
-  end
+  # def preview_pdf_data
+  #   @quotation = Quotation.find(params[:id])
+  #   @quotation_response = @quotation.quotation_responses.find_by(status: "finalizado")
+  #   unless @quotation_response
+  #     redirect_to @quotation, alert: "No finalizado response found for this quotation."
+  #   end
+  # end
 
   def index
     @quotations = current_user.quotations.order(created_at: :desc)
@@ -36,8 +36,6 @@ class QuotationsController < ApplicationController
       }
     end
   end
-
-
 
   def show
     @quotation = Quotation.find(params[:id])
@@ -74,7 +72,7 @@ class QuotationsController < ApplicationController
     @items = @quotation.quotation_items.includes(:product)
 
     supplier_ids = @quotation.quotation_responses
-                             .where(status: "finalizado", analysis_status: "aprovado")
+                             .where(status: "visualizacao_liberada", analysis_status: "aprovado")
                              .pluck(:supplier_id)
                              .uniq
 
@@ -181,7 +179,7 @@ class QuotationsController < ApplicationController
     end
   end
 
-  
+
   private
 
   def quotation_params

@@ -87,7 +87,16 @@
               </tr>
             <% end %>
 
-
+            <%# Se o fornecedor usar assinatura pré-cadastrada. Está desativado no momento.%>
+            <!--
+            <% if current_user.signature.present? %>
+              <div>
+                <%= f.check_box :use_pre_registered_signature %>
+                <%= f.label :use_pre_registered_signature, "Usar assinatura pré-cadastrada" %>
+              </div>
+            <% end %>
+            -->
+            
           </tbody>
         </table>
       </div>

@@ -86,7 +86,7 @@ class Quotation < ApplicationRecord
           quotation: self,
           supplier: supplier,
           status: "aberta",
-          analysis_status: "pendente_de_analise",
+          analysis_status: "aberta",
           expiration_date: expiration_date
         )
       rescue => e

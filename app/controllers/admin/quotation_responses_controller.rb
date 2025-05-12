@@ -25,11 +25,13 @@ module Admin
     end
 
     def reject
+      feedback = params[:admin_feedback]
       @quotation_response.update!(
         analysis_status: "reprovado",
-        status: "revisao_fornecedor"
+        status: "revisao_fornecedor",
+        admin_feedback: feedback
       )
-      redirect_to admin_dashboard_index_path, notice: "Cotação rejeitada. O fornecedor pode reenviar a resposta."
+      redirect_to admin_dashboard_index_path, notice: "Cotação rejeitada. O fornecedor poderá reenviar a resposta."
     end
 
     def liberar_visualizacao

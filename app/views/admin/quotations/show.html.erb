@@ -7,7 +7,7 @@
     <div class="space-y-4">
       <p><strong>Cliente:</strong> <%= @quotation.customer.name %></p>
       <p><strong>Data limite de conclusão de compra:</strong> <%= @quotation.expiration_date.strftime("%d/%m/%Y") if @quotation.expiration_date %></p>
-      <p><strong>Status:</strong> <%= @quotation.status.capitalize %></p>
+      <p><strong>Status:</strong> <%= quotation_status_badge(@quotation.status) %></p>
     </div>
 
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
@@ -36,24 +36,12 @@
             </tr>
           <% end %>
         </tbody>
-
-
-
       </table>
     </div>
 
+    <%= admin_quotation_action_buttons(@quotation) %>
+
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Respostas de Fornecedores</h3>
-    <% if @quotation.aberta? || @quotation.resposta_recebida? || @quotation.visualizacao_liberada? %>
-      <%= link_to "Encerrar para novas respostas",
-                  encerrar_respostas_admin_quotation_path(@quotation),
-                  method: :patch,
-                  data: { turbo_method: :patch, turbo_confirm: "Tem certeza de que deseja encerrar esta cotação para novas respostas?" },
-                  class: "inline-block px-4 py-2 rounded-xl text-white font-semibold shadow transition hover:brightness-110",
-                  style: "background-color: #1447E6;" %>
-    <% end %>
-
-
-
 
     <% if @quotation.quotation_responses.any? %>
       <div class="overflow-x-auto">
@@ -62,43 +50,20 @@
             <tr>
               <th class="px-4 py-2 text-left">Fornecedor</th>
               <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Status de Análise</th>
               <th class="px-4 py-2 text-left">Data de Validade</th>
               <th class="px-4 py-2 text-left">Ações</th>
             </tr>
           </thead>
-          <tbody >
+          <tbody>
             <% @quotation.quotation_responses.each do |response| %>
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2"><%= response.supplier.name %></td>
-                <td class="px-4 py-2">
-                  <% if response.status == "pendente" %>
-                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
-                      Pendente
-                    </span>
-                  <% elsif response.status == "finalizado" %>
-                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                      Finalizado
-                    </span>
-                  <% else %>
-                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-                      <%= response.status.capitalize %>
-                    </span>
-                  <% end %>
-                </td>
+                <td class="px-4 py-2"><%= quotation_response_status_badge(response) %></td>
+                <td class="px-4 py-2"><%= quotation_response_analysis_badge(response.analysis_status) %></td>
                 <td class="px-4 py-2"><%= response.expiration_date.strftime("%d/%m/%Y") if response.expiration_date %></td>
                 <td class="px-4 py-2 space-y-1">
                   <%= link_to "Ver Detalhes", admin_quotation_response_path(response), class: "text-blue-600 hover:underline block" %>
-
-                  <% if response.status == "documento_enviado" && response.analysis_status == "aprovado" %>
-                    <%= button_to "Liberar para o cliente", liberar_visualizacao_admin_quotation_response_path(response),
-                          method: :patch,
-                          form: { data: { turbo_confirm: "Tem certeza que deseja liberar esta resposta para o cliente?" } },
-                          class: "block text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-sm" %>
-
-                  <% elsif response.status == "finalizado" && response.analysis_status == "pendente_de_analise" %>
-                    <%= link_to "Analisar documento", admin_quotation_response_path(response),
-                          class: "block text-white bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded-md text-sm" %>
-                  <% end %>
                 </td>
               </tr>
             <% end %>

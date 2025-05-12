@@ -1,6 +1,7 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_and_authorize_purchase_order, only: [:show, :pdf]
+  # before_action :set_and_authorize_purchase_order, only: [:show, :pdf]
+  before_action :set_and_authorize_purchase_order, only: [:show]
 
   def index
     if current_user.role == "supplier"
@@ -34,14 +35,14 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
-  def pdf
-    pdf = PdfPurchaseOrderService.new(@purchase_order).generate
+  # def pdf
+  #   pdf = PdfPurchaseOrderService.new(@purchase_order).generate
 
-    send_data pdf,
-              filename: PdfPurchaseOrderService.new(@purchase_order).filename,
-              type: "application/pdf",
-              disposition: "inline"
-  end
+  #   send_data pdf,
+  #             filename: PdfPurchaseOrderService.new(@purchase_order).filename,
+  #             type: "application/pdf",
+  #             disposition: "inline"
+  # end
 
   def secure_pdf
     @purchase_order = PurchaseOrder.find_signed!(params[:signed_id])

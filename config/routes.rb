@@ -46,7 +46,7 @@ Rails.application.routes.draw do
     resources :customized_products, only: [ :create ]
   end
 
-  resources :quotations, only: [ :index, :new, :create, :show ] do
+  resources :quotations, only: [ :index, :new, :create, :show, :edit, :update ] do
     member do
       # New flow to generate purchase orders
       get :select_orders        # Step 4: Displays the table with items (rows) x suppliers (columns)

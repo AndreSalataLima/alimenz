@@ -7,11 +7,17 @@
     <p class="mb-2 text-gray-700"><strong>Fornecedor:</strong> <%= @purchase_order.supplier.name %></p>
     <p class="mb-2 text-gray-700"><strong>Valor Total:</strong> <%= real_currency(@purchase_order.total_value) %></p>
     <p class="mb-2 text-gray-700"><strong>Data de Validade:</strong> <%= @purchase_order.expiration_date.strftime('%d/%m/%Y') %></p>
-    <p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @purchase_order.status.capitalize %></p>
+<p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @purchase_order.status.try(:capitalize) %></p>
+
+    <div class="mt-4">
+      <%= admin_purchase_order_action_buttons(@purchase_order) %>
+    </div>
+
     <p class="mb-4 text-gray-700">
       <strong>Documento PDF:</strong>
       <%= link_to "Visualizar PDF", secure_purchase_order_pdf_path(@purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
     </p>
+
 
     <h2 class="text-lg font-bold text-gray-800 mt-6 mb-4">Itens do Pedido</h2>
     <% if @items.any? %>

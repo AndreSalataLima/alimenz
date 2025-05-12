@@ -5,75 +5,34 @@
     <h2 class="text-xl font-bold text-gray-800 mb-4">Minhas Respostas de Cotação</h2>
 
     <% if @quotation_responses.any? %>
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
+      <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table class="min-w-full text-left border-collapse">
+          <thead class="bg-gray-100 border-b border-gray-200">
             <tr>
-              <th class="px-4 py-2 text-left">Cotação</th>
-              <th class="px-4 py-2 text-left">Entidade Participante</th>
-              <th class="px-4 py-2 text-left">Data limite</th>
-              <th class="px-4 py-2 text-left">Status</th>
-              <th class="px-4 py-2 text-left">Ações</th>
+              <th class="px-4 py-2 font-medium text-gray-700">Cotação</th>
+              <th class="px-4 py-2 font-medium text-gray-700">Entidade Participante</th>
+              <th class="px-4 py-2 font-medium text-gray-700">Data Limite</th>
+              <th class="px-4 py-2 font-medium text-gray-700">Status</th>
+              <th class="px-4 py-2 font-medium text-gray-700">Ações</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <% @quotation_responses.each do |quotation_response| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2 font-medium">
-                  <%= "Cotação ##{quotation_response.quotation.id}" %>
-                </td>
+                <td class="px-4 py-2 font-medium"><%= "Cotação ##{quotation_response.quotation.id}" %></td>
+                <td class="px-4 py-2"><%= quotation_response.quotation.customer.name %></td>
+                <td class="px-4 py-2"><%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") if quotation_response.quotation.expiration_date %></td>
+                <td class="px-4 py-2">
+                  <%= quotation_response_status_badge(quotation_response) %>
 
-                <td class="px-4 py-2">
-                  <%= quotation_response.quotation.customer.name %>
-                </td>
-                <td class="px-4 py-2">
-                  <% if quotation_response.quotation.expiration_date.present? %>
-                    <%= quotation_response.quotation.expiration_date.strftime("%d/%m/%Y") %>
-                  <% else %>
-                    <span class="text-gray-500">Não informado</span>
+                  <% if quotation_response.status == "revisao_fornecedor" && quotation_response.admin_feedback.present? %>
+                    <div class="text-sm text-yellow-700 mt-1">
+                      <%= quotation_response.admin_feedback %>
+                    </div>
                   <% end %>
                 </td>
                 <td class="px-4 py-2">
-                  <span class="px-2 py-1 rounded-lg text-sm font-semibold
-                    <%= quotation_response.status == 'aberta' ? 'bg-yellow-200 text-yellow-800' :
-                         quotation_response.status == 'aguardando_assinatura' ? 'bg-blue-200 text-blue-800' :
-                         quotation_response.status == 'concluida' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-800' %>">
-                  <%= quotation_response.status.to_s.humanize.capitalize %>
-                  </span>
-                </td>
-                <td class="px-4 py-2">
-                  <% if quotation_response.status == "aguardando_assinatura" %>
-                    <div class="flex flex-col space-y-1">
-                      <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response),
-                          class: "text-blue-600 hover:underline" %>
-
-                      <%= link_to "Upload Documento Assinado", upload_document_suppliers_quotation_response_path(quotation_response),
-                          class: "text-blue-600 hover:underline" %>
-
-                      <%= link_to "Visualizar PDF", secure_pdf_suppliers_quotation_response_path(quotation_response.signed_id),
-                          target: "_blank", class: "text-blue-600 hover:underline" %>
-
-                      <div class="flex items-center space-x-1">
-                        <%= link_to "Assinar digitalmente", "https://assinador.iti.br/assinatura/index.xhtml",
-                            class: "text-blue-600 hover:underline", target: "_blank" %>
-
-                        <%= link_to "?", "https://www.gov.br/governodigital/pt-br/identidade/assinatura-eletronica",
-                            class: "text-sm text-gray-400 hover:text-blue-700 align-super", target: "_blank",
-                            title: "Ajuda sobre assinatura digital" %>
-                      </div>
-                    </div>
-                  </div>
-                  <% elsif quotation_response.status == "finalizado" %>
-                    <div class="flex flex-col space-y-1">
-                      <%= link_to "Baixar Cotação", rails_blob_path(quotation_response.signed_document, disposition: "attachment"),
-                        class: "text-blue-600 hover:underline" %>
-
-                      <%= link_to "Visualizar Cotação", secure_document_suppliers_quotation_response_path(quotation_response.signed_id),
-                        target: "_blank", class: "text-blue-600 hover:underline" %>
-                    </div>
-                  <% else %>
-                    <%= link_to "Responder", edit_suppliers_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
-                  <% end %>
+                  <%= supplier_quotation_response_action_buttons(quotation_response) %>
                 </td>
               </tr>
             <% end %>

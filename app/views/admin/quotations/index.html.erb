@@ -21,24 +21,14 @@
               <tr class="hover:bg-gray-50">
                 <td class="px-4 py-2"><%= quotation.id %></td>
                 <td class="px-4 py-2"><%= quotation.customer.name %></td>
-                <td class="px-4 py-2"><%= quotation.expiration_date.strftime("%d/%m/%Y") if quotation.expiration_date %></td>
+                <td class="px-4 py-2"><%= quotation.expiration_date&.strftime("%d/%m/%Y") %></td>
                 <td class="px-4 py-2">
-                  <% if quotation.status == "pendente" %>
-                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
-                      Pendente
-                    </span>
-                  <% elsif quotation.status == "finalizada" %>
-                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                      Finalizada
-                    </span>
-                  <% else %>
-                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-                      <%= quotation.status.capitalize %>
-                    </span>
-                  <% end %>
+                  <%= quotation_status_badge(quotation.status) %>
                 </td>
                 <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", admin_quotation_path(quotation), class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Ver Detalhes",
+                        admin_quotation_path(quotation),
+                        class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>

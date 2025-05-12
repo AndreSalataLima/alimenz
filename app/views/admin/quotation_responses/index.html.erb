@@ -10,61 +10,36 @@
           <thead class="bg-gray-100">
             <tr>
               <th class="px-4 py-2 text-left">ID</th>
+              <th class="px-4 py-2 text-left">Cliente</th>
               <th class="px-4 py-2 text-left">Fornecedor</th>
               <th class="px-4 py-2 text-left">Cotação</th>
-              <th class="px-4 py-2 text-left">Data de Validade</th>
-              <th class="px-4 py-2 text-left">Status fornecedor</th>
-              <th class="px-4 py-2 text-left">Análise admin</th>
-              <th class="px-4 py-2 text-left">Ações</th>
+              <th class="px-4 py-2 text-left">Validade</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-left">Análise</th>
+              <th class="px-4 py-2 text-left">Detalhes</th>
             </tr>
           </thead>
+
           <tbody class="divide-y divide-gray-200">
-            <% @quotation_responses.each do |qr| %>
+            <% @quotation_responses.each do |quotation_response| %>
               <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= qr.id %></td>
-                <td class="px-4 py-2"><%= qr.supplier.name %></td>
+                <td class="px-4 py-2"><%= quotation_response.id %></td>
+                <td class="px-4 py-2"><%= quotation_response.quotation.customer.name %></td> <!-- aqui também: quotation_response -->
+                <td class="px-4 py-2"><%= quotation_response.supplier.name %></td>
                 <td class="px-4 py-2">
-                  <%= link_to "Cotação ##{qr.quotation.id}", admin_quotation_path(qr.quotation), class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Cotação ##{quotation_response.quotation.id}", admin_quotation_path(quotation_response.quotation), class: "text-blue-600 hover:underline" %>
                 </td>
                 <td class="px-4 py-2">
-                  <%= qr.expiration_date.strftime('%d/%m/%Y') if qr.expiration_date %>
+                  <%= quotation_response.expiration_date.strftime('%d/%m/%Y') if quotation_response.expiration_date %>
                 </td>
                 <td class="px-4 py-2">
-                  <% if qr.status == "pendente" %>
-                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
-                      Pendente
-                    </span>
-                  <% elsif qr.status == "finalizado" %>
-                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                      Finalizado
-                    </span>
-                  <% else %>
-                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-                      <%= qr.status.capitalize %>
-                    </span>
-                  <% end %>
+                  <%= quotation_response_status_badge(quotation_response) %>
                 </td>
                 <td class="px-4 py-2">
-                  <% if qr.analysis_status == "pendente_de_analise" %>
-                    <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
-                      🟡 Pendente de Análise
-                    </span>
-                  <% elsif qr.analysis_status == "aprovado" %>
-                    <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                      ✅ Aprovado
-                    </span>
-                  <% elsif qr.analysis_status == "cotacao_nao_aceita" %>
-                    <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
-                      ❌ Cotação não aceita
-                    </span>
-                  <% else %>
-                    <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-                      -
-                    </span>
-                  <% end %>
+                  <%= quotation_response_analysis_badge(quotation_response.analysis_status) %>
                 </td>
                 <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", admin_quotation_response_path(qr), class: "text-blue-600 hover:underline" %>
+                  <%= link_to "Ver Detalhes", admin_quotation_response_path(quotation_response), class: "text-blue-600 hover:underline" %>
                 </td>
               </tr>
             <% end %>

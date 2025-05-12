@@ -2,7 +2,9 @@ module Suppliers
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_supplier
-    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
+    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :upload_document, :confirm_upload, :sign ]
+    # before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
+
 
     def index
       @quotation_responses = policy_scope(QuotationResponse)
@@ -35,7 +37,7 @@ module Suppliers
         "aguardando_assinatura"
       end
 
-      analysis_status_update = (new_status == "finalizado") ? { analysis_status: "pendente_de_analise" } : {}
+      analysis_status_update = (new_status == "aprovado") ? { analysis_status: "pendente_de_analise" } : {}
 
       if @quotation_response.update(quotation_response_params.merge(status: new_status).merge(analysis_status_update))
         @quotation_response.reload
@@ -105,15 +107,15 @@ module Suppliers
       # Logic to handle the manual upload of the signed document
     end
 
-    def pdf
-      pdf_service   = PdfGeneratorService.new(@quotation_response)
-      pdf_content   = pdf_service.generate
+    # def pdf
+    #   pdf_service   = PdfGeneratorService.new(@quotation_response)
+    #   pdf_content   = pdf_service.generate
 
-      send_data pdf_content,
-                filename: pdf_service.filename,
-                type: "application/pdf",
-                disposition: "inline"
-    end
+    #   send_data pdf_content,
+    #             filename: pdf_service.filename,
+    #             type: "application/pdf",
+    #             disposition: "inline"
+    # end
 
 
 
@@ -141,6 +143,7 @@ module Suppliers
         redirect_to supplier_home_path, alert: "Documento não encontrado."
       end
     end
+
 
     private
 

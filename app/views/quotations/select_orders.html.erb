@@ -8,7 +8,7 @@
 
     <div class="mb-6">
       <% @suppliers.each do |supplier| %>
-        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
+        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'visualizacao_liberada') %>
         <% if response&.signed_document.attached? %>
           <p class="text-sm text-gray-700 mb-1">
             <strong><%= supplier.name %></strong>:
@@ -39,58 +39,58 @@
               <% end %>
             </tr>
           </thead>
-<tbody class="divide-y divide-gray-200">
-  <% @items.each do |item| %>
-    <tr class="hover:bg-gray-50">
-      <td class="px-4 py-2 text-left">
-        <%= item.product.generic_name %>
-        <% if item.product_comment.present? %>
-          <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
-        <% end %>
-      </td>
+            <tbody class="divide-y divide-gray-200">
+              <% @items.each do |item| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2 text-left">
+                    <%= item.product.generic_name %>
+                    <% if item.product_comment.present? %>
+                      <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
+                    <% end %>
+                  </td>
 
-      <!-- Coluna quantidade (agora com campo editável) -->
-      <td class="px-4 py-2 text-center">
-<input type="number"
-       name="quantidades[<%= item.id %>]"
-       value="<%= item.quantity %>"
-       step="0.01"
-       min="0"
-       data-update-total-target="quantity"
-       data-item-id="<%= item.id %>"
-       class="w-24 text-sm text-center border rounded"
-       data-action="input->update-total#update"/>
+                  <!-- Coluna quantidade (agora com campo editável) -->
+                  <td class="px-4 py-2 text-center">
+            <input type="number"
+                  name="quantidades[<%= item.id %>]"
+                  value="<%= item.quantity %>"
+                  step="0.01"
+                  min="0"
+                  data-update-total-target="quantity"
+                  data-item-id="<%= item.id %>"
+                  class="w-24 text-sm text-center border rounded"
+                  data-action="input->update-total#update"/>
 
-      </td>
+                  </td>
 
-      <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
+                  <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
 
-      <% @suppliers.each do |supplier| %>
-        <td class="px-4 py-2 text-center">
-          <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'finalizado') %>
-          <% if response.present? %>
-            <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
-            <% if response_item.present? && response_item.available %>
-              <% unit_price = response_item.price.to_f %>
-              <div class="space-y-1 flex flex-col items-center">
-<span class="font-medium text-gray-800" data-update-total-target="productTotal"
-      data-item-id="<%= item.id %>"
-      data-response-id="<%= response.id %>">
-  <%= real_currency(unit_price * item.quantity.to_f) %>
-</span>
+                  <% @suppliers.each do |supplier| %>
+                    <td class="px-4 py-2 text-center">
+                      <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'visualizacao_liberada') %>
+                      <% if response.present? %>
+                        <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
+                        <% if response_item.present? && response_item.available %>
+                          <% unit_price = response_item.price.to_f %>
+                          <div class="space-y-1 flex flex-col items-center">
+            <span class="font-medium text-gray-800" data-update-total-target="productTotal"
+                  data-item-id="<%= item.id %>"
+                  data-response-id="<%= response.id %>">
+              <%= real_currency(unit_price * item.quantity.to_f) %>
+            </span>
 
 
-                <%= check_box_tag "selected[#{response.id}][#{item.id}]",
-                                  "1",
-                                  false,
-                                  class: "rounded border-gray-300 focus:ring-indigo-500",
-  data: {
-    "update-total-target": "checkbox",
-    "price": unit_price.to_s,
-    "item-id": item.id,
-    "response-id": response.id,
-    action: "update-total#update"
-  } %>
+                            <%= check_box_tag "selected[#{response.id}][#{item.id}]",
+                                              "1",
+                                              false,
+                                              class: "rounded border-gray-300 focus:ring-indigo-500",
+              data: {
+                "update-total-target": "checkbox",
+                "price": unit_price.to_s,
+                "item-id": item.id,
+                "response-id": response.id,
+                action: "update-total#update"
+              } %>
 
                 <%= label_tag "selected_#{response.id}_#{item.id}",
                               "Comprar",

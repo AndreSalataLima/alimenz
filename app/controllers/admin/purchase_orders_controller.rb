@@ -2,7 +2,7 @@ module Admin
   class PurchaseOrdersController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_purchase_order
+    before_action :set_purchase_order, only: [:show, :confirmar, :arquivar]
 
     def index
       @purchase_orders = PurchaseOrder.includes(:customer, :supplier).order(created_at: :desc)
