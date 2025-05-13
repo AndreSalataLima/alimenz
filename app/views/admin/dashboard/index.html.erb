@@ -4,16 +4,100 @@
   <div class="bg-white shadow-lg rounded-xl p-6">
     <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Painel de Controle</h2>
 
-    <% pending_responses = QuotationResponse.where(analysis_status: "pendente_de_analise").count %>
-    <% if pending_responses > 0 %>
-      <div class="bg-yellow-300 p-4 rounded-lg mb-6 text-gray-900 shadow-md flex justify-between items-center">
-        <div>
-          <strong>Atenção:</strong> Existem <%= pending_responses %> resposta(s) de cotação pendente(s) de análise.
-        </div>
-        <%= link_to "Visualizar Respostas", admin_quotation_responses_path,
-          class: "bg-yellow-500 text-white px-4 py-2 rounded-md shadow hover:bg-yellow-600 transition" %>
-      </div>
-    <% end %>
+<% if @cotacoes_abertas.any? %>
+  <div class="bg-blue-200 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    <strong>Atenção:</strong> Existem <%= @cotacoes_abertas.count %> cotação(ões) abertas sem resposta.
+    <ul class="mt-4 space-y-2">
+      <% @cotacoes_abertas.each do |quotation| %>
+        <li>
+          <%= link_to "#{quotation.created_at.to_date} | #{quotation.title} | #{quotation.customer_snapshot['name']}",
+            admin_quotation_path(quotation),
+            class: "text-blue-700 underline hover:text-blue-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+<% if @cotacoes_proximas_do_vencimento.any? %>
+  <div class="bg-red-200 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    Existem <%= @cotacoes_proximas_do_vencimento.count %> cotação(ões) próximas do vencimento.
+    <ul class="mt-4 space-y-2">
+      <% @cotacoes_proximas_do_vencimento.each do |quotation| %>
+        <li>
+          <%= link_to "#{quotation.expiration_date} | #{quotation.title} | #{quotation.customer_snapshot['name']}",
+            admin_quotation_path(quotation),
+            class: "text-red-700 underline hover:text-red-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% if @resps_aprovadas_nao_visiveis.any? %>
+  <div class="bg-purple-300 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    Existem <%= @resps_aprovadas_nao_visiveis.count %> resposta(s) de cotação aprovadas, aguardando liberação de visualização.
+    <ul class="mt-4 space-y-2">
+      <% @resps_aprovadas_nao_visiveis.each do |response| %>
+        <li>
+          <%= link_to "#{response.quotation.title} | #{response.supplier.name}",
+            admin_quotation_path(response.quotation),
+            class: "text-purple-700 underline hover:text-purple-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+<% if @cotacoes_arquivadas_7d.any? %>
+  <div class="bg-gray-200 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    Há <%= @cotacoes_arquivadas_7d.count %> cotação(ões) arquivada(s) nos últimos 7 dias.
+    <ul class="mt-4 space-y-2">
+      <% @cotacoes_arquivadas_7d.each do |quotation| %>
+        <li>
+          <%= link_to "#{quotation.created_at.to_date} | #{quotation.title} | #{quotation.customer_snapshot['name']}",
+            admin_quotation_path(quotation),
+            class: "text-gray-700 underline hover:text-gray-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+<% if @resps_pendentes_analise.any? %>
+  <div class="bg-yellow-300 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    Existem <%= @resps_pendentes_analise.count %> resposta(s) pendente(s) de análise.
+    <ul class="mt-4 space-y-2">
+      <% @resps_pendentes_analise.each do |response| %>
+        <li>
+          <%= link_to "#{response.quotation.title} | #{response.supplier.name}",
+            admin_quotation_response_path(response),
+            class: "text-yellow-700 underline hover:text-yellow-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+<% if @ordens_abertas.any? %>
+  <div class="bg-green-200 p-4 rounded-lg mb-6 text-gray-900 shadow-md">
+    Existem <%= @ordens_abertas.count %> ordem(ns) de compra emitida(s). Verifique disponibilidade e emissão de fatura.
+    <ul class="mt-4 space-y-2">
+      <% @ordens_abertas.each do |order| %>
+        <li>
+          <%= link_to "#{order.quotation.title} | #{order.customer.name} | #{order.supplier.name}",
+            admin_purchase_order_path(order),
+            class: "text-green-700 underline hover:text-green-900" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 
     <!-- Grid de Ações -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

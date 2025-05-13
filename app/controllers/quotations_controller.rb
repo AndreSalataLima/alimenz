@@ -172,12 +172,20 @@ class QuotationsController < ApplicationController
     @quotation = Quotation.find(params[:id])
 
     if current_user == @quotation.customer
-      @quotation.update!(status: "arquivada")
+      @quotation.transaction do
+        @quotation.update!(status: "arquivada")
+
+        @quotation.quotation_responses.where.not(status: "concluida").update_all(status: "arquivada")
+
+        @quotation.purchase_orders.update_all(status: "arquivada")
+      end
+
       redirect_to quotations_path, notice: "Cotação arquivada com sucesso."
     else
       redirect_to quotations_path, alert: "Você não tem permissão para arquivar esta cotação."
     end
   end
+
 
 
   private

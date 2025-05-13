@@ -26,28 +26,28 @@ module QuotationsHelper
     case quotation.status
     when "aberta"
       # Cliente pode editar e arquivar
-      buttons << link_to(
-        "Editar Cotação",
-        edit_quotation_path(quotation),
-        class: "bg-indigo-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-indigo-700"
-      )
-      buttons << button_to(
-        "Arquivar Cotação",
-        arquivar_quotation_path(quotation),
-        method: :patch,
-        data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
-        class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
-      )
+      # buttons << link_to(
+      #   "Editar Cotação",
+      #   edit_quotation_path(quotation),
+      #   class: "bg-indigo-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-indigo-700"
+      # )
+      # buttons << button_to(
+      #   "Arquivar Cotação",
+      #   arquivar_quotation_path(quotation),
+      #   method: :patch,
+      #   data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
+      #   class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
+      # )
 
     when "resposta_recebida"
       # Cliente só pode arquivar
-      buttons << button_to(
-        "Arquivar Cotação",
-        arquivar_quotation_path(quotation),
-        method: :patch,
-        data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
-        class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
-      )
+      # buttons << button_to(
+      #   "Arquivar Cotação",
+      #   arquivar_quotation_path(quotation),
+      #   method: :patch,
+      #   data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
+      #   class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
+      # )
 
     when "visualizacao_liberada", "respostas_encerradas"
       # Cliente vê respostas e seleciona itens

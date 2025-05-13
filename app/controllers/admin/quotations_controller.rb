@@ -33,12 +33,20 @@ module Admin
     end
 
     def arquivar
-      @quotation = Quotation.find(params[:id])
-      @quotation.update!(status: "arquivada")
-      redirect_to admin_quotation_path(@quotation), notice: "Cotação arquivada com sucesso."
+      @purchase_order.transaction do
+        @purchase_order.update!(status: "arquivada")
+        if @purchase_order.quotation.present?
+          @purchase_order.quotation.update!(status: "arquivada")
+
+          @purchase_order.quotation.quotation_responses.where.not(status: "concluida").update_all(status: "arquivada")
+        end
+      end
+
+      redirect_to admin_purchase_order_path(@purchase_order), notice: "Pedido arquivado com sucesso."
     end
 
-    
+
+
     private
 
     def set_quotation
