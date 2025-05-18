@@ -52,7 +52,7 @@ module QuotationsHelper
     when "visualizacao_liberada", "respostas_encerradas"
       # Cliente vê respostas e seleciona itens
       buttons << link_to(
-        "Selecionar Itens",
+        "Visualizar respostas",
         select_orders_quotation_path(quotation),
         class: "bg-green-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-green-700"
       )
