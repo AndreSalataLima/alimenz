@@ -2,13 +2,13 @@ class QuotationsController < ApplicationController
   before_action :authenticate_user!
   before_action :verify_customer, only: [ :new, :create, :select_orders, :orders_summary, :finalize_orders ]
 
-  def preview_pdf_data
-    @quotation = Quotation.find(params[:id])
-    @quotation_response = @quotation.quotation_responses.find_by(status: "finalizado")
-    unless @quotation_response
-      redirect_to @quotation, alert: "No finalizado response found for this quotation."
-    end
-  end
+  # def preview_pdf_data
+  #   @quotation = Quotation.find(params[:id])
+  #   @quotation_response = @quotation.quotation_responses.find_by(status: "finalizado")
+  #   unless @quotation_response
+  #     redirect_to @quotation, alert: "No finalizado response found for this quotation."
+  #   end
+  # end
 
   def index
     @quotations = current_user.quotations.order(created_at: :desc)
@@ -36,8 +36,6 @@ class QuotationsController < ApplicationController
       }
     end
   end
-
-
 
   def show
     @quotation = Quotation.find(params[:id])
@@ -74,7 +72,7 @@ class QuotationsController < ApplicationController
     @items = @quotation.quotation_items.includes(:product)
 
     supplier_ids = @quotation.quotation_responses
-                             .where(status: "finalizado", analysis_status: "aprovado")
+                             .where(status: "visualizacao_liberada", analysis_status: "aprovado")
                              .pluck(:supplier_id)
                              .uniq
 
@@ -115,8 +113,6 @@ class QuotationsController < ApplicationController
     quantidades = params[:quantidades] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
 
-    puts "Selected responses IDs: #{selected_responses.pluck(:id, :status, :analysis_status)}"
-
     items_by_response = {}
     selected_responses.each do |response|
       selected_item_ids = selected[response.id.to_s]&.keys || []
@@ -134,10 +130,7 @@ class QuotationsController < ApplicationController
     responses_by_supplier.each do |supplier_id, responses|
       next unless confirmations[supplier_id.to_s] == "1"
 
-      items = []
-      responses.each do |response|
-        items.concat(items_by_response[response.id])
-      end
+      items = responses.flat_map { |r| items_by_response[r.id] }
 
       total_value = items.sum do |item|
         quantity = quantidades[item.quotation_item.id.to_s]&.to_f || item.quotation_item.quantity.to_f
@@ -149,7 +142,7 @@ class QuotationsController < ApplicationController
         total_value: total_value,
         expiration_date: @quotation.expiration_date,
         quotation_id: @quotation.id,
-        status: "pendente"
+        status: "aberta"
       )
 
       items.each do |i|
@@ -168,11 +161,32 @@ class QuotationsController < ApplicationController
     end
 
     selected_responses.each do |response|
-      response.update!(status: "finalizado")
+      response.update!(status: "concluida")
     end
 
+    @quotation.update!(status: "concluida")
     redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
   end
+
+  def arquivar
+    @quotation = Quotation.find(params[:id])
+
+    if current_user == @quotation.customer
+      @quotation.transaction do
+        @quotation.update!(status: "arquivada")
+
+        @quotation.quotation_responses.where.not(status: "concluida").update_all(status: "arquivada")
+
+        @quotation.purchase_orders.update_all(status: "arquivada")
+      end
+
+      redirect_to quotations_path, notice: "Cotação arquivada com sucesso."
+    else
+      redirect_to quotations_path, alert: "Você não tem permissão para arquivar esta cotação."
+    end
+  end
+
+
 
   private
 

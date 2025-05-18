@@ -20,6 +20,7 @@
                 <th class="px-4 py-2 text-left">Cliente</th>
                 <th class="px-4 py-2 text-left">Valor Total</th>
                 <th class="px-4 py-2 text-left">Data de Validade</th>
+                <th class="px-4 py-2 text-left">Status</th> <!-- NOVO -->
                 <th class="px-4 py-2 text-left">Ações</th>
               </tr>
             </thead>
@@ -30,8 +31,9 @@
                   <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
                   <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                   <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
+                  <td class="px-4 py-2"><%= purchase_order_status_badge(purchase_order.status) %></td> <!-- NOVO -->
                   <td class="px-4 py-2">
-                    <%= link_to "Visualizar PDF", secure_purchase_order_pdf_path(purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
+                    <%= supplier_purchase_order_action_buttons(purchase_order) %> <!-- NOVO -->
                   </td>
                 </tr>
               <% end %>
@@ -47,28 +49,33 @@
       <h2 class="text-xl font-bold text-gray-800 mb-4">Meus Pedidos de Compra</h2>
 
       <% if @purchase_orders.present? %>
-        <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
-          <thead class="bg-gray-100 text-gray-700">
-            <tr>
-              <th class="px-4 py-2 text-left">Fornecedor</th>
-              <th class="px-4 py-2 text-left">Valor Total</th>
-              <th class="px-4 py-2 text-left">Data de Validade</th>
-              <th class="px-4 py-2 text-left">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% @purchase_orders.each do |purchase_order| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= purchase_order.supplier.name %></td>
-                <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
-                <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime('%d/%m/%Y') %></td>
-                <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", purchase_order_path(purchase_order), class: "text-blue-500 underline hover:text-blue-700" %>
-                </td>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">Fornecedor</th>
+                <th class="px-4 py-2 text-left">Valor Total</th>
+                <th class="px-4 py-2 text-left">Data de Validade</th>
+                <th class="px-4 py-2 text-left">Status</th>
+                <th class="px-4 py-2 text-left">Ações</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <% @purchase_orders.each do |purchase_order| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-2"><%= purchase_order.supplier.name %></td>
+                  <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
+                  <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime('%d/%m/%Y') %></td>
+                  <td class="px-4 py-2"><%= purchase_order_status_badge(purchase_order.status) %></td>
+                  <td class="px-4 py-2 flex gap-2 items-center">
+                    <%= link_to "Detalhes", purchase_order_path(purchase_order), class: "text-blue-500 underline hover:text-blue-700" %>
+                    <%= customer_purchase_order_action_buttons(purchase_order) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
       <% else %>
         <p class="text-gray-500">Você ainda não realizou nenhum pedido de compra.</p>
       <% end %>

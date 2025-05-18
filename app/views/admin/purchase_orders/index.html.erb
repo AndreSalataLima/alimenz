@@ -7,36 +7,31 @@
     <% if @purchase_orders.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 text-left">ID</th>
-              <th class="px-4 py-2 text-left">Cliente</th>
-              <th class="px-4 py-2 text-left">Fornecedor</th>
-              <th class="px-4 py-2 text-left">Valor Total</th>
-              <th class="px-4 py-2 text-left">Data de Validade</th>
-              <th class="px-4 py-2 text-left">Status</th>
-              <th class="px-4 py-2 text-left">Ações</th>
-              <th class="px-4 py-2 text-left">PDF</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <% @purchase_orders.each do |order| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-4 py-2"><%= order.id %></td>
-                <td class="px-4 py-2"><%= order.customer.name %></td>
-                <td class="px-4 py-2"><%= order.supplier.name %></td>
-                <td class="px-4 py-2"><%= real_currency(order.total_value) %></td>
-                <td class="px-4 py-2"><%= order.expiration_date.strftime('%d/%m/%Y') if order.expiration_date %></td>
-                <td class="px-4 py-2"><%= order.status.capitalize %></td>
-                <td class="px-4 py-2">
-                  <%= link_to "Ver Detalhes", admin_purchase_order_path(order), class: "text-blue-600 hover:underline" %>
-                </td>
-                <td class="px-4 py-2">
-                  <%= link_to "PDF", secure_purchase_order_pdf_path(order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
+<thead class="bg-gray-100">
+  <tr>
+    <th class="px-4 py-2 text-left">ID</th>
+    <th class="px-4 py-2 text-left">Cliente</th>
+    <th class="px-4 py-2 text-left">Fornecedor</th>
+    <th class="px-4 py-2 text-left">Valor Total</th>
+    <th class="px-4 py-2 text-left">Validade</th>
+    <th class="px-4 py-2 text-left">Status</th>
+    <th class="px-4 py-2 text-left">Ações</th>
+  </tr>
+</thead>
+<tbody>
+  <% @purchase_orders.each do |order| %>
+    <tr class="hover:bg-gray-50">
+      <td class="px-4 py-2"><%= order.id %></td>
+      <td class="px-4 py-2"><%= order.customer.name %></td>
+      <td class="px-4 py-2"><%= order.supplier.name %></td>
+      <td class="px-4 py-2"><%= real_currency(order.total_value) %></td>
+      <td class="px-4 py-2"><%= order.expiration_date&.strftime('%d/%m/%Y') %></td>
+      <td class="px-4 py-2"><%= purchase_order_status_badge(order.status) %></td>
+      <td class="px-4 py-2"><%= admin_purchase_order_action_buttons(order) %></td>
+    </tr>
+  <% end %>
+</tbody>
+
         </table>
       </div>
     <% else %>

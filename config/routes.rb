@@ -5,17 +5,30 @@ Rails.application.routes.draw do
     resources :users, only: [:new, :create, ]
     resources :customers, only: [ :index, :show, :edit, :update ]
     resources :suppliers, only: [ :index, :show, :edit, :update ]
-    resources :quotations, only: [ :index, :show ]
     resources :dashboard, only: [ :index ]
-    resources :purchase_orders, only: [:index, :show]
     resources :categories, only: [:index, :new, :create, :edit, :update]
     resources :products
 
+    resources :quotations, only: [ :index, :show ] do
+      member do
+        patch :encerrar_respostas
+        patch :liberar_visualizacao
+        patch :arquivar
+      end
+    end
 
     resources :quotation_responses, only: [ :index, :show ] do
       member do
         patch :approve
         patch :reject
+        patch :liberar_visualizacao
+      end
+    end
+
+    resources :purchase_orders, only: [:index, :show] do
+      member do
+        patch :confirmar
+        patch :arquivar
       end
     end
 
@@ -33,12 +46,13 @@ Rails.application.routes.draw do
     resources :customized_products, only: [ :create ]
   end
 
-  resources :quotations, only: [ :index, :new, :create, :show ] do
+  resources :quotations, only: [ :index, :new, :create, :show, :edit, :update ] do
     member do
       # New flow to generate purchase orders
       get :select_orders        # Step 4: Displays the table with items (rows) x suppliers (columns)
       post :orders_summary      # Step 5: Receives the checkboxes and displays the summary cards
       post :finalize_orders     # Step 7: Generates the Purchase Orders from the confirmed orders
+      patch :arquivar
     end
   end
 

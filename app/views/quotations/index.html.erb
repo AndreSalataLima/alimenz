@@ -8,9 +8,14 @@
         <%= f.label :status, "Filtrar por status:", class: "block text-gray-700" %>
         <%= f.select :status,
             options_for_select([
-              ["Todos", ""],
-              ["Pendente", "pendente"],
-              ["Completa", "completa"]
+              ["Todas", ""],
+              ["Aberta", "aberta"],
+              ["Resposta Recebida", "resposta_recebida"],
+              ["Visualização Liberada", "visualizacao_liberada"],
+              ["Respostas Encerradas", "respostas_encerradas"],
+              ["Expirada", "expirada"],
+              ["Concluída", "concluida"],
+              ["Arquivada", "arquivada"]
             ], params[:status]),
             class: "border rounded px-2 py-1" %>
       </div>
@@ -47,20 +52,14 @@
               <%= quotation.expiration_date.strftime("%d/%m/%Y") %>
             </td>
             <td class="px-4 py-2">
-              <%= quotation.status&.capitalize || "Sem Status" %>
+              <%= quotation_status_badge(quotation.status) %>
             </td>
+
             <td class="px-4 py-2">
-              <%= link_to 'Visualizar',
-                  quotation_path(quotation),
-                  class: "text-blue-600 hover:text-blue-800 mr-2" %>
-              <% if quotation.quotation_responses.where(status: "finalizado", analysis_status: "aprovado").exists? %>
-                <%= link_to 'Selecionar Pedidos',
-                    select_orders_quotation_path(quotation),
-                    class: "text-green-600 hover:text-green-800" %>
-              <% else %>
-                <span class="text-gray-400">Aguardando fornecedores</span>
-              <% end %>
+              <%= link_to 'Visualizar', quotation_path(quotation), class: "text-blue-600 hover:underline" %>
             </td>
+
+
           </tr>
         <% end %>
       </tbody>

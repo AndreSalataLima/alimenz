@@ -11,9 +11,6 @@ class QuotationResponsePolicy < ApplicationPolicy
       (user.role == 'supplier' && record.supplier_id == user.id)
   end
 
-
-
-
   def edit?
     record.supplier_id == user.id
   end
@@ -34,7 +31,7 @@ class QuotationResponsePolicy < ApplicationPolicy
     user.role == 'admin' ||
       (user.role == 'supplier' &&
        record.supplier_id == user.id &&
-       record.status == 'aguardando assinatura')
+       ['aguardando_assinatura', 'revisao_fornecedor'].include?(record.status))
   end
 
   # 3) Scope para index

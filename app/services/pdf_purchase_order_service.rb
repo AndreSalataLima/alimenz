@@ -22,7 +22,7 @@ class PdfPurchaseOrderService
     quotation = @purchase_order.quotation
     customer_data = quotation.customer_snapshot.symbolize_keys
     customer = @purchase_order.customer
-    response = quotation.quotation_responses.find_by(supplier_id: @purchase_order.supplier_id, status: "finalizado")
+    response = quotation.quotation_responses.find_by(supplier_id: @purchase_order.supplier_id, status: "concluida")
     supplier_data = response&.supplier_snapshot&.symbolize_keys || @purchase_order.supplier.attributes.symbolize_keys
 
 

@@ -3,9 +3,16 @@ class SuppliersController < ApplicationController
   before_action :verify_supplier
 
   def home
-    @quotation_responses = current_user.quotation_responses.includes(:quotation).order(created_at: :desc)
-    @purchase_orders = PurchaseOrder.where(supplier_id: current_user.id).order(created_at: :desc)
-  end
+    @quotation_responses = current_user.quotation_responses
+      .includes(:quotation)
+      .where.not(quotations: { status: ['concluida', 'arquivada','expirada'] })
+      .order(created_at: :desc)
+
+      @purchase_orders = PurchaseOrder
+      .where(supplier_id: current_user.id, status: :aberta)
+      .order(created_at: :desc)
+      end
+
 
   private
 

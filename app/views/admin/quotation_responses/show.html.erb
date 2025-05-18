@@ -6,29 +6,13 @@
 
     <div class="space-y-4">
       <p><strong>Fornecedor:</strong> <%= @quotation_response.supplier.name %></p>
-      <p><strong>Status do Fornecedor:</strong> <%= @quotation_response.status.capitalize %></p>
+      <p><strong>Status do Fornecedor:</strong> <%= @quotation_response.status&.capitalize || "Não informado" %></p>
       <p><strong>Status da Análise:</strong>
-        <% if @quotation_response.analysis_status == "pendente_de_analise" %>
-          <span class="px-2 py-1 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-full">
-            🟡 Pendente de Análise
-          </span>
-        <% elsif @quotation_response.analysis_status == "aprovado" %>
-          <span class="px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-            ✅ Aprovado
-          </span>
-        <% elsif @quotation_response.analysis_status == "cotacao_nao_aceita" %>
-          <span class="px-2 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full">
-            ❌ Cotação não aceita
-          </span>
-        <% else %>
-          <span class="px-2 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-full">
-            -
-          </span>
-        <% end %>
+        <%= quotation_response_analysis_badge(@quotation_response.analysis_status) %>
       </p>
       <p><strong>Data de Validade:</strong> <%= @quotation_response.expiration_date.strftime("%d/%m/%Y") if @quotation_response.expiration_date %></p>
 
-      <% if @quotation_response.status == "finalizado" && @quotation_response.signed_document.attached? %>
+      <% if @quotation_response.status == "documento_enviado" && @quotation_response.signed_document.attached? %>
         <div class="mt-4">
           <strong>Documento Enviado:</strong>
           <%= link_to "📄 Visualizar PDF", rails_blob_path(@quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
@@ -38,7 +22,30 @@
       <% end %>
     </div>
 
+    <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR/LIBERAR) %>
+    <div class="mt-6 flex space-x-4">
+      <%# Aprovar / Reprovar se ainda pendente de análise %>
+      <% if @quotation_response.analysis_status == "pendente_de_analise" %>
+        <%= button_to "Aprovar", approve_admin_quotation_response_path(@quotation_response),
+                      method: :patch,
+                      class: "bg-green-600 text-white px-4 py-2 rounded" %>
+<%= form_with url: reject_admin_quotation_response_path(@quotation_response), method: :patch, local: true do |f| %>
+  <div class="flex flex-col space-y-2">
+    <%= f.label :admin_feedback, "Comentário para o Fornecedor:", class: "text-gray-700 font-semibold" %>
+    <%= f.text_area :admin_feedback, rows: 3, class: "border rounded p-2 w-full" %>
+    <%= f.submit "Reprovar", class: "bg-red-600 text-white px-4 py-2 rounded" %>
+  </div>
+<% end %>
 
+      <%# Liberar visualização se já aprovado e documento enviado %>
+      <% elsif @quotation_response.analysis_status == "aprovado" && @quotation_response.status == "documento_enviado" %>
+        <%= button_to "Liberar ao Cliente", liberar_visualizacao_admin_quotation_response_path(@quotation_response),
+                      method: :patch,
+                      data: { turbo_confirm: "Confirma liberação?" },
+                      class: "bg-blue-600 text-white px-4 py-2 rounded" %>
+      <% end %>
+
+    </div>
 
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">
@@ -57,14 +64,12 @@
           <% @quotation_response.quotation_response_items.each do |item| %>
             <tr class="hover:bg-gray-50">
               <td class="px-4 py-2">
-                <div>
-                  <%= item.quotation_item.product.generic_name %>
-                  <% if item.quotation_item.product_comment.present? %>
-                    <div class="text-gray-500 italic text-sm mt-1">
-                      Obs: <%= item.quotation_item.product_comment %>
-                    </div>
-                  <% end %>
-                </div>
+                <%= item.quotation_item.product.generic_name %>
+                <% if item.quotation_item.product_comment.present? %>
+                  <div class="text-gray-500 italic text-sm mt-1">
+                    Obs: <%= item.quotation_item.product_comment %>
+                  </div>
+                <% end %>
               </td>
               <td class="px-4 py-2"><%= item.quotation_item.quantity %></td>
               <td class="px-4 py-2"><%= item.quotation_item.selected_unit %></td>
@@ -89,30 +94,24 @@
                   –
                 <% end %>
               </td>
-
             </tr>
           <% end %>
 
-      <!-- Total da Cotação -->
-      <% total_quotation = @quotation_response
-        .quotation_response_items
-        .sum { |item| item.price * item.quotation_item.quantity } %>
-
-      <tr>
-        <td colspan="5" class="px-4 py-2 text-left font-semibold">
-
-        </td>
-        <td class="px-4 py-2 text-left font-bold">
-          R$ <%= number_with_precision(total_quotation, precision: 2) %>
-        </td>
-      </tr>
-
+          <!-- Total da Cotação -->
+          <tr>
+            <td colspan="5" class="px-4 py-2 text-left font-semibold"></td>
+            <td class="px-4 py-2 text-left font-bold">
+              R$ <%= number_with_precision(@quotation_response.quotation_response_items.sum { |item| item.available ? item.price * item.quotation_item.quantity : 0 }, precision: 2) %>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
-    <h3 class="text-xl font-semibold text-gray-700 mt-6">Checklist de Validação</h3>
-    <p class="text-gray-600">Marque os itens que estão de acordo:</p>
+
+    <%# CHECKLIST DE VALIDAÇÃO %>
+    <h3 class="text-xl font-semibold text-gray-700 mt-8">Checklist de Validação</h3>
+    <p class="text-gray-600 mb-2">Marque os itens que estão de acordo:</p>
 
     <div data-controller="approval">
       <%= form_with id: "checklistForm", url: approve_admin_quotation_response_path(@quotation_response), method: :patch, local: true do |f| %>
@@ -133,37 +132,7 @@
         <div class="mt-4">
           <button type="button" data-action="click->approval#selecionarTodos" class="bg-gray-300 px-3 py-1 rounded">Selecionar Todos</button>
         </div>
-
-        <div class="mt-6 flex space-x-4">
-          <button type="button" id="btnAprovar" data-action="click->approval#showAprovarModal" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">Aprovar Cotação</button>
-          <button type="button" id="btnReprovar" data-action="click->approval#showReprovarModal" data-action-url="<%= reject_admin_quotation_response_path(@quotation_response) %>" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">Reprovar Cotação</button>
-        </div>
       <% end %>
-
-      <!-- Modal de Aprovação -->
-      <div id="modalAprovar" data-approval-target="modalAprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div class="bg-white p-6 rounded w-1/3 shadow-lg">
-          <h2 id="modalAprovarTitulo" class="text-lg font-bold mb-2">Confirmar Aprovação</h2>
-          <p id="modalAprovarMensagem">Tem certeza que deseja aprovar esta cotação?</p>
-          <div class="mt-4 flex justify-end space-x-4">
-            <button type="button" data-action="click->approval#confirmarAprovacao" class="bg-green-500 text-white px-4 py-2 rounded">Aprovar</button>
-            <button type="button" data-action="click->approval#cancelarAprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal de Reprovação -->
-      <div id="modalReprovar" data-approval-target="modalReprovar" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div class="bg-white p-6 rounded w-1/3 shadow-lg">
-          <h2 class="text-lg font-bold mb-2">Confirmar Reprovação</h2>
-          <p>Tem certeza que deseja reprovar esta cotação?</p>
-          <div class="mt-4 flex justify-end space-x-4">
-            <button type="button" data-action="click->approval#confirmarReprovacao" class="bg-red-500 text-white px-4 py-2 rounded">Reprovar</button>
-            <button type="button" data-action="click->approval#cancelarReprovacao" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>

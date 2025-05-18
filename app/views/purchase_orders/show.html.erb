@@ -5,7 +5,19 @@
     <p class="mb-4 text-gray-700"><strong>Fornecedor:</strong> <%= @purchase_order.supplier.name %></p>
     <p class="mb-4 text-gray-700"><strong>Valor Total:</strong> <%= real_currency(@purchase_order.total_value) %></p>
     <p class="mb-4 text-gray-700"><strong>Data de Validade:</strong> <%= @purchase_order.expiration_date.strftime('%d/%m/%Y') if @purchase_order.expiration_date %></p>
-    <p class="mb-4 text-gray-700"><strong>Status:</strong> <%= @purchase_order.status.capitalize %></p>
+    <p class="mb-4 text-gray-700 flex items-center gap-2">
+      <strong>Status:</strong> <%= purchase_order_status_badge(@purchase_order.status) %>
+    </p>
+
+    <!-- AÇÕES DO FORNECEDOR -->
+    <div class="mt-4">
+      <%= supplier_purchase_order_action_buttons(@purchase_order) %>
+    </div>
+
+    <!-- AÇÕES DO CLIENTE -->
+    <div class="flex gap-2 mt-4">
+      <%= customer_purchase_order_action_buttons(@purchase_order) %>
+    </div>
 
     <h2 class="text-lg font-bold text-gray-800 mt-6 mb-4">Itens do Pedido</h2>
     <% if @purchase_order.purchase_order_items.any? %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_150212) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_11_151525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -94,7 +94,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_150212) do
 
   create_table "purchase_orders", force: :cascade do |t|
     t.date "expiration_date"
-    t.string "status", default: "pendente", null: false
+    t.string "status", default: "aberta", null: false
     t.decimal "total_value", precision: 10, scale: 2, default: "0.0", null: false
     t.bigint "customer_id", null: false
     t.bigint "supplier_id", null: false
@@ -133,13 +133,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_150212) do
   create_table "quotation_responses", force: :cascade do |t|
     t.bigint "quotation_id", null: false
     t.bigint "supplier_id", null: false
-    t.string "status", default: "pendente", null: false
+    t.string "status", default: "aberta", null: false
     t.date "expiration_date"
-    t.string "analysis_status", default: "pendente_de_analise", null: false
+    t.string "analysis_status", default: "aberta", null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "supplier_snapshot"
+    t.text "admin_feedback"
     t.index ["quotation_id"], name: "index_quotation_responses_on_quotation_id"
     t.index ["supplier_id"], name: "index_quotation_responses_on_supplier_id"
   end
@@ -147,7 +148,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_150212) do
   create_table "quotations", force: :cascade do |t|
     t.date "expiration_date", null: false
     t.bigint "customer_id", null: false
-    t.string "status", default: "pendente", null: false
+    t.string "status", default: "aberta", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "general_comment"

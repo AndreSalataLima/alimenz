@@ -3,12 +3,21 @@ class Admin::DashboardController < ApplicationController
   before_action :verify_admin
 
   def index
-    # Place any dashboard logic here
+    @cotacoes_abertas = Quotation.where(status: :aberta)
+    @cotacoes_proximas_do_vencimento = Quotation
+      .where(status: [:aberta, :resposta_recebida, :visualizacao_liberada, :respostas_encerradas])
+      .where(expiration_date: Date.today..3.days.from_now)
+
+    @cotacoes_arquivadas_7d = Quotation.where(status: :arquivada)
+                                       .where("updated_at >= ?", 7.days.ago)
+
+    @resps_aprovadas_nao_visiveis = QuotationResponse.where(status: :documento_enviado, analysis_status: :aprovado)
+
+    @resps_pendentes_analise = QuotationResponse.where(analysis_status: :pendente_de_analise)
+
+    @ordens_abertas = PurchaseOrder.where(status: :aberta)
   end
 
-  # def pending_verifications
-  # Method declared in routes, if needed
-  # end
 
   private
 
