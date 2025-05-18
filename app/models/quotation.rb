@@ -6,6 +6,7 @@ class Quotation < ApplicationRecord
   belongs_to :customer, class_name: "User", foreign_key: "customer_id"
   has_many :quotation_items, dependent: :destroy
   has_many :quotation_responses, dependent: :destroy
+  has_many :purchase_orders, dependent: :destroy
 
   accepts_nested_attributes_for :quotation_items, allow_destroy: true,
   reject_if: proc { |attributes| attributes["quantity"].to_f <= 0 || attributes["selected_unit"].blank? }
