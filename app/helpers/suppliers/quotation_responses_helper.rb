@@ -103,6 +103,8 @@ module Suppliers::QuotationResponsesHelper
   # Badge de análise (admin)
   def quotation_response_analysis_badge(status)
     case status
+    when "aberta"
+      content_tag(:span, "Aguardando fornecedor", class: "px-2 py-1 text-sm font-medium bg-blue-100 text-blue-700 rounded-full")
     when "pendente_de_analise"
       content_tag(:span, "Pendente de Análise", class: "px-2 py-1 text-sm font-medium bg-yellow-100 text-yellow-700 rounded-full")
     when "aprovado"
@@ -110,8 +112,9 @@ module Suppliers::QuotationResponsesHelper
     when "reprovado"
       content_tag(:span, "Reprovado", class: "px-2 py-1 text-sm font-medium bg-red-100 text-red-700 rounded-full")
     else
-      status_text = status.present? ? status.humanize : "Status Indefinido"
-      content_tag(:span, status_text, class: "px-2 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full")
+      # Fallback para valores inválidos ou nulos
+      label = status.present? ? status.humanize : "Status Indefinido"
+      content_tag(:span, label, class: "px-2 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full")
     end
   end
 end
