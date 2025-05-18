@@ -23,7 +23,7 @@ class QuotationResponse < ApplicationRecord
   }
 
   enum :analysis_status, {
-    aberta: 'aberta',
+    analise_aberta: 'aberta',
     pendente_de_analise: 'pendente_de_analise',
     aprovado: 'aprovado',
     reprovado: 'reprovado'
