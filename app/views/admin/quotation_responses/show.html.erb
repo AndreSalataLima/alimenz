@@ -12,14 +12,15 @@
       </p>
       <p><strong>Data de Validade:</strong> <%= @quotation_response.expiration_date.strftime("%d/%m/%Y") if @quotation_response.expiration_date %></p>
 
-      <% if @quotation_response.status == "documento_enviado" && @quotation_response.signed_document.attached? %>
+      <% if @quotation_response.signed_document.attached? %>
         <div class="mt-4">
           <strong>Documento Enviado:</strong>
-          <%= link_to "📄 Visualizar PDF", rails_blob_path(@quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
+          <%= link_to "Visualizar PDF", rails_blob_path(@quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
         </div>
       <% else %>
-        <p class="text-red-500 mt-4">❌ Nenhum documento enviado ou resposta não finalizada.</p>
+        <p class="text-red-500 mt-4">❌ Nenhum documento enviado.</p>
       <% end %>
+
     </div>
 
     <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR/LIBERAR) %>

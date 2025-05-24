@@ -17,30 +17,26 @@ module PurchaseOrdersHelper
     end
   end
 
-  # Botões de ação para o **admin**
   def admin_purchase_order_action_buttons(po)
-    buttons = []
-    if po.status == "aberta"
-      buttons << button_to("Confirmar",
-        confirmar_admin_purchase_order_path(po),
-        method: :patch,
-        data: { turbo_confirm: "Confirmar este pedido?" },
-        class: "bg-green-600 text-white px-3 py-1 rounded")
-      buttons << button_to("Arquivar",
-        arquivar_admin_purchase_order_path(po),
-        method: :patch,
-        data: { turbo_confirm: "Arquivar este pedido?" },
-        class: "bg-red-600 text-white px-3 py-1 rounded")
-    elsif po.status == "confirmada"
-      buttons << button_to("Arquivar",
-        arquivar_admin_purchase_order_path(po),
-        method: :patch,
-        data: { turbo_confirm: "Arquivar este pedido?" },
-        class: "bg-red-600 text-white px-3 py-1 rounded")
-    end
+    return unless po.aberta?
 
-    content_tag(:div, safe_join(buttons, " "), class: "flex space-x-2") unless buttons.empty?
+    buttons = []
+
+    buttons << button_to("Confirmar",
+      confirmar_admin_purchase_order_path(po),
+      method: :patch,
+      data: { turbo_confirm: "Confirmar este pedido?" },
+      class: "bg-green-600 text-white px-3 py-1 rounded")
+
+    buttons << button_to("Desconsiderar",
+      desconsiderar_admin_purchase_order_path(po),
+      method: :patch,
+      data: { turbo_confirm: "Desconsiderar (arquivar) este pedido?" },
+      class: "bg-red-600 text-white px-3 py-1 rounded")
+
+    content_tag(:div, safe_join(buttons, " "), class: "flex space-x-2")
   end
+
 
   # Botão para o **cliente** arquivar pedidos confirmados
   def customer_purchase_order_action_buttons(po)

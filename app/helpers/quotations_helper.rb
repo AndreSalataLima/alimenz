@@ -109,6 +109,16 @@ module QuotationsHelper
       )
     end
 
+    if quotation.status.in?(%w[visualizacao_liberada respostas_encerradas])
+      buttons << button_to(
+        "Concluir Cotação",
+        concluir_admin_quotation_path(quotation),
+        method: :patch,
+        data: { turbo_confirm: "Marcar esta cotação como concluída?" },
+        class: "bg-emerald-600 text-white px-4 py-2 rounded shadow hover:bg-emerald-700"
+      )
+    end
+
     return if buttons.empty?
 
     content_tag :div, safe_join(buttons), class: "flex space-x-4 mb-4"

@@ -2,7 +2,7 @@ module Admin
   class QuotationsController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_quotation, only: [:show, :liberar_visualizacao, :encerrar_respostas]
+    before_action :set_quotation, only: [:show, :liberar_visualizacao, :encerrar_respostas, :arquivar]
 
 
     def index
@@ -33,18 +33,21 @@ module Admin
     end
 
     def arquivar
-      @purchase_order.transaction do
-        @purchase_order.update!(status: "arquivada")
-        if @purchase_order.quotation.present?
-          @purchase_order.quotation.update!(status: "arquivada")
-
-          @purchase_order.quotation.quotation_responses.where.not(status: "concluida").update_all(status: "arquivada")
-        end
+      @quotation.transaction do
+        @quotation.update!(status: "arquivada")
+        @quotation.quotation_responses.where.not(status: "concluida")
+                              .update_all(status: "arquivada")
+        @quotation.purchase_orders.update_all(status: "arquivada")
       end
 
-      redirect_to admin_purchase_order_path(@purchase_order), notice: "Pedido arquivado com sucesso."
+      redirect_to admin_quotations_path, notice: "Cotação arquivada com sucesso."
     end
 
+    def concluir
+      @quotation = Quotation.find(params[:id])
+      @quotation.update!(status: "concluida")
+      redirect_to admin_quotation_path(@quotation), notice: "Cotação marcada como concluída com sucesso."
+    end
 
 
     private

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         patch :encerrar_respostas
         patch :liberar_visualizacao
         patch :arquivar
+        patch :concluir
       end
     end
 
@@ -28,7 +29,7 @@ Rails.application.routes.draw do
     resources :purchase_orders, only: [:index, :show] do
       member do
         patch :confirmar
-        patch :arquivar
+        patch :desconsiderar
       end
     end
 
