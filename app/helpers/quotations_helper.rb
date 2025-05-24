@@ -79,7 +79,7 @@ module QuotationsHelper
   def admin_quotation_action_buttons(quotation)
     buttons = []
 
-    if %w[aberta resposta_recebida].include?(quotation.status)
+    if %w[aberta resposta_recebida visualizacao_liberada].include?(quotation.status)
       buttons << button_to(
         "Encerrar Respostas",
         encerrar_respostas_admin_quotation_path(quotation),
