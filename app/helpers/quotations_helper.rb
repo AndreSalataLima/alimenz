@@ -46,6 +46,15 @@ module QuotationsHelper
       #   data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
       #   class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
       # )
+      if quotation.quotation_responses
+                  .where(status: "resposta_aprovada", analysis_status: "aprovado")
+                  .exists?
+        buttons << link_to(
+          "Visualizar respostas",
+          select_orders_quotation_path(quotation),
+          class: "bg-green-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-green-700"
+        )
+      end
 
     when "respostas_encerradas", "concluida"
       # Cliente vê respostas e seleciona itens
@@ -90,7 +99,7 @@ module QuotationsHelper
       )
     end
 
-    if quotation.status.in?(%w[respostas_encerradas])
+    if quotation.status.in?(%w[resposta_recebida respostas_encerradas])
       buttons << button_to(
         "Concluir Cotação",
         concluir_admin_quotation_path(quotation),

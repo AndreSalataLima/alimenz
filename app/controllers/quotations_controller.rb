@@ -160,9 +160,9 @@ class QuotationsController < ApplicationController
       @created_orders << order
     end
 
-    selected_responses.each do |response|
-      response.update!(status: "concluida")
-    end
+    # selected_responses.each do |response|
+    #   response.update!(status: "concluida")
+    # end
 
     # @quotation.update!(status: "concluida")
     redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
