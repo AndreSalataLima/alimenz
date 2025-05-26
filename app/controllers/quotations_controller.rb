@@ -72,7 +72,7 @@ class QuotationsController < ApplicationController
     @items = @quotation.quotation_items.includes(:product)
 
     supplier_ids = @quotation.quotation_responses
-                             .where(status: "visualizacao_liberada", analysis_status: "aprovado")
+                             .where(status: "resposta_aprovada", analysis_status: "aprovado")
                              .pluck(:supplier_id)
                              .uniq
 
@@ -160,11 +160,11 @@ class QuotationsController < ApplicationController
       @created_orders << order
     end
 
-    selected_responses.each do |response|
-      response.update!(status: "concluida")
-    end
+    # selected_responses.each do |response|
+    #   response.update!(status: "concluida")
+    # end
 
-    @quotation.update!(status: "concluida")
+    # @quotation.update!(status: "concluida")
     redirect_to purchase_orders_path, notice: "Pedidos finalizados com sucesso."
   end
 
@@ -174,9 +174,7 @@ class QuotationsController < ApplicationController
     if current_user == @quotation.customer
       @quotation.transaction do
         @quotation.update!(status: "arquivada")
-
-        @quotation.quotation_responses.where.not(status: "concluida").update_all(status: "arquivada")
-
+        @quotation.quotation_responses.update_all(status: "arquivada")
         @quotation.purchase_orders.update_all(status: "arquivada")
       end
 

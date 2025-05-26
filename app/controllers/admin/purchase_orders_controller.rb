@@ -2,10 +2,10 @@ module Admin
   class PurchaseOrdersController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_purchase_order, only: [:show, :confirmar, :arquivar]
+    before_action :set_purchase_order, only: [:show, :confirmar, :desconsiderar]
 
     def index
-      @purchase_orders = PurchaseOrder.includes(:customer, :supplier).order(created_at: :desc)
+      @purchase_orders = PurchaseOrder.includes(:customer, :supplier, :quotation).order(created_at: :desc)
     end
 
     def show
@@ -14,15 +14,14 @@ module Admin
 
     def confirmar
       @purchase_order.update!(status: "confirmada")
-      @purchase_order.quotation.update!(status: "concluida") if @purchase_order.quotation.present?
       redirect_to admin_purchase_order_path(@purchase_order), notice: "Pedido confirmado com sucesso."
     end
 
-    def arquivar
+    def desconsiderar
       @purchase_order.update!(status: "arquivada")
-      @purchase_order.quotation.update!(status: "arquivada") if @purchase_order.quotation.present?
-      redirect_to admin_purchase_order_path(@purchase_order), notice: "Pedido arquivado com sucesso."
+      redirect_to admin_purchase_order_path(@purchase_order), notice: "Pedido desconsiderado (arquivado) com sucesso."
     end
+
 
     private
 

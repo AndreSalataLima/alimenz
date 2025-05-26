@@ -19,7 +19,6 @@ class Quotation < ApplicationRecord
   enum :status, {
     aberta: 'aberta',
     resposta_recebida: 'resposta_recebida',
-    visualizacao_liberada: 'visualizacao_liberada',
     respostas_encerradas: 'respostas_encerradas',
     expirada: 'expirada',
     concluida: 'concluida',
@@ -27,24 +26,16 @@ class Quotation < ApplicationRecord
   }
 
   def self.expire_expired_quotations
-    where(status: [:aberta, :resposta_recebida, :visualizacao_liberada, :respostas_encerradas])
+    where(status: [:aberta, :resposta_recebida])
       .where("expiration_date < ?", Date.today)
       .find_each do |quotation|
 
       quotation.transaction do
         quotation.update!(status: "expirada")
-
-        quotation.quotation_responses.each do |response|
-          case response.status
-          when "aberta", "aguardando_assinatura", "revisao_fornecedor"
-            response.update!(status: "arquivada")
-          when "documento_enviado", "visualizacao_liberada"
-            response.update!(status: "concluida")
-          end
-        end
       end
     end
   end
+
 
 
   def marcar_como_resposta_recebida!
@@ -59,12 +50,6 @@ class Quotation < ApplicationRecord
         case response.status
         when "aberta", "aguardando_assinatura", "revisao_fornecedor"
           response.update!(status: "arquivada")
-        when "documento_enviado"
-          if response.analysis_status == "aprovado"
-            response.update!(status: "visualizacao_liberada")
-          else
-            response.update!(status: "arquivada")
-          end
         end
       end
     end
@@ -87,7 +72,7 @@ class Quotation < ApplicationRecord
           quotation: self,
           supplier: supplier,
           status: "aberta",
-          analysis_status: "aberta",
+          analysis_status: "analise_aberta",
           expiration_date: expiration_date
         )
       rescue => e

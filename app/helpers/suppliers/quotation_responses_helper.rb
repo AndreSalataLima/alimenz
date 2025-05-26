@@ -10,7 +10,7 @@ module Suppliers::QuotationResponsesHelper
       badge("Reenviar",  :yellow)
     when "documento_enviado"
       badge("Documento enviado", :purple)
-    when "visualizacao_liberada"
+    when "resposta_aprovada"
       badge("Liberada p/ cliente", :green)
     when "arquivada"
       badge("Arquivada",    :gray)
@@ -49,7 +49,7 @@ module Suppliers::QuotationResponsesHelper
         content_tag(:span, "Aguardando análise", class: "italic text-gray-600")
       end
 
-    when "visualizacao_liberada"
+    when "resposta_aprovada"
       content_tag(:div, class: "flex items-center space-x-2") do
         link_to("Ver Resposta Liberada", secure_document_suppliers_quotation_response_path(response.signed_id),
                 target: "_blank", class: "text-blue-600 hover:underline")
@@ -90,20 +90,13 @@ module Suppliers::QuotationResponsesHelper
                   form: { data: { turbo_confirm: "Reprovar e enviar feedback?" } },
                   class: "bg-red-600 text-white px-3 py-1 rounded")
       ], " ")
-    elsif response.analysis_status == "aprovado"
-      # liberar visualização global
-      button_to("Liberar", liberar_visualizacao_admin_quotation_response_path(response),
-                method: :patch,
-                data: { turbo_confirm: "Liberar para o cliente?" },
-                class: "bg-blue-600 text-white px-3 py-1 rounded")
     end
   end
-
 
   # Badge de análise (admin)
   def quotation_response_analysis_badge(status)
     case status
-    when "aberta"
+    when "analise_aberta"
       content_tag(:span, "Aguardando fornecedor", class: "px-2 py-1 text-sm font-medium bg-blue-100 text-blue-700 rounded-full")
     when "pendente_de_analise"
       content_tag(:span, "Pendente de Análise", class: "px-2 py-1 text-sm font-medium bg-yellow-100 text-yellow-700 rounded-full")

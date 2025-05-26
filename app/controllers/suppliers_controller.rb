@@ -5,7 +5,7 @@ class SuppliersController < ApplicationController
   def home
     @quotation_responses = current_user.quotation_responses
       .includes(:quotation)
-      .where.not(quotations: { status: ['concluida', 'arquivada','expirada'] })
+      .where.not(quotations: { status: ['respostas_encerradas', 'concluida', 'arquivada','expirada'] })
       .order(created_at: :desc)
 
       @purchase_orders = PurchaseOrder

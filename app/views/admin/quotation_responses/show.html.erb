@@ -12,40 +12,37 @@
       </p>
       <p><strong>Data de Validade:</strong> <%= @quotation_response.expiration_date.strftime("%d/%m/%Y") if @quotation_response.expiration_date %></p>
 
-      <% if @quotation_response.status == "documento_enviado" && @quotation_response.signed_document.attached? %>
+      <% if @quotation_response.signed_document.attached? %>
         <div class="mt-4">
           <strong>Documento Enviado:</strong>
-          <%= link_to "📄 Visualizar PDF", rails_blob_path(@quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
+          <%= link_to "Visualizar PDF", rails_blob_path(@quotation_response.signed_document, disposition: "inline"), target: "_blank", class: "text-blue-600 hover:underline" %>
         </div>
       <% else %>
-        <p class="text-red-500 mt-4">❌ Nenhum documento enviado ou resposta não finalizada.</p>
+        <p class="text-red-500 mt-4">❌ Nenhum documento enviado.</p>
       <% end %>
+
     </div>
 
-    <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR/LIBERAR) %>
-    <div class="mt-6 flex space-x-4">
-      <%# Aprovar / Reprovar se ainda pendente de análise %>
-      <% if @quotation_response.analysis_status == "pendente_de_analise" %>
+    <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR) %>
+    <% if @quotation_response.status == "documento_enviado" && @quotation_response.analysis_status == "pendente_de_analise" %>
+      <div class="mt-6 flex space-x-4">
         <%= button_to "Aprovar", approve_admin_quotation_response_path(@quotation_response),
                       method: :patch,
                       class: "bg-green-600 text-white px-4 py-2 rounded" %>
-<%= form_with url: reject_admin_quotation_response_path(@quotation_response), method: :patch, local: true do |f| %>
-  <div class="flex flex-col space-y-2">
-    <%= f.label :admin_feedback, "Comentário para o Fornecedor:", class: "text-gray-700 font-semibold" %>
-    <%= f.text_area :admin_feedback, rows: 3, class: "border rounded p-2 w-full" %>
-    <%= f.submit "Reprovar", class: "bg-red-600 text-white px-4 py-2 rounded" %>
-  </div>
-<% end %>
 
-      <%# Liberar visualização se já aprovado e documento enviado %>
-      <% elsif @quotation_response.analysis_status == "aprovado" && @quotation_response.status == "documento_enviado" %>
-        <%= button_to "Liberar ao Cliente", liberar_visualizacao_admin_quotation_response_path(@quotation_response),
-                      method: :patch,
-                      data: { turbo_confirm: "Confirma liberação?" },
-                      class: "bg-blue-600 text-white px-4 py-2 rounded" %>
-      <% end %>
-
-    </div>
+        <%= form_with url: reject_admin_quotation_response_path(@quotation_response), method: :patch, local: true do |f| %>
+          <div class="flex flex-col space-y-2">
+            <%= f.label :admin_feedback, "Comentário para o Fornecedor:", class: "text-gray-700 font-semibold" %>
+            <%= f.text_area :admin_feedback, rows: 3, class: "border rounded p-2 w-full" %>
+            <%= f.submit "Reprovar", class: "bg-red-600 text-white px-4 py-2 rounded" %>
+          </div>
+        <% end %>
+      </div>
+    <% elsif @quotation_response.status == "resposta_aprovada" %>
+      <div class="mt-6 text-green-700 italic">
+        Resposta aprovada e já visível ao cliente.
+      </div>
+    <% end %>
 
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">
