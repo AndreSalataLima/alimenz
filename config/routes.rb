@@ -12,7 +12,6 @@ Rails.application.routes.draw do
     resources :quotations, only: [ :index, :show ] do
       member do
         patch :encerrar_respostas
-        patch :liberar_visualizacao
         patch :arquivar
         patch :concluir
       end
@@ -22,7 +21,6 @@ Rails.application.routes.draw do
       member do
         patch :approve
         patch :reject
-        patch :liberar_visualizacao
       end
     end
 

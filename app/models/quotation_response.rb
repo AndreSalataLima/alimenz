@@ -17,13 +17,13 @@ class QuotationResponse < ApplicationRecord
     aguardando_assinatura: 'aguardando_assinatura',
     revisao_fornecedor: 'revisao_fornecedor',
     documento_enviado: 'documento_enviado',
-    visualizacao_liberada: 'visualizacao_liberada',
+    resposta_aprovada: 'resposta_aprovada',
     arquivada: 'arquivada',
     concluida: 'concluida'
   }
 
   enum :analysis_status, {
-    analise_aberta: 'aberta',
+    analise_aberta: 'analise_aberta',
     pendente_de_analise: 'pendente_de_analise',
     aprovado: 'aprovado',
     reprovado: 'reprovado'

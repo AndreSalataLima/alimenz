@@ -23,10 +23,9 @@
 
     </div>
 
-    <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR/LIBERAR) %>
-    <div class="mt-6 flex space-x-4">
-      <%# Aprovar / Reprovar se ainda pendente de análise %>
-      <% if @quotation_response.analysis_status == "pendente_de_analise" %>
+    <%# BOTÕES DE AÇÃO (APROVAR/REPROVAR) %>
+    <% if @quotation_response.status == "documento_enviado" && @quotation_response.analysis_status == "pendente_de_analise" %>
+      <div class="mt-6 flex space-x-4">
         <%= button_to "Aprovar", approve_admin_quotation_response_path(@quotation_response),
                       method: :patch,
                       class: "bg-green-600 text-white px-4 py-2 rounded" %>
@@ -38,16 +37,12 @@
             <%= f.submit "Reprovar", class: "bg-red-600 text-white px-4 py-2 rounded" %>
           </div>
         <% end %>
-
-      <%# Liberar visualização se já aprovado e documento enviado %>
-      <% elsif @quotation_response.analysis_status == "aprovado" && @quotation_response.status == "documento_enviado" %>
-        <%= button_to "Liberar ao Cliente", liberar_visualizacao_admin_quotation_response_path(@quotation_response),
-                      method: :patch,
-                      data: { turbo_confirm: "Confirma liberação?" },
-                      class: "bg-blue-600 text-white px-4 py-2 rounded" %>
-      <% end %>
-
-    </div>
+      </div>
+    <% elsif @quotation_response.status == "resposta_aprovada" %>
+      <div class="mt-6 text-green-700 italic">
+        Resposta aprovada e já visível ao cliente.
+      </div>
+    <% end %>
 
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">

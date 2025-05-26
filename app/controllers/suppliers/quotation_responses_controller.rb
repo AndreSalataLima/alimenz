@@ -8,8 +8,9 @@ module Suppliers
 
     def index
       @quotation_responses = policy_scope(QuotationResponse)
-                             .includes(:quotation)
-                             .order(created_at: :desc)
+                            .includes(:quotation)
+                            .where.not(status: :arquivada)
+                            .order(created_at: :desc)
     end
 
     def show
