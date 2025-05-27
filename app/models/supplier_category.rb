@@ -17,6 +17,7 @@ class SupplierCategory < ApplicationRecord
         response = quotation.quotation_responses.create!(
           supplier: supplier,
           status: "aberta",
+          analysis_status:   "analise_aberta",
           expiration_date: quotation.expiration_date
         )
 
