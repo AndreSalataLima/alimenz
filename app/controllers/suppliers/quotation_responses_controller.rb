@@ -29,148 +29,157 @@ module Suppliers
     end
 
 
-    def update
-      use_pre_registered_signature = (params[:quotation_response][:use_pre_registered_signature] == "1")
+  def update
+    use_pre_registered_signature = (params[:quotation_response][:use_pre_registered_signature] == "1")
 
-      new_status = if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
-        "documento_enviado"
-      else
-        "aguardando_assinatura"
-      end
-
-      analysis_status_update = (new_status == "aprovado") ? { analysis_status: "pendente_de_analise" } : {}
-
-      if @quotation_response.update(quotation_response_params.merge(status: new_status).merge(analysis_status_update))
-        @quotation_response.reload
-
-        if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
-          pdf_service = PdfGeneratorService.new(@quotation_response, use_pre_registered_signature: true)
-          pdf_content = pdf_service.generate
-
-          @quotation_response.signed_document.attach(
-            io: StringIO.new(pdf_content),
-            filename: pdf_service.filename,
-            content_type: "application/pdf"
-          )
-        end
-
-        respond_to do |format|
-          format.html { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
-          format.turbo_stream { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
-        end
-      else
-        respond_to do |format|
-          format.html { render :edit, status: :unprocessable_entity }
-          format.turbo_stream { render :edit, status: :unprocessable_entity }
-        end
-      end
+    new_status = if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
+      "documento_enviado"
+    else
+      "aguardando_assinatura"
     end
 
+    analysis_status_update = (new_status == "aprovado") ? { analysis_status: "pendente_de_analise" } : {}
 
-    def confirm_upload
-      uploaded_files = params[:quotation_response][:signed_documents]
+    if @quotation_response.update(quotation_response_params.merge(status: new_status).merge(analysis_status_update))
+      @quotation_response.reload
 
-      if uploaded_files.blank?
-        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Nenhum documento foi selecionado." and return
+      if invalid_prices?(@quotation_response)
+        @quotation_response.errors.add(:base, "Todos os itens precisam ter preço maior que zero.")
+        return render :edit, status: :unprocessable_entity
       end
 
-      unless uploaded_files.all? { |f| f.content_type =~ /\A(application\/pdf|image\/(png|jpeg|jpg))\z/ }
-        redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Apenas arquivos PDF ou imagens (JPG, PNG) são aceitos." and return
+      if use_pre_registered_signature && current_user.signature&.signature_image&.attached?
+        pdf_service = PdfGeneratorService.new(@quotation_response, use_pre_registered_signature: true)
+        pdf_content = pdf_service.generate
+
+        @quotation_response.signed_document.attach(
+          io: StringIO.new(pdf_content),
+          filename: pdf_service.filename,
+          content_type: "application/pdf"
+        )
       end
 
-      merged_pdf = PdfMergeService.merge_files(uploaded_files)
+      respond_to do |format|
+        format.html { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
+        format.turbo_stream { redirect_to supplier_home_path, notice: "Cotação respondida com sucesso! Status: #{new_status.capitalize}" }
+      end
+    else
+      respond_to do |format|
+        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+      end
+    end
+  end
 
-      pdf_service = PdfGeneratorService.new(@quotation_response)
+  def confirm_upload
+    uploaded_files = params[:quotation_response][:signed_documents]
 
-      @quotation_response.signed_document.attach(
-        io: merged_pdf,
-        filename: pdf_service.filename,
-        content_type: "application/pdf"
-      )
-
-      @quotation_response.update!(
-        status: "documento_enviado",
-        analysis_status: "pendente_de_analise"
-      )
-
-      redirect_to supplier_home_path, notice: "Proposta enviada com sucesso!"
+    if uploaded_files.blank?
+      redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Nenhum documento foi selecionado." and return
     end
 
-
-
-    def sign
-      # Action to force PDF generation (for preview, for example)
-      PdfGeneratorService.call(@quotation_response)
-      redirect_to suppliers_quotation_response_path(@quotation_response), notice: "PDF generated successfully."
+    unless uploaded_files.all? { |f| f.content_type =~ /\A(application\/pdf|image\/(png|jpeg|jpg))\z/ }
+      redirect_to upload_document_supplier_quotation_response_path(@quotation_response), alert: "Apenas arquivos PDF ou imagens (JPG, PNG) são aceitos." and return
     end
 
-    def upload_document
-      # Logic to handle the manual upload of the signed document
+    merged_pdf = PdfMergeService.merge_files(uploaded_files)
+
+    pdf_service = PdfGeneratorService.new(@quotation_response)
+
+    @quotation_response.signed_document.attach(
+      io: merged_pdf,
+      filename: pdf_service.filename,
+      content_type: "application/pdf"
+    )
+
+    @quotation_response.update!(
+      status: "documento_enviado",
+      analysis_status: "pendente_de_analise"
+    )
+
+    redirect_to supplier_home_path, notice: "Proposta enviada com sucesso!"
+  end
+
+
+  def invalid_prices?(quotation_response)
+    quotation_response.quotation_response_items.any? do |item|
+      item.available? && item.price.to_f <= 0
     end
+  end
 
-    # def pdf
-    #   pdf_service   = PdfGeneratorService.new(@quotation_response)
-    #   pdf_content   = pdf_service.generate
+  def sign
+    # Action to force PDF generation (for preview, for example)
+    PdfGeneratorService.call(@quotation_response)
+    redirect_to suppliers_quotation_response_path(@quotation_response), notice: "PDF generated successfully."
+  end
 
-    #   send_data pdf_content,
-    #             filename: pdf_service.filename,
-    #             type: "application/pdf",
-    #             disposition: "inline"
-    # end
+  def upload_document
+    # Logic to handle the manual upload of the signed document
+  end
+
+  # def pdf
+  #   pdf_service   = PdfGeneratorService.new(@quotation_response)
+  #   pdf_content   = pdf_service.generate
+
+  #   send_data pdf_content,
+  #             filename: pdf_service.filename,
+  #             type: "application/pdf",
+  #             disposition: "inline"
+  # end
 
 
 
-    def secure_pdf
-      @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
+  def secure_pdf
+    @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
+    authorize @quotation_response
+
+    pdf_service = PdfGeneratorService.new(@quotation_response)
+    pdf_content = pdf_service.generate
+
+    send_data pdf_content,
+              filename: pdf_service.filename,
+              type: "application/pdf",
+              disposition: "inline"
+  end
+
+
+  def secure_document
+    @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
+    authorize @quotation_response
+
+    if @quotation_response.signed_document.attached?
+      redirect_to rails_blob_path(@quotation_response.signed_document, disposition: :inline)
+    else
+      redirect_to supplier_home_path, alert: "Documento não encontrado."
+    end
+  end
+
+
+  private
+
+  def set_and_authorize_quotation_response
+    @quotation_response = policy_scope(QuotationResponse).find_by(id: params[:id])
+
+    if @quotation_response.nil?
+      redirect_to supplier_home_path, alert: "Cotação não encontrada ou acesso não autorizado."
+    else
       authorize @quotation_response
-
-      pdf_service = PdfGeneratorService.new(@quotation_response)
-      pdf_content = pdf_service.generate
-
-      send_data pdf_content,
-                filename: pdf_service.filename,
-                type: "application/pdf",
-                disposition: "inline"
     end
+  end
 
 
-    def secure_document
-      @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
-      authorize @quotation_response
+  def quotation_response_params
+    params.require(:quotation_response).permit(
+      :expiration_date, :status, :use_pre_registered_signature, :signed_document,
+      quotation_response_items_attributes: [ :id, :quotation_item_id, :price, :available, :_destroy ]
+    )
+  end
 
-      if @quotation_response.signed_document.attached?
-        redirect_to rails_blob_path(@quotation_response.signed_document, disposition: :inline)
-      else
-        redirect_to supplier_home_path, alert: "Documento não encontrado."
-      end
+  def verify_supplier
+    unless current_user.role.in?(%w[supplier admin])
+      redirect_to root_path, alert: "Acesso negado."
     end
-
-
-    private
-
-    def set_and_authorize_quotation_response
-      @quotation_response = policy_scope(QuotationResponse).find_by(id: params[:id])
-
-      if @quotation_response.nil?
-        redirect_to supplier_home_path, alert: "Cotação não encontrada ou acesso não autorizado."
-      else
-        authorize @quotation_response
-      end
-    end
-
-
-    def quotation_response_params
-      params.require(:quotation_response).permit(
-        :expiration_date, :status, :use_pre_registered_signature, :signed_document,
-        quotation_response_items_attributes: [ :id, :quotation_item_id, :price, :available, :_destroy ]
-      )
-    end
-
-    def verify_supplier
-      unless current_user.role.in?(%w[supplier admin])
-        redirect_to root_path, alert: "Acesso negado."
-      end
-    end
+  end
 
 
   end

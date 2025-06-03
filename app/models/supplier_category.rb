@@ -1,34 +1,58 @@
+# app/models/supplier_category.rb
 class SupplierCategory < ApplicationRecord
   belongs_to :supplier, class_name: "User", foreign_key: "supplier_id"
   belongs_to :category
 
   after_create :include_supplier_in_open_quotations
+  after_destroy :mark_response_items_unavailable_for_removed_category
+
+  private
 
   def include_supplier_in_open_quotations
-    Quotation.where("expiration_date >= ?", Date.today).find_each do |quotation|
-      next if quotation.customer.blocked_supplier_ids.include?(supplier_id) # IGNORA se cliente bloqueou o supplier
+    # Busca TODAS as categorias atuais do fornecedor
+    supplier_category_ids = supplier.supplier_categories.pluck(:category_id)
 
-      # só interessa se a cotação já tiver items dessa nova categoria
-      if quotation.quotation_items.joins(:product)
-                   .where(products: { category_id: category_id })
-                   .exists? &&
-         !quotation.quotation_responses.exists?(supplier_id: supplier_id)
+    Quotation.where(status: [:aberta, :resposta_recebida, :expirada]).find_each do |quotation|
+      next if quotation.customer.blocked_supplier_ids.include?(supplier_id)
 
-        response = quotation.quotation_responses.create!(
-          supplier: supplier,
-          status: "aberta",
-          analysis_status:   "analise_aberta",
-          expiration_date: quotation.expiration_date
-        )
+      # Verifica se a cotação tem pelo menos 1 item de qualquer categoria do fornecedor
+      matching_items = quotation.quotation_items.joins(:product)
+                          .where(products: { category_id: supplier_category_ids })
 
-        # cria os response_items só para os quotation_items dessa categoria
-        quotation.quotation_items.joins(:product)
-                 .where(products: { category_id: category_id })
-                 .find_each do |item|
+      next unless matching_items.exists?
+
+      # Busca ou cria a QuotationResponse
+      response = quotation.quotation_responses.find_or_initialize_by(supplier: supplier)
+      if response.new_record?
+        response.status = "aberta"
+        response.analysis_status = "analise_aberta"
+        response.expiration_date = quotation.expiration_date
+        response.save!
+      end
+
+      # Agora, garante que TODOS os itens das categorias do fornecedor estão presentes
+      matching_items.find_each do |item|
+        unless response.quotation_response_items.exists?(quotation_item_id: item.id)
           response.quotation_response_items.create!(quotation_item: item)
         end
       end
     end
   end
 
+  def mark_response_items_unavailable_for_removed_category
+    Quotation.joins(:quotation_items)
+      .where("quotation_items.product_id IN (?)", Product.where(category_id: category_id).select(:id))
+      .where(status: [:aberta, :resposta_recebida, :expirada])
+      .find_each do |quotation|
+
+      response = quotation.quotation_responses.find_by(supplier: supplier)
+      next if response.nil?
+
+      # Desativa os response_items ligados a itens da categoria que foi removida
+      response.quotation_response_items.joins(quotation_item: :product)
+        .where(products: { category_id: category_id })
+        .update_all(available: false)
+    end
+  end
+  
 end
