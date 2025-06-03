@@ -10,6 +10,8 @@ import CustomNameController from "controllers/custom_name_controller"
 import QuotationResponseController from "controllers/quotation_response_controller"
 import UpdateTotalController from "controllers/update_total_controller"
 import AutoSubmitController from "controllers/auto_submit_controller"
+import AdminUpdateTotalController from "controllers/admin_update_total_controller"
+
 
 const application = Application.start()
 
@@ -23,3 +25,4 @@ application.register("custom-name", CustomNameController)
 application.register("quotation-response", QuotationResponseController)
 application.register("update-total", UpdateTotalController)
 application.register("auto-submit", AutoSubmitController)
+application.register("admin-update-total", AdminUpdateTotalController)

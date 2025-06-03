@@ -74,6 +74,84 @@
       <p class="text-gray-500">Nenhuma resposta de fornecedor para esta cotação.</p>
     <% end %>
 
+
+    <!-- … seção de Respostas de Fornecedores existente … -->
+
+<h3 class="text-xl font-semibold text-gray-700 mt-6">Comparativo de Respostas</h3>
+
+<%= form_with url: '#', method: :post, data: { controller: "admin-update-total" }, html: { id: "admin-form" } do %>
+
+<div class="overflow-x-auto rounded-lg border border-gray-200 mt-2">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2 text-left">Produto</th>
+        <% @suppliers.each do |supplier| %>
+          <th class="px-4 py-2 text-center"><%= supplier.name %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      <% @items.each do |item| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 text-left">
+            <%= item.product.generic_name %>
+            <% if item.product_comment.present? %>
+              <p class="text-sm text-gray-500 mt-1"><em><%= item.product_comment %></em></p>
+            <% end %>
+          </td>
+
+          <% @suppliers.each do |supplier| %>
+            <td class="px-4 py-2 text-center">
+              <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, analysis_status: "aprovado") %>
+              <% if response.present? %>
+                <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
+                <% if response_item.present? && response_item.available %>
+                  <% unit_price = response_item.price.to_f %>
+                  <% available_quantity = item.quantity.to_f %>
+
+
+                  <div class="flex flex-col items-center space-y-1">
+                    <span class="text-sm">Qtd disponível: <%= available_quantity %> <%= item.selected_unit %></span>
+                    <span class="text-sm">Preço unit: <%= real_currency(unit_price) %></span>
+                    <span class="font-medium text-gray-800">
+                      Total: <%= real_currency(unit_price * available_quantity) %>
+                    </span>
+
+<%= check_box_tag "selected[#{response.id}][#{item.id}]",
+                  "1",
+                  false,
+                  class: "rounded border-gray-300 focus:ring-indigo-500",
+                  data: {
+                    "admin-update-total-target": "checkbox",
+                    price: unit_price.to_s,
+                    quantity: available_quantity.to_s,
+                    action: "change->admin-update-total#update"
+                  } %>
+
+                    <%= label_tag "selected_#{response.id}_#{item.id}", "Selecionar", class: "text-sm text-gray-600" %>
+                  </div>
+                <% else %>
+                  <span class="text-sm text-red-500">Indisponível</span>
+                <% end %>
+              <% else %>
+                <span class="text-gray-400 text-sm">Sem resposta</span>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-4 text-right text-lg font-semibold text-gray-800">
+  Total: <span data-admin-update-total-target="total">R$ 0,00</span>
+</div>
+
+<% end %>
+
+
     <div class="mt-6 flex space-x-4">
       <%= link_to "Voltar", admin_quotations_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
     </div>

@@ -9,9 +9,18 @@ module Admin
       @quotations = Quotation.order(created_at: :desc)
     end
 
-    def show
-      @quotation = Quotation.find(params[:id])
-    end
+def show
+  @quotation = Quotation.find(params[:id])
+  @items = @quotation.quotation_items.includes(:product)
+
+  supplier_ids = @quotation
+                   .quotation_responses
+                   .where(analysis_status: "aprovado")
+                   .pluck(:supplier_id)
+                   .uniq
+  @suppliers = User.where(id: supplier_ids)
+end
+
 
     def encerrar_respostas
       @quotation.encerrar_para_novas_respostas!
