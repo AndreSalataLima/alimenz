@@ -7,34 +7,32 @@
     <% if @purchase_orders.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-<thead class="bg-gray-100">
-  <tr>
-    <th class="px-4 py-2">Cliente</th>
-    <th class="px-4 py-2">Fornecedor</th>
-    <th class="px-4 py-2">Cotação</th> <!-- NOVO -->
-    <th class="px-4 py-2">Valor Total</th>
-    <th class="px-4 py-2">Status</th>
-    <th class="px-4 py-2">Ações</th>
-  </tr>
-</thead>
-<tbody class="divide-y divide-gray-200">
-  <% @purchase_orders.each do |po| %>
-    <tr>
-      <td class="px-4 py-2"><%= po.customer.name %></td>
-      <td class="px-4 py-2"><%= po.supplier.name %></td>
-      <td class="px-4 py-2">
-        <%= link_to (po.quotation.title.presence || "Cotação ##{po.quotation.id}"),
-                    admin_quotation_path(po.quotation),
-                    class: "text-blue-600 hover:underline" %>
-      </td>
-      <td class="px-4 py-2">R$ <%= number_with_precision(po.total_value, precision: 2) %></td>
-      <td class="px-4 py-2"><%= purchase_order_status_badge(po.status) %></td>
-      <td class="px-4 py-2"><%= admin_purchase_order_action_buttons(po) %></td>
-    </tr>
-  <% end %>
-</tbody>
-
-
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2">Cliente</th>
+              <th class="px-4 py-2">Fornecedor</th>
+              <th class="px-4 py-2">Cotação</th> <!-- NOVO -->
+              <th class="px-4 py-2">Valor Total</th>
+              <th class="px-4 py-2">Status</th>
+              <th class="px-4 py-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <% @purchase_orders.each do |po| %>
+              <tr>
+                <td class="px-4 py-2"><%= po.customer.name %></td>
+                <td class="px-4 py-2"><%= po.supplier.name %></td>
+                <td class="px-4 py-2">
+                  <%= link_to (po.quotation.title.presence || "Cotação ##{po.quotation.id}"),
+                              admin_quotation_path(po.quotation),
+                              class: "text-blue-600 hover:underline" %>
+                </td>
+                <td class="px-4 py-2">R$ <%= number_with_precision(po.total_value, precision: 2) %></td>
+                <td class="px-4 py-2"><%= purchase_order_status_badge(po.status) %></td>
+                <td class="px-4 py-2"><%= admin_purchase_order_action_buttons(po) %></td>
+              </tr>
+            <% end %>
+          </tbody>
         </table>
       </div>
     <% else %>
