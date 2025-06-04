@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_11_151525) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_04_044426) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_151525) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "commission_payments", force: :cascade do |t|
+    t.bigint "commission_id", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.date "payment_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["commission_id"], name: "index_commission_payments_on_commission_id"
+  end
+
+  create_table "commissions", force: :cascade do |t|
+    t.bigint "purchase_order_id", null: false
+    t.decimal "total_commission", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "paid_in_full", default: false, null: false
+    t.index ["purchase_order_id"], name: "index_commissions_on_purchase_order_id", unique: true
   end
 
   create_table "customized_products", force: :cascade do |t|
@@ -196,6 +214,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_151525) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "blocked_suppliers", "users", column: "customer_id"
   add_foreign_key "blocked_suppliers", "users", column: "supplier_id"
+  add_foreign_key "commission_payments", "commissions"
+  add_foreign_key "commissions", "purchase_orders"
   add_foreign_key "customized_products", "products"
   add_foreign_key "customized_products", "users", column: "customer_id"
   add_foreign_key "products", "categories"

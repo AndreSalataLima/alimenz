@@ -48,6 +48,10 @@
         Pedidos de Compra
       <% end %>
 
+      <%= link_to admin_commissions_path,
+                  class: "inline-flex items-center py-1 text-[#615F4A] font-medium hover:text-[#484638]" do %>
+        Comissões
+      <% end %>
       <!-- Link para logout -->
       <%= link_to "Logout",
                   destroy_user_session_path,

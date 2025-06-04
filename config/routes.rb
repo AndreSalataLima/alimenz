@@ -2,6 +2,11 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { registrations: "users/registrations" }
 
   namespace :admin do
+    namespace :commissions do
+      get "commission_payments/create"
+    end
+    get "commissions/index"
+    get "commissions/show"
     resources :users, only: [:new, :create, ]
     resources :customers, only: [ :index, :show, :edit, :update ]
     resources :suppliers, only: [ :index, :show, :edit, :update ]
@@ -30,6 +35,16 @@ Rails.application.routes.draw do
         patch :desconsiderar
       end
     end
+
+    resources :commissions, only: [:index, :show] do
+      member do
+        patch :mark_paid_full
+        patch :unmark_paid_full
+      end
+
+      resources :commission_payments, module: :commissions, only: [:create, :edit, :update, :destroy]
+    end
+
 
     # get 'pending_verifications', to: 'dashboard#pending_verifications'
   end

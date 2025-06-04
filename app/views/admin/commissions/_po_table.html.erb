@@ -1,0 +1,64 @@
+<table class="min-w-full divide-y divide-gray-200">
+  <thead class="bg-gray-100">
+    <tr>
+      <th class="px-4 py-2 text-left"># PO</th>
+      <th class="px-4 py-2 text-left">Cotação</th>
+      <th class="px-4 py-2 text-left">Cliente</th>
+      <th class="px-4 py-2 text-left">Fornecedor</th>
+      <th class="px-4 py-2 text-left">Status</th>
+      <th class="px-4 py-2 text-left">Valor Total</th>
+      <th class="px-4 py-2 text-left">Comissão</th>
+      <th class="px-4 py-2 text-left">Pago</th>
+      <th class="px-4 py-2 text-left">Quitado</th>
+      <th class="px-4 py-2 text-left">Ações</th>
+    </tr>
+  </thead>
+
+  <tbody class="divide-y divide-gray-200">
+    <% purchase_orders.each do |po| %>
+      <% comm = po.commission %>
+      <tr>
+        <td class="px-4 py-2"><%= po.id %></td>
+        <td class="px-4 py-2">
+          <%= link_to (po.quotation.title.presence || "##{po.quotation.id}"), admin_quotation_path(po.quotation), class: "text-blue-600 hover:underline" %>
+        </td>
+        <td class="px-4 py-2"><%= po.customer.name %></td>
+        <td class="px-4 py-2"><%= po.supplier.name %></td>
+        <td class="px-4 py-2"><%= po.status.capitalize %></td>
+        <td class="px-4 py-2"><%= real_currency(po.total_value) %></td>
+        <td class="px-4 py-2 text-green-700">
+          <% if po.commission.present? %>
+            <%= real_currency(po.commission.total_commission) %>
+          <% else %>
+            <span class="text-gray-500 italic">—</span>
+          <% end %>
+        </td>
+        <td class="px-4 py-2">
+          <% if comm.present? %>
+            <%= real_currency(comm.paid_total) %>
+          <% else %>
+            <span class="text-gray-500 italic">—</span>
+          <% end %>
+        </td>
+        <td class="px-4 py-2">
+          <% if comm.present? %>
+            <% if comm.paid_in_full %>
+              <span class="text-green-600 font-semibold">Sim</span>
+            <% else %>
+              <span class="text-red-600 font-semibold">Não</span>
+            <% end %>
+          <% else %>
+            <span class="text-gray-500 italic">—</span>
+          <% end %>
+        </td>
+        <td class="px-4 py-2">
+          <% if comm.present? %>
+            <%= link_to "Detalhes", admin_commission_path(comm), class: "text-blue-600 hover:underline" %>
+          <% else %>
+            <span class="text-gray-400 italic">—</span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
