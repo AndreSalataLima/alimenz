@@ -1,0 +1,52 @@
+<%= render 'admin/shared/navbar', titulo: "Detalhes da Comissão" %>
+
+<div class="container mx-auto py-6 px-4">
+
+  <!-- Informações principais -->
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+      Comissão do Pedido de Compra #<%= @purchase_order.id %>
+    </h2>
+
+    <p class="text-gray-700 mb-2"><strong>Cliente:</strong> <%= @purchase_order.customer.name %></p>
+    <p class="text-gray-700 mb-2"><strong>Fornecedor:</strong> <%= @purchase_order.supplier.name %></p>
+    <p class="text-gray-700 mb-2"><strong>Valor do Pedido:</strong> <%= real_currency(@purchase_order.total_value) %></p>
+    <p class="text-gray-700 mb-2"><strong>Comissão (Total Atual):</strong> <%= real_currency(@commission.total_commission) %></p>
+    <p class="text-gray-700 mb-2"><strong>Pago até o momento:</strong> <%= real_currency(@commission.paid_total) %></p>
+    <p class="text-gray-700 mb-4"><strong>Saldo Restante:</strong> <%= real_currency(@commission.remaining_amount) %></p>
+
+    <!-- Botões de marcação -->
+    <% if @commission.paid_in_full? %>
+      <div class="mb-4">
+        <span class="bg-green-200 text-green-800 px-4 py-2 rounded-lg font-semibold">Pago integralmente</span>
+      </div>
+      <%= button_to "Desmarcar como pago integralmente", unmark_paid_full_admin_commission_path(@commission),
+            method: :patch,
+            class: "bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-lg" %>
+    <% else %>
+      <div data-controller="commission-modal"
+           data-commission-modal-total-commission-value="<%= @commission.total_commission %>"
+           data-commission-modal-paid-total-value="<%= @commission.paid_total %>">
+        <button data-action="click->commission-modal#open"
+                class="bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg">
+          Marcar como pago integralmente
+        </button>
+
+        <%= render 'admin/commissions/modal_confirmation' %>
+      </div>
+    <% end %>
+
+    <div class="mt-6">
+      <%= link_to "Voltar", admin_commissions_path, class: "bg-gray-600 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700" %>
+    </div>
+  </div>
+
+  <!-- Lista de pagamentos -->
+  <%= render 'admin/commissions/payment_list', payments: @payments, commission: @commission %>
+
+  <!-- Formulário para novo pagamento -->
+  <div class="bg-white shadow-lg rounded-xl p-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Registrar Novo Pagamento</h3>
+    <%= render 'admin/commissions/payment_form', commission: @commission, payment: @new_payment %>
+  </div>
+</div>
