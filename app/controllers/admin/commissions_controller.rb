@@ -25,6 +25,12 @@ module Admin
       @purchase_orders_confirmadas = @purchase_orders.select { |po| po.status == 'confirmada' }.sort_by(&:id)
       @purchase_orders_arquivadas = @purchase_orders.select { |po| po.status == 'arquivada' }.sort_by(&:id)
 
+      @commissions = Commission.where(purchase_order_id: @purchase_orders.pluck(:id)).includes(purchase_order: :supplier)
+
+      @supplier_commissions = @commissions.group_by { |c| c.purchase_order.supplier.name }
+                                          .transform_values { |commissions| commissions.sum(&:total_commission) }
+
+
     end
 
     def show

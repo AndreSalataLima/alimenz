@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
-  include Pundit
+  include Pundit::Authorization
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
@@ -28,5 +28,5 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     redirect_to root_path, alert: "Você não tem permissão para acessar este recurso."
   end
-  
+
 end
