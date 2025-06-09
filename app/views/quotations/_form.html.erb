@@ -119,7 +119,7 @@
                 <select class="border rounded px-2 py-1"
                         name="quotation[quotation_items_attributes][<%= product.id %>][selected_unit]"
                         data-cotacao-target="unidadeSelect"
-                        data-action="change->cotacao#verificarCampos change->cotacao#atualizarCamposOcultos">
+                        data-action="change->cotacao#atualizarCamposOcultos">
                   <option value="">Selecione</option>
                   <% product.unit_options.each do |unit| %>
                     <option value="<%= unit %>"><%= unit %></option>
@@ -133,14 +133,14 @@
                        min="0" step="1" value="0"
                        name="quotation[quotation_items_attributes][<%= product.id %>][quantity]"
                        class="border rounded px-2 py-1 w-20"
-                       data-action="input->cotacao#verificarCampos input->cotacao#atualizarCamposOcultos"
+                       data-action="input->cotacao#atualizarCamposOcultos"
                        data-cotacao-target="quantidade" />
               </td>
 
               <!-- Botão Adicionar -->
               <td class="px-2 py-2">
                 <button type="button"
-                        class="adicionar-lista-btn text-sm text-blue-600 hidden"
+                        class="adicionar-lista-btn text-sm text-blue-600"
                         data-action="click->cotacao#adicionarProduto">
                   ➕ Adicionar
                 </button>

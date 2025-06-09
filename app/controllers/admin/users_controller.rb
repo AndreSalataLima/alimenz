@@ -59,7 +59,7 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    # Removemos :role daqui para evitar que ele seja atribuído via mass assignment
+    # Verificar se devo retirar o :role do params
     params.require(:user).permit(
       :name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation, :trade_name, :role,
       signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],

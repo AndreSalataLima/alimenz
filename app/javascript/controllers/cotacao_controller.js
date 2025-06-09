@@ -10,28 +10,42 @@ export default class extends Controller {
     this.produtosAdicionados = new Set()
   }
 
-  verificarCampos(event) {
-    const row = event.currentTarget.closest("tr.product-item")
-    const unidade = row.querySelector("select").value
-    const quantidade = parseFloat(row.querySelector("input[type='number']").value || 0)
-    const botao = row.querySelector(".adicionar-lista-btn")
+  // verificarCampos(event) {
+  //   const row = event.currentTarget.closest("tr.product-item")
+  //   const unidade = row.querySelector("select").value
+  //   const quantidade = parseFloat(row.querySelector("input[type='number']").value || 0)
+  //   const botao = row.querySelector(".adicionar-lista-btn")
 
-    if (unidade && quantidade > 0) {
-      botao.classList.remove("hidden")
-    } else {
-      botao.classList.add("hidden")
-    }
-  }
+  //   if (unidade && quantidade > 0) {
+  //     botao.classList.remove("hidden")
+  //   } else {
+  //     botao.classList.add("hidden")
+  //   }
+  // }
 
   adicionarProduto(event) {
     const row = event.currentTarget.closest("tr.product-item")
-    const productId = row.dataset.productId
+    const productId  = row.dataset.productId
+    const unidade    = row.querySelector("select").value
+    const quantidade = parseFloat(row.querySelector("input[type='number']").value || 0)
+
+    // ← Validação antes de tudo
+    if (!unidade || quantidade <= 0) {
+      let msg = 'Favor selecionar '
+      if (!unidade && quantidade <= 0) {
+        msg += 'unidade e quantidade desejada.'
+      } else if (!unidade) {
+        msg += 'unidade.'
+      } else {
+        msg += 'quantidade.'
+      }
+      this.showErrorModal(msg)
+      return
+    }
 
     if (this.produtosAdicionados.has(productId)) return
 
     const nome = row.querySelector("[data-custom-name-target='label']").textContent.trim()
-    const unidade = row.querySelector("select").value
-    const quantidade = row.querySelector("input[type='number']").value
     const comentario = row.querySelector('input[name$="[product_comment]"]').value
 
     // === Adiciona visualmente ao resumo
@@ -82,6 +96,7 @@ export default class extends Controller {
     this.resumoTarget.scrollIntoView({ behavior: "smooth" })
   }
 
+
   removerProduto(event) {
     const productId = event.currentTarget.dataset.productId
 
@@ -113,7 +128,7 @@ export default class extends Controller {
       if (quantidadeInput) {
         quantidadeInput.disabled = false
         quantidadeInput.value = "0"
-        this.verificarCampos({ currentTarget: quantidadeInput })
+        // this.verificarCampos({ currentTarget: quantidadeInput })
       }
     }
   }
