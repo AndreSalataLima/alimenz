@@ -12,6 +12,7 @@
               <th class="px-4 py-2 text-left">Cliente</th>
               <th class="px-4 py-2 text-left">Fornecedor</th>
               <th class="px-4 py-2 text-left">Cotação</th>
+              <th class="px-4 py-2 text-left">Data de Criação</th>
               <th class="px-4 py-2 text-left">Valor Total</th>
               <th class="px-4 py-2 text-left">Status</th>
               <th class="px-4 py-2 text-left">Ações</th>
@@ -27,6 +28,7 @@
                               admin_quotation_path(po.quotation),
                               class: "text-blue-600 hover:underline" %>
                 </td>
+                <td class="px-4 py-2"><%= po.created_at.strftime("%d/%m/%Y") %></td>
                 <td class="px-4 py-2">R$ <%= number_with_precision(po.total_value, precision: 2) %></td>
                 <td class="px-4 py-2"><%= purchase_order_status_badge(po.status) %></td>
                 <td class="px-4 py-2 flex gap-2 items-center">
