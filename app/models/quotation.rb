@@ -1,6 +1,8 @@
 class Quotation < ApplicationRecord
-  validates :expiration_date, presence: true
-  validate :expiration_date_must_be_future
+  validates :title, presence: true
+  validates :expiration_date, :response_expiration_date, presence: true
+  validate :expiration_dates_must_be_future
+
 
 
   belongs_to :customer, class_name: "User", foreign_key: "customer_id"
@@ -73,7 +75,7 @@ class Quotation < ApplicationRecord
           supplier: supplier,
           status: "aberta",
           analysis_status: "analise_aberta",
-          expiration_date: expiration_date
+          expiration_date: response_expiration_date
         )
       rescue => e
         Rails.logger.error "Erro ao criar QuotationResponse para supplier #{supplier.id}: #{e.message}"
@@ -89,11 +91,12 @@ class Quotation < ApplicationRecord
     )
   end
 
-  def expiration_date_must_be_future
-    return if expiration_date.blank?
-
-    if expiration_date <= Date.today && new_record?
-      errors.add(:expiration_date, "deve ser uma data futura")
+  def expiration_dates_must_be_future
+    if expiration_date && expiration_date <= Date.today
+      errors.add(:expiration_date, "deve ser futura")
+    end
+    if response_expiration_date && response_expiration_date <= Date.today
+      errors.add(:response_expiration_date, "deve ser futura")
     end
   end
 

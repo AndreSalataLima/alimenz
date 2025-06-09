@@ -166,14 +166,29 @@ export default class extends Controller {
 
   // --- Validação e envio
   submitForm(event) {
-    const dateField = this.element.querySelector("input[name='quotation[expiration_date]']")
-    const selectedDate = new Date(dateField.value)
+    const expirationField = this.element.querySelector("input[name='quotation[expiration_date]']")
+    const expirationDate = new Date(expirationField.value)
+
+    const responseField = this.element.querySelector("input[name='quotation[response_expiration_date]']")
+    const responseDateParts = responseField.value.split("-");
+    const responseDate = new Date(
+      parseInt(responseDateParts[0]), // ano
+      parseInt(responseDateParts[1]) - 1, // mês (0-based)
+      parseInt(responseDateParts[2]) // dia
+);
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    if (!dateField.value || selectedDate <= today) {
+    if (!expirationField.value || expirationDate <= today) {
       event.preventDefault()
-      this.showErrorModal("A data de validade é obrigatória e deve ser futura.")
+      this.showErrorModal("A data de validade (conclusão de compra) é obrigatória e deve ser futura.")
+      return
+    }
+
+    if (!responseField.value || responseDate <= today) {
+      event.preventDefault()
+      this.showErrorModal("A data limite de proposta é obrigatória e deve ser futura.")
       return
     }
 
@@ -188,6 +203,7 @@ export default class extends Controller {
     event.preventDefault()
     this.showConfirmModal()
   }
+
 
 
   showErrorModal(message) {

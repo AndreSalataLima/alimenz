@@ -101,13 +101,12 @@
         </table>
       </div>
 
-      <div class="mt-6">
-        <%= f.label :expiration_date, "Validade da Resposta", class: "block font-medium text-gray-800" %>
-        <%= f.date_field :expiration_date,
-              class: "border rounded px-3 py-2 w-full mt-1",
-              data: { "quotation-response-target": "expirationDate" } %>
-        <p class="text-sm text-gray-600 mt-1">Indica até quando os valores informados permanecerão válidos.</p>
-      </div>
+      <% if @quotation_response.expiration_date.present? %>
+        <p class="text-sm text-gray-700 mt-2">
+          Os valores informados permanecem válidos até <%= l(@quotation_response.expiration_date, format: :default) %>.
+        </p>
+      <% end %>
+
 
       <% if current_user.signature.present? %>
         <div class="mt-4">

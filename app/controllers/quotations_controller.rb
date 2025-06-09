@@ -202,7 +202,7 @@ class QuotationsController < ApplicationController
   private
 
   def quotation_params
-    params.require(:quotation).permit(:title, :expiration_date, :general_comment,
+    params.require(:quotation).permit(:title, :expiration_date, :response_expiration_date, :general_comment,
       quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name, :product_comment ]
     )
   end
