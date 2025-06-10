@@ -20,7 +20,7 @@
                 <th class="px-4 py-2 text-left">Cliente</th>
                 <th class="px-4 py-2 text-left">Valor Total</th>
                 <th class="px-4 py-2 text-left">Data de Validade</th>
-                <th class="px-4 py-2 text-left">Status</th> <!-- NOVO -->
+                <th class="px-4 py-2 text-left">Status</th>
                 <th class="px-4 py-2 text-left">Ações</th>
               </tr>
             </thead>
@@ -31,9 +31,9 @@
                   <td class="px-4 py-2"><%= purchase_order.customer.name %></td>
                   <td class="px-4 py-2"><%= real_currency(purchase_order.total_value) %></td>
                   <td class="px-4 py-2"><%= purchase_order.expiration_date.strftime("%d/%m/%Y") if purchase_order.expiration_date %></td>
-                  <td class="px-4 py-2"><%= purchase_order_status_badge(purchase_order.status) %></td> <!-- NOVO -->
+                  <td class="px-4 py-2"><%= purchase_order_status_badge(purchase_order.status) %></td>
                   <td class="px-4 py-2">
-                    <%= supplier_purchase_order_action_buttons(purchase_order) %> <!-- NOVO -->
+                    <%= supplier_purchase_order_action_buttons(purchase_order) %>
                   </td>
                 </tr>
               <% end %>

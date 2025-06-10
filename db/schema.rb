@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_04_044426) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_09_145300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -172,6 +172,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_04_044426) do
     t.text "general_comment"
     t.string "title"
     t.jsonb "customer_snapshot"
+    t.date "response_expiration_date", null: false
     t.index ["customer_id"], name: "index_quotations_on_customer_id"
   end
 

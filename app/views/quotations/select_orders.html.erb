@@ -8,7 +8,7 @@
 
     <div class="mb-6">
       <% @suppliers.each do |supplier| %>
-        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'resposta_aprovada') %>
+        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: ['resposta_aprovada', 'concluida']) %>
         <% if response&.signed_document.attached? %>
           <p class="text-sm text-gray-700 mb-1">
             <strong><%= supplier.name %></strong>:
@@ -49,77 +49,77 @@
                     <% end %>
                   </td>
 
-                  <!-- Coluna quantidade (agora com campo editável) -->
+                  <!-- Coluna quantidade campo editável) -->
                   <td class="px-4 py-2 text-center">
-            <input type="number"
-                  name="quantidades[<%= item.id %>]"
-                  value="<%= item.quantity %>"
-                  step="0.01"
-                  min="0"
-                  data-update-total-target="quantity"
-                  data-item-id="<%= item.id %>"
-                  class="w-24 text-sm text-center border rounded"
-                  data-action="input->update-total#update"/>
-
+                    <% if @quotation.status != "concluida" %>
+                      <input type="number"
+                        name="quantidades[<%= item.id %>]"
+                        value="<%= item.quantity %>"
+                        step="0.01"
+                        min="0"
+                        data-update-total-target="quantity"
+                        data-item-id="<%= item.id %>"
+                        class="w-24 text-sm text-center border rounded"
+                        data-action="input->update-total#update"/>
+                    <% else %>
+                      <span class="text-gray-800"><%= item.quantity %></span>
+                    <% end %>
                   </td>
+
 
                   <td class="px-4 py-2 text-center"><%= item.selected_unit %></td>
 
                   <% @suppliers.each do |supplier| %>
                     <td class="px-4 py-2 text-center">
-                      <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: 'resposta_aprovada') %>
+                      <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: ['resposta_aprovada', 'concluida']) %>
                       <% if response.present? %>
                         <% response_item = response.quotation_response_items.find_by(quotation_item_id: item.id) %>
                         <% if response_item.present? && response_item.available %>
                           <% unit_price = response_item.price.to_f %>
                           <div class="space-y-1 flex flex-col items-center">
-            <span class="font-medium text-gray-800" data-update-total-target="productTotal"
-                  data-item-id="<%= item.id %>"
-                  data-response-id="<%= response.id %>">
-              <%= real_currency(unit_price * item.quantity.to_f) %>
-            </span>
+                          <span class="font-medium text-gray-800" data-update-total-target="productTotal"
+                                data-item-id="<%= item.id %>"
+                                data-response-id="<%= response.id %>">
+                            <%= real_currency(unit_price * item.quantity.to_f) %>
+                          </span>
 
-
+                          <% if @quotation.status != "concluida" %>
                             <%= check_box_tag "selected[#{response.id}][#{item.id}]",
-                                              "1",
-                                              false,
-                                              class: "rounded border-gray-300 focus:ring-indigo-500",
-              data: {
-                "update-total-target": "checkbox",
-                "price": unit_price.to_s,
-                "item-id": item.id,
-                "response-id": response.id,
-                action: "update-total#update"
-              } %>
-
-                <%= label_tag "selected_#{response.id}_#{item.id}",
-                              "Comprar",
-                              class: "text-gray-700 text-sm" %>
-              </div>
-            <% else %>
-              <span class="text-sm text-red-500">Indisponível</span>
+                              "1", false, class: "rounded border-gray-300 focus:ring-indigo-500",
+                              data: {
+                                "update-total-target": "checkbox",
+                                "price": unit_price.to_s,
+                                "item-id": item.id,
+                                "response-id": response.id,
+                                action: "update-total#update"
+                              } %>
+                          <% end %>
+                        </div>
+                      <% else %>
+                        <span class="text-sm text-red-500">Indisponível</span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">Indisponível</span>
+                    <% end %>
+                  </td>
+                <% end %>
+              </tr>
             <% end %>
-          <% else %>
-            <span class="text-gray-400">Indisponível</span>
-          <% end %>
-        </td>
-      <% end %>
-    </tr>
-  <% end %>
-</tbody>
-
+          </tbody>
         </table>
-
       </div>
-        <!-- Total parcial da seleção -->
+
+      <% if @quotation.status != "concluida" %>
         <div class="mt-4 text-right text-lg font-semibold text-gray-800">
           Total: <span data-update-total-target="total">R$ 0,00</span>
         </div>
 
-      <div class="mt-6">
-        <%= f.submit "Avançar",
-          class: "bg-[#615F4A] text-white py-2 px-4 rounded-lg shadow hover:bg-[#4b493f]" %>
-      </div>
+        <div class="mt-6">
+          <%= f.submit "Avançar",
+            class: "bg-[#615F4A] text-white py-2 px-4 rounded-lg shadow hover:bg-[#4b493f]" %>
+        </div>
+      <% end %>
+
     <% end %>
   </div>
 </div>

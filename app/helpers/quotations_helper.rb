@@ -19,61 +19,22 @@ module QuotationsHelper
   end
 
   def quotation_action_buttons(quotation)
-    buttons = []
+    has_any_response = quotation.quotation_responses
+                                .where(analysis_status: "aprovado")
+                                .where(status: ["resposta_aprovada", "concluida"])
+                                .exists?
 
-    case quotation.status
-    when "aberta"
-      # Cliente pode editar e arquivar
-      # buttons << link_to(
-      #   "Editar Cotação",
-      #   edit_quotation_path(quotation),
-      #   class: "bg-indigo-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-indigo-700"
-      # )
-      # buttons << button_to(
-      #   "Arquivar Cotação",
-      #   arquivar_quotation_path(quotation),
-      #   method: :patch,
-      #   data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
-      #   class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
-      # )
+    return unless has_any_response
 
-    when "resposta_recebida"
-      # Cliente só pode arquivar
-      # buttons << button_to(
-      #   "Arquivar Cotação",
-      #   arquivar_quotation_path(quotation),
-      #   method: :patch,
-      #   data: { confirm: "Tem certeza que deseja arquivar esta cotação?" },
-      #   class: "bg-gray-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-gray-700"
-      # )
-      if quotation.quotation_responses
-                  .where(status: "resposta_aprovada", analysis_status: "aprovado")
-                  .exists?
-        buttons << link_to(
-          "Visualizar respostas",
-          select_orders_quotation_path(quotation),
-          class: "bg-green-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-green-700"
-        )
-      end
-
-    when "respostas_encerradas", "concluida"
-      # Cliente vê respostas e seleciona itens
-      buttons << link_to(
+    content_tag :div, class: "flex justify-center mb-6 space-x-4" do
+      link_to(
         "Visualizar respostas",
         select_orders_quotation_path(quotation),
         class: "bg-green-600 text-white px-4 py-1 rounded-full font-medium shadow hover:bg-green-700"
       )
-
-    else
-      # expirada e arquivada: somente leitura, sem botões
-    end
-
-    return if buttons.empty?
-
-    content_tag :div, class: "flex justify-center mb-6 space-x-4" do
-      safe_join(buttons)
     end
   end
+
 
   def admin_quotation_action_buttons(quotation)
     buttons = []

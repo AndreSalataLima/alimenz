@@ -72,9 +72,10 @@ class QuotationsController < ApplicationController
     @items = @quotation.quotation_items.includes(:product)
 
     supplier_ids = @quotation.quotation_responses
-                             .where(status: "resposta_aprovada", analysis_status: "aprovado")
-                             .pluck(:supplier_id)
-                             .uniq
+      .where(status: ["resposta_aprovada", "concluida"])
+      .where(analysis_status: "aprovado")
+      .pluck(:supplier_id)
+      .uniq
 
     @suppliers = User.where(id: supplier_ids)
   end
@@ -82,6 +83,12 @@ class QuotationsController < ApplicationController
   # Step 5: Process selection and display grouped summary by supplier
   def orders_summary
     @quotation = Quotation.find(params[:id])
+
+    if @quotation.status == "concluida"
+      redirect_to select_orders_quotation_path(@quotation), alert: "Esta cotação já foi concluída. Não é possível avançar."
+      return
+    end
+
     selected = params[:selected] || {}
     @quantidades = params[:quantidades] || {}
 
@@ -109,6 +116,12 @@ class QuotationsController < ApplicationController
   # Step 7: Finalize and generate purchase orders for confirmed suppliers
   def finalize_orders
     @quotation = Quotation.find(params[:id])
+
+    if @quotation.status == "concluida"
+      redirect_to select_orders_quotation_path(@quotation), alert: "Esta cotação já foi concluída. Não é possível finalizar novamente."
+      return
+    end
+
     selected = params[:selected] || {}
     quantidades = params[:quantidades] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
@@ -189,7 +202,7 @@ class QuotationsController < ApplicationController
   private
 
   def quotation_params
-    params.require(:quotation).permit(:title, :expiration_date, :general_comment,
+    params.require(:quotation).permit(:title, :expiration_date, :response_expiration_date, :general_comment,
       quotation_items_attributes: [ :product_id, :quantity, :selected_unit, :keep_generic_name, :product_comment ]
     )
   end
