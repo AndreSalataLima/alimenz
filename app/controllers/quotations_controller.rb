@@ -71,13 +71,33 @@ class QuotationsController < ApplicationController
     @quotation = Quotation.find(params[:id])
     @items = @quotation.quotation_items.includes(:product)
 
+    approved_responses_scope = @quotation.quotation_responses
+                                        .where(status: ["resposta_aprovada", "concluida"])
+                                        .where(analysis_status: "aprovado")
+                                        .includes(:supplier, quotation_response_items: :quotation_item)
+
     supplier_ids = @quotation.quotation_responses
       .where(status: ["resposta_aprovada", "concluida"])
       .where(analysis_status: "aprovado")
       .pluck(:supplier_id)
       .uniq
 
+    supplier_ids = approved_responses_scope.pluck(:supplier_id).uniq
     @suppliers = User.where(id: supplier_ids)
+
+    @response_summaries = {}
+    approved_responses_scope.each do |response|
+      item_count = 0
+      total_value = 0.0
+
+      response.quotation_response_items.each do |response_item|
+        if response_item.available && response_item.quotation_item&.quantity.to_f > 0
+          item_count += 1
+          total_value += response_item.price.to_f * response_item.quotation_item.quantity.to_f
+        end
+      end
+      @response_summaries[response.id] = { item_count: item_count, total_value: total_value }
+    end
   end
 
   # Step 5: Process selection and display grouped summary by supplier

@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["checkbox", "quantity", "total", "productTotal"]
 
   connect() {
-    console.log("UpdateTotalController connected")
     this.update()
   }
 

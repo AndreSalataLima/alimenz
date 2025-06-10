@@ -7,12 +7,21 @@
     </p>
 
     <div class="mb-6">
+
       <% @suppliers.each do |supplier| %>
-        <% response = @quotation.quotation_responses.find_by(supplier_id: supplier.id, status: ['resposta_aprovada', 'concluida']) %>
+        <% response = @quotation.quotation_responses.find_by(
+                         supplier_id: supplier.id,
+                         status: ['resposta_aprovada', 'concluida'],
+                         analysis_status: 'aprovado'
+                       ) %>
         <% if response&.signed_document.attached? %>
+          <% summary = @response_summaries[response.id] %>
           <p class="text-sm text-gray-700 mb-1">
             <strong><%= supplier.name %></strong>:
             <%= link_to "Visualizar Cotação", rails_blob_path(response.signed_document, disposition: "inline"), target: "_blank", class: "text-indigo-600 hover:underline" %>
+            <% if summary.present? && (summary[:item_count] > 0 || summary[:total_value] > 0) %>
+              (<%= summary[:item_count] %> <%= "item".pluralize(summary[:item_count]) %> | <%= real_currency(summary[:total_value]) %>)
+            <% end %>
           </p>
         <% end %>
       <% end %>

@@ -34,13 +34,13 @@
     </div>
 
     <div class="mt-6">
-      <%= f.label :expiration_date, "Data esperada de conclusão de compra", class: "block font-medium text-gray-800" %>
+      <%= f.label :expiration_date, "Data desejada de conclusão da compra", class: "block font-medium text-gray-800" %>
       <%= f.date_field :expiration_date, class: "border rounded px-3 py-2 w-full mt-1" %>
       <p class="text-sm text-gray-600 mt-1">Informe uma data futura para a validade da cotação.</p>
     </div>
 
     <div class="mt-6">
-      <%= f.label :response_expiration_date, "Data limite de proposta", class: "block font-medium text-gray-800" %>
+      <%= f.label :response_expiration_date, "Validade mínima necessária para a proposta do fornecedor", class: "block font-medium text-gray-800" %>
       <%= f.date_field :response_expiration_date, required: true, class: "border rounded px-3 py-2 w-full mt-1" %>
       <p class="text-sm text-gray-600 mt-1">
         Os valores informados permanecem válidos até essa data.
