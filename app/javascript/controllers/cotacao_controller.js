@@ -175,21 +175,25 @@ export default class extends Controller {
     event.preventDefault()
 
     const expirationField = this.element.querySelector("input[name='quotation[expiration_date]']")
-    const expirationDate = new Date(expirationField.value)
-
     const responseField = this.element.querySelector("input[name='quotation[response_expiration_date]']")
-    const responseDateParts = responseField.value.split("-");
+
+    const expirationDate = new Date(expirationField.value)
+    const responseDateParts = responseField.value.split("-")
     const responseDate = new Date(
       parseInt(responseDateParts[0]),
       parseInt(responseDateParts[1]) - 1,
       parseInt(responseDateParts[2])
-    );
+    )
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    if (!expirationField.value || expirationDate <= today) {
-      this.showErrorModal("A data de validade (conclusão de compra) é obrigatória e deve ser futura.")
+    const tomorrow = new Date()
+    tomorrow.setDate(today.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+
+    if (!expirationField.value || expirationDate < tomorrow) {
+      this.showErrorModal("A data de validade (conclusão de compra) deve ser, no mínimo, amanhã.")
       return
     }
 
@@ -200,6 +204,7 @@ export default class extends Controller {
 
     this.showConfirmModal()
   }
+
 
   showErrorModal(message) {
     this.errorMessageTarget.textContent = message

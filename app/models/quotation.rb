@@ -1,7 +1,7 @@
 class Quotation < ApplicationRecord
   validates :title, presence: true
   validates :expiration_date, :response_expiration_date, presence: true
-  validate :expiration_dates_must_be_future
+  validate :expiration_dates_must_be_future, on: :create
 
 
 
