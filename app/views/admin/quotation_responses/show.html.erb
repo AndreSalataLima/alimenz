@@ -44,6 +44,13 @@
       </div>
     <% end %>
 
+    <% if @quotation_response.quotation.general_comment.present? %>
+      <div class="mb-4 p-4 bg-gray-100 rounded-lg">
+        <strong>Comentário Geral da Cotação:</strong>
+        <p class="text-gray-700 mt-1"><%= @quotation_response.quotation.general_comment %></p>
+      </div>
+    <% end %>
+
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 mt-2">
