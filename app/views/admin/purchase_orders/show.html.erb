@@ -18,6 +18,12 @@
       <%= link_to "Visualizar PDF", secure_purchase_order_pdf_path(@purchase_order.signed_id), target: "_blank", class: "text-blue-600 hover:underline" %>
     </p>
 
+    <% if @purchase_order.quotation.general_comment.present? %>
+      <div class="mb-4 p-4 bg-gray-100 rounded-lg">
+        <strong>Comentário Geral da Cotação:</strong>
+        <p class="text-gray-700 mt-1"><%= @purchase_order.quotation.general_comment %></p>
+      </div>
+    <% end %>
 
     <h2 class="text-lg font-bold text-gray-800 mt-6 mb-4">Itens do Pedido</h2>
     <% if @items.any? %>

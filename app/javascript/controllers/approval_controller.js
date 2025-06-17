@@ -8,16 +8,10 @@ export default class extends Controller {
     console.log("Approval Controller connected")
   }
 
-  selecionarTodos() {
-    this.element.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
-      checkbox.checked = true
-    })
-  }
-
   showAprovarModal(event) {
     event.preventDefault()
     console.log("Botão de aprovação clicado!")
-    
+
     const checkCarimbo = this.element.querySelector("#check_carimbo").checked
     const checkData = this.element.querySelector("#check_data").checked
     const checkProdutos = this.element.querySelector("#check_produtos").checked

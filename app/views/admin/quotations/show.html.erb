@@ -10,6 +10,13 @@
       <p><strong>Status:</strong> <%= quotation_status_badge(@quotation.status) %></p>
     </div>
 
+    <% if @quotation.general_comment.present? %>
+      <div class="mb-4 p-4 bg-gray-100 rounded-lg">
+        <strong>Comentário Geral:</strong>
+        <p class="text-gray-700 mt-1"><%= @quotation.general_comment %></p>
+      </div>
+    <% end %>
+
     <h3 class="text-xl font-semibold text-gray-700 mt-6">Itens da Cotação</h3>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200 mt-2">
@@ -179,7 +186,7 @@
     <% else %>
       <p class="text-gray-500">Nenhum pedido de compra gerado a partir desta cotação.</p>
     <% end %>
-    
+
     <div class="mt-6 flex space-x-4">
       <%= link_to "Voltar", admin_quotations_path, class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
     </div>
