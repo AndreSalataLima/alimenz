@@ -46,9 +46,11 @@ module Admin
         @quotation.quotation_responses
                   .where(status: "resposta_aprovada")
                   .update_all(status: "concluida")
+        @quotation.quotation_responses
+                  .where.not(status: ["resposta_aprovada", "concluida", "arquivada"])
+                  .update_all(status: "arquivada")
       end
 
-      @quotation.update!(status: "concluida")
       redirect_to admin_quotation_path(@quotation), notice: "Cotação marcada como concluída com sucesso."
     end
 
