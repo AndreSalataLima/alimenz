@@ -202,6 +202,15 @@ export default class extends Controller {
       return
     }
 
+    const minValidResponseDate = new Date(expirationDate)
+    minValidResponseDate.setDate(minValidResponseDate.getDate() + 7)
+
+    if (responseDate < minValidResponseDate) {
+      const minDateStr = minValidResponseDate.toLocaleDateString('pt-BR')
+      this.showErrorModal(`A validade mínima da proposta deve ser pelo menos 7 dias após a data desejada de conclusão da compra (${minDateStr}).`)
+      return
+    }
+
     this.showConfirmModal()
   }
 

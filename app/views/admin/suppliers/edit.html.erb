@@ -47,17 +47,20 @@
       </div>
 
       <!-- Categorias -->
-<div>
-  <%= f.label :category_ids, "Categorias", class: "block font-semibold text-gray-700" %>
-  <div class="grid grid-cols-2 gap-2 mt-2">
-    <% Category.all.each do |category| %>
-      <label class="inline-flex items-center">
-        <%= check_box_tag "user[category_ids][]", category.id, @supplier.category_ids.include?(category.id), class: "mr-2" %>
-        <span><%= category.name %></span>
-      </label>
-    <% end %>
-  </div>
-</div>
+      <div>
+        <%= f.label :category_ids, "Categorias", class: "block font-semibold text-gray-700" %>
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          <!-- Garante envio de array vazio se nada for selecionado -->
+          <%= hidden_field_tag "user[category_ids][]", nil %>
+
+          <% Category.all.each do |category| %>
+            <label class="inline-flex items-center">
+              <%= check_box_tag "user[category_ids][]", category.id, @supplier.category_ids.include?(category.id), class: "mr-2" %>
+              <span><%= category.name %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
 
 
 
