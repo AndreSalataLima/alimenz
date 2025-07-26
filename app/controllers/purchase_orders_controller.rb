@@ -23,12 +23,24 @@ class PurchaseOrdersController < ApplicationController
   def new
     @purchase_order = current_user.purchase_orders.build
     @suppliers = current_user.quotation_responses.where(status: "concluida").map(&:supplier).uniq
+
+    @quotation = current_user.quotation_responses
+                  .find_by(supplier_id: params[:supplier_id], status: "concluida")
+                  &.quotation
+
+    @purchase_order.general_comment = @quotation&.general_comment
   end
 
   def create
-    @purchase_order = current_user.purchase_orders.build(purchase_order_params.merge(status: "aberta"))
+    @purchase_order = current_user.purchase_orders.build(
+      purchase_order_params.merge(
+        status: "aberta",
+        quotation_id: params[:quotation_id]
+      )
+    )
+
     if @purchase_order.save
-      redirect_to @purchase_order, notice: "Purchase order generated successfully."
+      redirect_to @purchase_order, notice: "Pedido de compra gerado com sucesso."
     else
       @suppliers = current_user.quotation_responses.where(status: "concluida").map(&:supplier).uniq
       render :new, status: :unprocessable_entity
@@ -72,7 +84,7 @@ class PurchaseOrdersController < ApplicationController
 
   def purchase_order_params
     params.require(:purchase_order).permit(
-      :supplier_id, :total_value, :expiration_date, :status,
+      :supplier_id, :total_value, :expiration_date, :status, :general_comment,
       purchase_order_items_attributes: [ :product_id, :quantity, :unit, :price, :_destroy ]
     )
   end

@@ -1,4 +1,3 @@
-# app/services/pdf_purchase_order_service.rb
 require "prawn"
 require "prawn/table"
 
@@ -53,9 +52,9 @@ class PdfPurchaseOrderService
     pdf.move_down 20
 
     # Comentário geral da cotação
-    if @purchase_order.quotation&.general_comment.present?
-      pdf.text "Observações gerais da cotação:", style: :bold
-      pdf.text @purchase_order.quotation.general_comment
+    if @purchase_order.general_comment.present?
+      pdf.text "Observações gerais do pedido:", style: :bold
+      pdf.text @purchase_order.general_comment
       pdf.move_down 10
     end
 

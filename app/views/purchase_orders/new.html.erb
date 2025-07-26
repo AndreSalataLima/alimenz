@@ -22,6 +22,11 @@
 
   <%= f.hidden_field :status, value: "aberta" %>
 
+  <div class="mb-4">
+    <%= f.label :general_comment, "Observações Gerais", class: "block font-bold" %>
+    <%= f.text_area :general_comment, rows: 3, class: "border rounded p-2 w-full" %>
+  </div>
+
   <!-- Campos aninhados para itens do pedido -->
   <div class="mb-4">
     <h2 class="font-bold">Itens do Pedido</h2>

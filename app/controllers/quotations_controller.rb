@@ -144,6 +144,7 @@ class QuotationsController < ApplicationController
 
     selected = params[:selected] || {}
     quantidades = params[:quantidades] || {}
+    comentarios = params[:comentarios] || {}
     selected_responses = QuotationResponse.where(id: selected.keys)
 
     items_by_response = {}
@@ -175,7 +176,8 @@ class QuotationsController < ApplicationController
         total_value: total_value,
         expiration_date: @quotation.expiration_date,
         quotation_id: @quotation.id,
-        status: "aberta"
+        status: "aberta",
+        general_comment: comentarios[supplier_id.to_s] || @quotation.general_comment
       )
 
       items.each do |i|
