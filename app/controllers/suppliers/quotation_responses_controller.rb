@@ -2,7 +2,7 @@ module Suppliers
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_supplier
-    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :upload_document, :confirm_upload, :sign ]
+    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :upload_document, :confirm_upload, :sign, :digital_signature_form, :submit_digital_signature]
     # before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
 
 
@@ -117,18 +117,6 @@ module Suppliers
     # Logic to handle the manual upload of the signed document
   end
 
-  # def pdf
-  #   pdf_service   = PdfGeneratorService.new(@quotation_response)
-  #   pdf_content   = pdf_service.generate
-
-  #   send_data pdf_content,
-  #             filename: pdf_service.filename,
-  #             type: "application/pdf",
-  #             disposition: "inline"
-  # end
-
-
-
   def secure_pdf
     @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
     authorize @quotation_response
@@ -142,7 +130,6 @@ module Suppliers
               disposition: "inline"
   end
 
-
   def secure_document
     @quotation_response = QuotationResponse.find_signed!(params[:signed_id])
     authorize @quotation_response
@@ -154,17 +141,44 @@ module Suppliers
     end
   end
 
+  def digital_signature_form
+    unless ["aguardando_assinatura", "revisao_fornecedor"].include?(@quotation_response.status)
+      redirect_to supplier_home_path, alert: "Esta cotação não está disponível para assinatura digital."
+      return
+    end
+  end
+
+
+  def submit_digital_signature
+    if current_user.valid_password?(params[:signature_password])
+      @quotation_response.update!(
+        status: "documento_enviado",
+        signed_at: Time.zone.now,
+        signed_ip: request.remote_ip,
+        analysis_status: "pendente_de_analise",
+        signature_tracking_id: SecureRandom.uuid
+      )
+
+      pdf_service = PdfGeneratorService.new(@quotation_response, use_signature: true)
+      pdf_content = pdf_service.generate
+
+      @quotation_response.signed_document.attach(
+        io: StringIO.new(pdf_content),
+        filename: pdf_service.filename,
+        content_type: "application/pdf"
+      )
+
+      redirect_to supplier_home_path, notice: "Documento assinado digitalmente com sucesso!"
+    else
+      flash.now[:alert] = "Senha incorreta"
+      render :digital_signature_form, status: :unprocessable_entity
+    end
+  end
 
   private
 
   def set_and_authorize_quotation_response
-    @quotation_response = policy_scope(QuotationResponse).find_by(id: params[:id])
-
-    if @quotation_response.nil?
-      redirect_to supplier_home_path, alert: "Cotação não encontrada ou acesso não autorizado."
-    else
-      authorize @quotation_response
-    end
+    @quotation_response = QuotationResponse.find(params[:id])
   end
 
 
@@ -180,7 +194,6 @@ module Suppliers
       redirect_to root_path, alert: "Acesso negado."
     end
   end
-
 
   end
 end

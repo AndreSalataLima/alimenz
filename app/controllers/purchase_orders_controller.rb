@@ -47,15 +47,6 @@ class PurchaseOrdersController < ApplicationController
     end
   end
 
-  # def pdf
-  #   pdf = PdfPurchaseOrderService.new(@purchase_order).generate
-
-  #   send_data pdf,
-  #             filename: PdfPurchaseOrderService.new(@purchase_order).filename,
-  #             type: "application/pdf",
-  #             disposition: "inline"
-  # end
-
   def secure_pdf
     @purchase_order = PurchaseOrder.find_signed!(params[:signed_id])
     authorize @purchase_order

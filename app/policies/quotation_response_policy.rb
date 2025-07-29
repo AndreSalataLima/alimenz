@@ -47,4 +47,13 @@ class QuotationResponsePolicy < ApplicationPolicy
       end
     end
   end
+
+  def digital_signature_form?
+    user.role == 'supplier' && record.supplier_id == user.id && record.status == 'aguardando_assinatura revisao_fornecedor'
+  end
+
+  def submit_digital_signature?
+    digital_signature_form?
+  end
+
 end

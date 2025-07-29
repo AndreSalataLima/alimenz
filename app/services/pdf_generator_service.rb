@@ -97,9 +97,17 @@ class PdfGeneratorService
       pdf.text "Nenhum item disponível para cotação.", align: :center
     end
 
-    pdf.move_down 60
-    pdf.text "_______________________________", align: :center
-    pdf.text supplier_data[:responsible], align: :center, size: 10
+    if @use_signature && @response.signed_at.present?
+      pdf.move_down 40
+      pdf.text "Assinado digitalmente por #{@response.supplier.responsible}",
+              size: 10, align: :center
+      pdf.text "Data: #{@response.signed_at.strftime('%d/%m/%Y %H:%M')} – IP: #{@response.signed_ip}", size: 10, align: :center
+      pdf.text "Código de rastreio: #{@response.signature_tracking_id}", size: 10, align: :center
+    else
+      pdf.move_down 60
+      pdf.text "_______________________________", align: :center
+      pdf.text @response.supplier.responsible, align: :center, size: 10
+    end
 
     pdf.render
   end

@@ -75,6 +75,8 @@ Rails.application.routes.draw do
       member do
         get "upload_document", to: "quotation_responses#upload_document"
         post "confirm_upload", to: "quotation_responses#confirm_upload"
+        get :digital_signature_form
+        post :submit_digital_signature
       end
     end
   end

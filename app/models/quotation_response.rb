@@ -1,5 +1,6 @@
 class QuotationResponse < ApplicationRecord
   attr_accessor :use_pre_registered_signature
+  before_update :generate_signature_tracking_id
 
   belongs_to :quotation
   belongs_to :supplier, class_name: "User", foreign_key: "supplier_id"
@@ -11,6 +12,10 @@ class QuotationResponse < ApplicationRecord
   accepts_nested_attributes_for :quotation_response_items, allow_destroy: true
 
   has_one_attached :signed_document
+
+  def signed?
+    signed_at.present?
+  end
 
   enum :status, {
     aberta: 'aberta',
@@ -46,6 +51,10 @@ class QuotationResponse < ApplicationRecord
     return unless status == 'documento_enviado'
 
     quotation.update(status: 'resposta_recebida') if quotation.aberta?
+  end
+
+  def generate_signature_tracking_id
+    self.signature_tracking_id ||= SecureRandom.uuid
   end
 
 end

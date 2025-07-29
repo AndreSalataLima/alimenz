@@ -39,32 +39,35 @@ module Suppliers::QuotationResponsesHelper
                   class: "text-blue-600 hover:underline"),
           link_to("Pré-visualizar PDF", secure_pdf_suppliers_quotation_response_path(response.signed_id),
                   target: "_blank", class: "text-blue-600 hover:underline"),
-          link_to("Assinar Digitalmente", "https://assinador.iti.br/assinatura/index.xhtml",
-                  target: "_blank", class: "text-blue-600 hover:underline")
+          link_to("Assinar Digitalmente pela Plataforma",
+                  digital_signature_form_suppliers_quotation_response_path(response),
+                  class: "text-blue-600 hover:underline"),
+          link_to("Assinar com Gov.br", "https://assinador.iti.br/assinatura/index.xhtml",
+                  target: "_blank", class: "text-gray-600 hover:underline text-sm italic")
         ])
       end
 
-    when "documento_enviado"
-      content_tag(:div, class: "flex items-center space-x-2") do
-        content_tag(:span, "Aguardando análise", class: "italic text-gray-600")
-      end
+      when "documento_enviado"
+        content_tag(:div, class: "flex items-center space-x-2") do
+          content_tag(:span, "Aguardando análise", class: "italic text-gray-600")
+        end
 
-    when "resposta_aprovada"
-      content_tag(:div, class: "flex items-center space-x-2") do
-        link_to("Ver Resposta Liberada", secure_document_suppliers_quotation_response_path(response.signed_id),
-                target: "_blank", class: "text-blue-600 hover:underline")
-      end
+      when "resposta_aprovada"
+        content_tag(:div, class: "flex items-center space-x-2") do
+          link_to("Ver Resposta Liberada", secure_document_suppliers_quotation_response_path(response.signed_id),
+                  target: "_blank", class: "text-blue-600 hover:underline")
+        end
 
-    when "concluida"
-      content_tag(:div, class: "flex items-center space-x-2") do
-        link_to("Ver Resposta Final", secure_document_suppliers_quotation_response_path(response.signed_id),
-                target: "_blank", class: "text-blue-600 hover:underline")
-      end
+      when "concluida"
+        content_tag(:div, class: "flex items-center space-x-2") do
+          link_to("Ver Resposta Final", secure_document_suppliers_quotation_response_path(response.signed_id),
+                  target: "_blank", class: "text-blue-600 hover:underline")
+        end
 
-    when "arquivada"
-      content_tag(:div, class: "flex items-center space-x-2") do
-        content_tag(:span, "Arquivada", class: "italic text-gray-500")
-      end
+      when "arquivada"
+        content_tag(:div, class: "flex items-center space-x-2") do
+          content_tag(:span, "Arquivada", class: "italic text-gray-500")
+        end
     end
   end
 

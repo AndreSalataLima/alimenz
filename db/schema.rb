@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_170032) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_29_042613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -160,6 +160,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_170032) do
     t.datetime "updated_at", null: false
     t.jsonb "supplier_snapshot"
     t.text "admin_feedback"
+    t.datetime "signed_at"
+    t.string "signature_tracking_id"
+    t.string "signed_ip"
     t.index ["quotation_id"], name: "index_quotation_responses_on_quotation_id"
     t.index ["supplier_id"], name: "index_quotation_responses_on_supplier_id"
   end
