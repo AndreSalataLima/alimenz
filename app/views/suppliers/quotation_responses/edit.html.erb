@@ -107,14 +107,6 @@
         </p>
       <% end %>
 
-      <% if current_user.signature.present? %>
-        <div class="mt-4">
-          <%= f.label :use_pre_registered_signature, "Utilizar assinatura pré-cadastrada?", class: "font-medium text-gray-800" %>
-          <%= f.check_box :use_pre_registered_signature, class: "ml-2" %>
-          <p class="text-sm text-gray-600 mt-1">Se marcado, o PDF será gerado com sua assinatura já cadastrada.</p>
-        </div>
-      <% end %>
-
       <div class="mt-6 text-center">
         <%= f.submit "Responder Cotação", class: "bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700" %>
       </div>

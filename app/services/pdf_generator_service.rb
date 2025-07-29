@@ -12,16 +12,15 @@ class PdfGeneratorService
     @response.reload
     pdf = Prawn::Document.new(page_size: "A4", margin: 50)
 
-    # Cabeçalho da Proposta
-    pdf.text "PROPOSTA DE COTAÇÃO", size: 20, style: :bold, align: :center
+    pdf.text "PROPOSTA DE COTAÇÃO", size: 17, style: :bold, align: :center
 
     if @response.quotation.title.present?
       pdf.move_down 5
-      pdf.text @response.quotation.title, size: 14, style: :italic, align: :center
+      pdf.text @response.quotation.title, size: 12, style: :italic, align: :center
     end
 
     pdf.move_down 10
-    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Válido até: #{@response.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 10
+    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Válido até: #{@response.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 9
     pdf.move_down 10
     pdf.stroke_horizontal_rule
     pdf.move_down 10
@@ -30,36 +29,31 @@ class PdfGeneratorService
     customer_data = quotation.customer_snapshot.symbolize_keys
     supplier_data = @response.supplier_snapshot.present? ? @response.supplier_snapshot.symbolize_keys : @response.supplier.attributes.symbolize_keys
 
-
-    # Blocos lado a lado com alinhamento vertical
     y_position = pdf.cursor
 
     pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
-      pdf.text "Entidade Participante:", style: :bold
-      pdf.text "Nome: #{customer_data[:name]}"
-      pdf.text "Nome Fantasia: #{customer_data[:trade_name]}" if customer_data[:trade_name].present?
-      pdf.text "CNPJ: #{customer_data[:cnpj]}"
-      pdf.text "Endereço: #{customer_data[:address]}"
-      pdf.text "Telefone: #{customer_data[:phone]}"
-
+      pdf.text "Entidade Participante:", style: :bold, size: 10
+      pdf.text "Nome: #{customer_data[:name]}", size: 9
+      pdf.text "Nome Fantasia: #{customer_data[:trade_name]}", size: 9 if customer_data[:trade_name].present?
+      pdf.text "CNPJ: #{customer_data[:cnpj]}", size: 9
+      pdf.text "Endereço: #{customer_data[:address]}", size: 9
+      pdf.text "Telefone: #{customer_data[:phone]}", size: 9
     end
 
     pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
-      pdf.text "Empresa Proponente:", style: :bold
-      pdf.text "Nome: #{supplier_data[:name]}"
-      pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}" if supplier_data[:trade_name].present?
-      pdf.text "CNPJ: #{supplier_data[:cnpj]}"
-      pdf.text "Endereço: #{supplier_data[:address]}"
-      pdf.text "Telefone: #{supplier_data[:phone]}"
-      pdf.text "Responsável: #{supplier_data[:responsible]}"
-
+      pdf.text "Empresa Proponente:", style: :bold, size: 10
+      pdf.text "Nome: #{supplier_data[:name]}", size: 9
+      pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}", size: 9 if supplier_data[:trade_name].present?
+      pdf.text "CNPJ: #{supplier_data[:cnpj]}", size: 9
+      pdf.text "Endereço: #{supplier_data[:address]}", size: 9
+      pdf.text "Telefone: #{supplier_data[:phone]}", size: 9
+      pdf.text "Responsável: #{supplier_data[:responsible]}", size: 9
     end
 
     pdf.move_down 20
     pdf.stroke_horizontal_rule
     pdf.move_down 20
 
-    # Tabela de Cotação de Preços
     table_data = [["ITEM", "DESCRIÇÃO", "QUANT", "UNID", "PREÇO UNI (R$)", "TOTAL (R$)"]]
     item_index = 1
 
@@ -87,21 +81,22 @@ class PdfGeneratorService
     end
 
     if table_data.size > 1
-      pdf.table(table_data, header: true, width: pdf.bounds.width) do |table|
+      pdf.table(table_data, header: true, width: pdf.bounds.width, cell_style: { size: 9 }) do |table|
         table.row(0).background_color = "DDDDDD"
         table.row(0).font_style = :bold
         table.columns(4..5).align = :right
         table.column(0).align = :center
       end
     else
-      pdf.text "Nenhum item disponível para cotação.", align: :center
+      pdf.text "Nenhum item disponível para cotação.", align: :center, size: 9
     end
 
     if @use_signature && @response.signed_at.present?
       pdf.move_down 40
-      pdf.text "Assinado digitalmente por #{@response.supplier.responsible}",
-              size: 10, align: :center
-      pdf.text "Data: #{@response.signed_at.strftime('%d/%m/%Y %H:%M')} – IP: #{@response.signed_ip}", size: 10, align: :center
+      pdf.text "Assinado digitalmente por:", size: 10, align: :center
+      pdf.text "#{supplier_data[:name]}", size: 10, align: :center
+      pdf.text "CNPJ: #{supplier_data[:cnpj]}", size: 10, align: :center
+      pdf.text "Data: #{@response.signed_at.strftime('%d/%m/%Y %H:%M:%S')}", size: 10, align: :center
       pdf.text "Código de rastreio: #{@response.signature_tracking_id}", size: 10, align: :center
     else
       pdf.move_down 60
@@ -111,6 +106,7 @@ class PdfGeneratorService
 
     pdf.render
   end
+
 
   def filename
     title = @response.quotation.title.presence
