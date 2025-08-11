@@ -81,6 +81,13 @@ Rails.application.routes.draw do
     end
   end
 
+  scope :validar do
+    get  "/",                 to: "signature_validations#new",   as: :new_signature_validation
+    post "/",                 to: "signature_validations#create",as: :signature_validations
+    get  "/:tracking_id",     to: "signature_validations#show",  as: :signature_validation
+    get  "/:tracking_id/pdf", to: "signature_validations#pdf",   as: :signature_validation_pdf
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
   get "/suppliers/quotation_responses/secure/:signed_id/pdf", to: "suppliers/quotation_responses#secure_pdf", as: :secure_pdf_suppliers_quotation_response
   get "/suppliers/quotation_responses/secure/:signed_id/document", to: "suppliers/quotation_responses#secure_document", as: :secure_document_suppliers_quotation_response

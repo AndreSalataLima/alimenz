@@ -20,7 +20,8 @@ class PdfGeneratorService
     end
 
     pdf.move_down 10
-    pdf.text "Data de Emissão: #{Date.today.strftime('%d/%m/%Y')}  |  Válido até: #{@response.expiration_date.strftime('%d/%m/%Y')}", align: :center, size: 9
+    pdf.text "Data de Emissão: #{Time.zone.today.strftime('%d/%m/%Y')}  |  Válido até: #{@response.expiration_date.strftime('%d/%m/%Y')}",
+            align: :center, size: 9
     pdf.move_down 10
     pdf.stroke_horizontal_rule
     pdf.move_down 10
@@ -96,7 +97,7 @@ class PdfGeneratorService
       pdf.text "Assinado digitalmente por:", size: 10, align: :center
       pdf.text "#{supplier_data[:name]}", size: 10, align: :center
       pdf.text "CNPJ: #{supplier_data[:cnpj]}", size: 10, align: :center
-      pdf.text "Data: #{@response.signed_at.strftime('%d/%m/%Y %H:%M:%S')}", size: 10, align: :center
+      pdf.text "Data: #{@response.signed_at.in_time_zone.strftime('%d/%m/%Y %H:%M:%S')}", size: 10, align: :center
       pdf.text "Código de rastreio: #{@response.signature_tracking_id}", size: 10, align: :center
     else
       pdf.move_down 60

@@ -153,7 +153,7 @@ module Suppliers
     if current_user.valid_password?(params[:signature_password])
       @quotation_response.update!(
         status: "documento_enviado",
-        signed_at: Time.zone.now,
+        signed_at: Time.current,
         signed_ip: request.remote_ip,
         analysis_status: "pendente_de_analise",
         signature_tracking_id: SecureRandom.uuid

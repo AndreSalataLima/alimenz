@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_29_042613) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -164,6 +164,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_29_042613) do
     t.string "signature_tracking_id"
     t.string "signed_ip"
     t.index ["quotation_id"], name: "index_quotation_responses_on_quotation_id"
+    t.index ["signature_tracking_id"], name: "index_quotation_responses_on_signature_tracking_id", unique: true
     t.index ["supplier_id"], name: "index_quotation_responses_on_supplier_id"
   end
 
