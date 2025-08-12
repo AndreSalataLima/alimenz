@@ -99,6 +99,8 @@ class PdfGeneratorService
       pdf.text "CNPJ: #{supplier_data[:cnpj]}", size: 10, align: :center
       pdf.text "Data: #{@response.signed_at.in_time_zone.strftime('%d/%m/%Y %H:%M:%S')}", size: 10, align: :center
       pdf.text "Código de rastreio: #{@response.signature_tracking_id}", size: 10, align: :center
+      pdf.text "Verificável em https://alimenz.com.br", size: 10, align: :center
+
     else
       pdf.move_down 60
       pdf.text "_______________________________", align: :center
