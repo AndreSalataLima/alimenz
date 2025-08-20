@@ -38,11 +38,19 @@
           </div>
         <% end %>
       </div>
-    <% elsif @quotation_response.status == "resposta_aprovada" %>
-      <div class="mt-6 text-green-700 italic">
-        Resposta aprovada e já visível ao cliente.
-      </div>
-    <% end %>
+      <% elsif @quotation_response.status == "resposta_aprovada" && @quotation_response.analysis_status == "aprovado" %>
+        <div class="mt-6 text-green-700 italic">
+          Resposta aprovada e já visível ao cliente.
+        </div>
+
+        <div class="mt-2">
+          <%= button_to "Reverter para Revisão do Fornecedor",
+                        revert_approval_admin_quotation_response_path(@quotation_response),
+                        method: :patch,
+                        data: { confirm: "Tem certeza que deseja reverter esta resposta para o fornecedor revisar?" },
+                        class: "bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600" %>
+        </div>
+      <% end %>
 
     <% if @quotation_response.quotation.general_comment.present? %>
       <div class="mb-4 p-4 bg-gray-100 rounded-lg">

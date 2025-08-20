@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       member do
         patch :approve
         patch :reject
+        patch :revert_approval
       end
     end
 

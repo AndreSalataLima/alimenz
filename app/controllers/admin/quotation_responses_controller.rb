@@ -34,6 +34,21 @@ module Admin
       redirect_to admin_dashboard_index_path, notice: "Cotação rejeitada. O fornecedor poderá reenviar a resposta."
     end
 
+    def revert_approval
+      @quotation_response = QuotationResponse.find(params[:id])
+
+      if @quotation_response.status == "resposta_aprovada" && @quotation_response.analysis_status == "aprovado"
+        @quotation_response.update!(
+          status: "revisao_fornecedor",
+          analysis_status: "reprovado",
+          admin_feedback: ""
+        )
+        redirect_to admin_quotation_response_path(@quotation_response), notice: "Resposta revertida para revisão do fornecedor."
+      else
+        redirect_to admin_quotation_response_path(@quotation_response), alert: "A resposta não está em um estado válido para reversão."
+      end
+    end
+
     private
 
     def set_response
