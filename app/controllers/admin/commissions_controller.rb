@@ -21,9 +21,17 @@ module Admin
         .includes(:commission, :customer, :supplier, :quotation)
         .order(:created_at)
 
-      @purchase_orders_abertas = @purchase_orders.select { |po| po.status == 'aberta' }.sort_by(&:id)
-      @purchase_orders_confirmadas = @purchase_orders.select { |po| po.status == 'confirmada' }.sort_by(&:id)
-      @purchase_orders_arquivadas = @purchase_orders.select { |po| po.status == 'arquivada' }.sort_by(&:id)
+      @purchase_orders_abertas = @purchase_orders
+        .select { |po| po.status == 'aberta' }
+        .sort_by { |po| [po.supplier.name.downcase, po.id] }
+
+      @purchase_orders_confirmadas = @purchase_orders
+        .select { |po| po.status == 'confirmada' }
+        .sort_by { |po| [po.supplier.name.downcase, po.id] }
+
+      @purchase_orders_arquivadas = @purchase_orders
+        .select { |po| po.status == 'arquivada' }
+        .sort_by { |po| [po.supplier.name.downcase, po.id] }
 
       @commissions = Commission.where(purchase_order_id: @purchase_orders.pluck(:id)).includes(purchase_order: :supplier)
 
