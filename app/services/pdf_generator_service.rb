@@ -93,19 +93,37 @@ class PdfGeneratorService
     end
 
     if @use_signature && @response.signed_at.present?
+      sig_lines = [
+        { text: "Assinado digitalmente por:", size: 10 },
+        { text: supplier_data[:name].to_s, size: 10 },
+        { text: "CNPJ: #{supplier_data[:cnpj]}", size: 10 },
+        { text: "Data: #{@response.signed_at.in_time_zone.strftime('%d/%m/%Y %H:%M:%S')}", size: 10 },
+        { text: "Código de rastreio: #{@response.signature_tracking_id}", size: 10 },
+        { text: "Verificável em https://alimenz.com.br", size: 10 }
+      ]
+
+      block_height = pdf.height_of_formatted(sig_lines, width: pdf.bounds.width)
+      required_space = 40 + block_height # 40 = move_down planejado
+
+      pdf.start_new_page if pdf.cursor < required_space
+
       pdf.move_down 40
-      pdf.text "Assinado digitalmente por:", size: 10, align: :center
-      pdf.text "#{supplier_data[:name]}", size: 10, align: :center
-      pdf.text "CNPJ: #{supplier_data[:cnpj]}", size: 10, align: :center
-      pdf.text "Data: #{@response.signed_at.in_time_zone.strftime('%d/%m/%Y %H:%M:%S')}", size: 10, align: :center
-      pdf.text "Código de rastreio: #{@response.signature_tracking_id}", size: 10, align: :center
-      pdf.text "Verificável em https://alimenz.com.br", size: 10, align: :center
+      sig_lines.each do |row|
+        pdf.text row[:text], size: row[:size], align: :center
+      end
 
     else
+
+      manual_block_height = pdf.height_of("_______________________________", size: 12) +
+                            pdf.height_of(@response.supplier.responsible.to_s, size: 10) +
+                            60
+      pdf.start_new_page if pdf.cursor < manual_block_height
+
       pdf.move_down 60
       pdf.text "_______________________________", align: :center
       pdf.text @response.supplier.responsible, align: :center, size: 10
     end
+
 
     pdf.render
   end
