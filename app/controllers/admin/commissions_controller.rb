@@ -10,35 +10,47 @@ module Admin
 
       if @month_ref.present?
         start_date = Date.new(@year_ref, @month_ref, 1)
-        end_date = start_date.end_of_month
+        end_date   = start_date.end_of_month
       else
         start_date = Date.new(@year_ref, 1, 1)
-        end_date = start_date.end_of_year
+        end_date   = start_date.end_of_year
       end
 
+      # Base: todas as POs no período + includes sem misturar sintaxes
       @purchase_orders = PurchaseOrder
         .where(created_at: start_date.beginning_of_day..end_date.end_of_day)
-        .includes(:commission, :customer, :supplier, :quotation)
+        .includes(:customer, :supplier, :quotation, commission: :commission_payments)
         .order(:created_at)
 
+      # Coleção ATIVA (exclui arquivadas) — usada no Resumo
+      @purchase_orders_ativas = @purchase_orders.where.not(status: 'arquivada')
+
+      # Listagens por status (ordenando por fornecedor + id)
       @purchase_orders_abertas = @purchase_orders
-        .select { |po| po.status == 'aberta' }
-        .sort_by { |po| [po.supplier.name.downcase, po.id] }
+        .where(status: 'aberta')
+        .left_joins(:supplier)
+        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
 
       @purchase_orders_confirmadas = @purchase_orders
-        .select { |po| po.status == 'confirmada' }
-        .sort_by { |po| [po.supplier.name.downcase, po.id] }
+        .where(status: 'confirmada')
+        .left_joins(:supplier)
+        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
 
       @purchase_orders_arquivadas = @purchase_orders
-        .select { |po| po.status == 'arquivada' }
-        .sort_by { |po| [po.supplier.name.downcase, po.id] }
+        .where(status: 'arquivada')
+        .left_joins(:supplier)
+        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
 
-      @commissions = Commission.where(purchase_order_id: @purchase_orders.pluck(:id)).includes(purchase_order: :supplier)
+      # Comissões SOMENTE das POs ativas
+      @commissions = Commission
+        .joins(purchase_order: :supplier)
+        .where(purchase_orders: { id: @purchase_orders_ativas.select(:id) })
+        .includes(:commission_payments, purchase_order: :supplier)
 
-      @supplier_commissions = @commissions.group_by { |c| c.purchase_order.supplier.name }
-                                          .transform_values { |commissions| commissions.sum(&:total_commission) }
-
-
+      # Hash { "Fornecedor" => soma_total_commission }
+      @supplier_commissions = @commissions
+        .group('users.name')
+        .sum(:total_commission)
     end
 
     def show
@@ -67,7 +79,6 @@ module Admin
 
       render json: { success: true }, status: :ok
     end
-
 
     def unmark_paid_full
       @commission.update(paid_in_full: false)

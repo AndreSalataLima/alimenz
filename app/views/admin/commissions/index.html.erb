@@ -22,30 +22,30 @@
       <% end %>
     </div>
 
-
     <div class="mb-6 bg-gray-100 p-4 rounded-lg border border-gray-300">
       <h3 class="text-xl font-bold mb-4 text-gray-800">Resumo Financeiro do Período</h3>
 
-      <% total_orders = @purchase_orders.count %>
-      <% total_value = @purchase_orders.sum(&:total_value) %>
-      <% commissions = Commission.where(purchase_order_id: @purchase_orders.pluck(:id))
-        total_commission = commissions.sum(&:total_commission)
-        total_paid = commissions.sum(&:paid_total)
-        total_pending = total_commission - total_paid
-      %>
+      <% total_orders = @purchase_orders_ativas.count %>
 
-      <% commissions = Commission.where(purchase_order_id: @purchase_orders.pluck(:id)) %>
-      <% total_paid = commissions.sum { |c| c.paid_total } %>
-      <% total_pending = total_commission - total_paid %>
+      <%# total_value é COLUNA (schema mostra purchase_orders.total_value) %>
+      <% total_value  = @purchase_orders_ativas.sum(:total_value) %>
+
+      <%# Comissões já vêm filtradas para POs ativas %>
+      <% commissions       = @commissions %>
+      <% total_commission  = commissions.sum(:total_commission) %>
+
+      <%# paid_total é método (soma de commission_payments). Usamos Ruby com BigDecimal p/ precisão. %>
+      <% total_paid        = commissions.sum { |c| c.paid_total.to_d } %>
+      <% total_pending     = total_commission.to_d - total_paid %>
 
       <table class="min-w-full divide-y divide-gray-300 text-sm text-gray-700">
         <tbody>
           <tr>
-            <td class="py-2 font-semibold">Ordens de compra:</td>
+            <td class="py-2 font-semibold">Ordens de compra (ativas):</td>
             <td class="py-2"><%= total_orders %></td>
           </tr>
           <tr>
-            <td class="py-2 font-semibold">Total de ordens:</td>
+            <td class="py-2 font-semibold">Total de ordens (ativas):</td>
             <td class="py-2"><%= real_currency(total_value) %></td>
           </tr>
           <tr>
@@ -67,7 +67,7 @@
     <div class="mb-6 bg-gray-100 p-4 rounded-lg border border-gray-300">
       <h3 class="text-xl font-bold mb-4 text-gray-800">Comissões por Fornecedor</h3>
 
-      <% if @supplier_commissions.any? %>
+      <% if @supplier_commissions.present? %>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-300 text-sm text-gray-700">
             <thead class="bg-gray-200">
@@ -90,7 +90,6 @@
         <p class="text-gray-500 italic">Nenhuma comissão registrada para fornecedores neste período.</p>
       <% end %>
     </div>
-
 
     <% if @purchase_orders.empty? %>
       <p class="text-gray-500">Nenhum pedido de compra encontrado neste período.</p>
