@@ -21,7 +21,7 @@ module QuotationsHelper
   def quotation_action_buttons(quotation)
     has_any_response = quotation.quotation_responses
                                 .where(analysis_status: "aprovado")
-                                .where(status: ["resposta_aprovada", "concluida"])
+                                .where(status: [ "resposta_aprovada", "concluida" ])
                                 .exists?
 
     return unless has_any_response
@@ -96,6 +96,4 @@ module QuotationsHelper
 
     content_tag(:div, safe_join(buttons), class: "space-y-1")
   end
-
-
 end

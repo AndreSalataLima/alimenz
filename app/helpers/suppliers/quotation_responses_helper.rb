@@ -47,24 +47,24 @@ module Suppliers::QuotationResponsesHelper
         ])
       end
 
-      when "documento_enviado"
+    when "documento_enviado"
         content_tag(:div, class: "flex items-center space-x-2") do
           content_tag(:span, "Aguardando análise", class: "italic text-gray-600")
         end
 
-      when "resposta_aprovada"
+    when "resposta_aprovada"
         content_tag(:div, class: "flex items-center space-x-2") do
           link_to("Ver Resposta Liberada", secure_document_suppliers_quotation_response_path(response.signed_id),
                   target: "_blank", class: "text-blue-600 hover:underline")
         end
 
-      when "concluida"
+    when "concluida"
         content_tag(:div, class: "flex items-center space-x-2") do
           link_to("Ver Resposta Final", secure_document_suppliers_quotation_response_path(response.signed_id),
                   target: "_blank", class: "text-blue-600 hover:underline")
         end
 
-      when "arquivada"
+    when "arquivada"
         content_tag(:div, class: "flex items-center space-x-2") do
           content_tag(:span, "Arquivada", class: "italic text-gray-500")
         end

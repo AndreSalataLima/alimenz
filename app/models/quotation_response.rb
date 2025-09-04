@@ -18,20 +18,20 @@ class QuotationResponse < ApplicationRecord
   end
 
   enum :status, {
-    aberta: 'aberta',
-    aguardando_assinatura: 'aguardando_assinatura',
-    revisao_fornecedor: 'revisao_fornecedor',
-    documento_enviado: 'documento_enviado',
-    resposta_aprovada: 'resposta_aprovada',
-    arquivada: 'arquivada',
-    concluida: 'concluida'
+    aberta: "aberta",
+    aguardando_assinatura: "aguardando_assinatura",
+    revisao_fornecedor: "revisao_fornecedor",
+    documento_enviado: "documento_enviado",
+    resposta_aprovada: "resposta_aprovada",
+    arquivada: "arquivada",
+    concluida: "concluida"
   }
 
   enum :analysis_status, {
-    analise_aberta: 'analise_aberta',
-    pendente_de_analise: 'pendente_de_analise',
-    aprovado: 'aprovado',
-    reprovado: 'reprovado'
+    analise_aberta: "analise_aberta",
+    pendente_de_analise: "pendente_de_analise",
+    aprovado: "aprovado",
+    reprovado: "reprovado"
   }
 
 
@@ -43,18 +43,17 @@ class QuotationResponse < ApplicationRecord
 
   def capture_supplier_snapshot
     self.supplier_snapshot = supplier.slice(
-      'name', 'email', 'address', 'phone', 'cnpj', 'responsible', 'trade_name'
+      "name", "email", "address", "phone", "cnpj", "responsible", "trade_name"
     )
   end
 
   def update_quotation_status_to_resposta_recebida
-    return unless status == 'documento_enviado'
+    return unless status == "documento_enviado"
 
-    quotation.update(status: 'resposta_recebida') if quotation.aberta?
+    quotation.update(status: "resposta_recebida") if quotation.aberta?
   end
 
   def generate_signature_tracking_id
     self.signature_tracking_id ||= SecureRandom.uuid
   end
-
 end

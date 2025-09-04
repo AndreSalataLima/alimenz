@@ -2,7 +2,7 @@ module Admin
   class CommissionsController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_commission, only: [:show, :mark_paid_full, :unmark_paid_full]
+    before_action :set_commission, only: [ :show, :mark_paid_full, :unmark_paid_full ]
 
     def index
       @year_ref  = params[:year_ref].present? ? params[:year_ref].to_i : Date.current.year
@@ -23,23 +23,23 @@ module Admin
         .order(:created_at)
 
       # Coleção ATIVA (exclui arquivadas) — usada no Resumo
-      @purchase_orders_ativas = @purchase_orders.where.not(status: 'arquivada')
+      @purchase_orders_ativas = @purchase_orders.where.not(status: "arquivada")
 
       # Listagens por status (ordenando por fornecedor + id)
       @purchase_orders_abertas = @purchase_orders
-        .where(status: 'aberta')
+        .where(status: "aberta")
         .left_joins(:supplier)
-        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
+        .order(Arel.sql("LOWER(users.name), purchase_orders.id"))
 
       @purchase_orders_confirmadas = @purchase_orders
-        .where(status: 'confirmada')
+        .where(status: "confirmada")
         .left_joins(:supplier)
-        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
+        .order(Arel.sql("LOWER(users.name), purchase_orders.id"))
 
       @purchase_orders_arquivadas = @purchase_orders
-        .where(status: 'arquivada')
+        .where(status: "arquivada")
         .left_joins(:supplier)
-        .order(Arel.sql('LOWER(users.name), purchase_orders.id'))
+        .order(Arel.sql("LOWER(users.name), purchase_orders.id"))
 
       # Comissões SOMENTE das POs ativas
       @commissions = Commission
@@ -49,7 +49,7 @@ module Admin
 
       # Hash { "Fornecedor" => soma_total_commission }
       @supplier_commissions = @commissions
-        .group('users.name')
+        .group("users.name")
         .sum(:total_commission)
     end
 

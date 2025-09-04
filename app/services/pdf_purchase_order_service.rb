@@ -27,17 +27,16 @@ class PdfPurchaseOrderService
 
     # Dados do Cliente e Fornecedor
     y_position = pdf.cursor
-    pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ 0, y_position ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Cliente:", style: :bold
       pdf.text "Nome: #{customer_data[:name]}"
       pdf.text "Nome Fantasia: #{customer_data[:trade_name]}" if customer_data[:trade_name].present?
       pdf.text "CNPJ: #{customer_data[:cnpj]}"
       pdf.text "Endereço: #{customer_data[:address]}"
       pdf.text "Telefone: #{customer_data[:phone]}"
-
     end
 
-    pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ pdf.bounds.width / 2 + 10, y_position ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Fornecedor:", style: :bold
       pdf.text "Nome: #{supplier_data[:name]}"
       pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}" if supplier_data[:trade_name].present?
@@ -59,14 +58,14 @@ class PdfPurchaseOrderService
     end
 
     # Tabela de itens
-    table_data = [[
+    table_data = [ [
       "<b>ITEM</b>",
       "<b>DESCRIÇÃO</b>",
       "<b>QUANT</b>",
       "<b>UNID</b>",
       "<b>PREÇO UNI (R$)</b>",
       "<b>TOTAL (R$)</b>"
-    ]]
+    ] ]
     item_index = 1
 
     @purchase_order.purchase_order_items.each do |item|
@@ -113,7 +112,7 @@ class PdfPurchaseOrderService
     pdf.move_down 30
 
     pdf.number_pages "<page>/<total>",
-                 at: [pdf.bounds.right - 50, 0],
+                 at: [ pdf.bounds.right - 50, 0 ],
                  width: 50,
                  align: :right,
                  size: 9,
@@ -127,8 +126,8 @@ class PdfPurchaseOrderService
     if title.present?
       "solic_de_compra_#{parameterize_title(title)}.pdf"
     else
-      customer = @purchase_order.customer.name.parameterize(separator: '_')
-      supplier = @purchase_order.supplier.name.parameterize(separator: '_')
+      customer = @purchase_order.customer.name.parameterize(separator: "_")
+      supplier = @purchase_order.supplier.name.parameterize(separator: "_")
       date = I18n.l(@purchase_order.created_at.to_date, format: "%d.%m")
       "solic_de_compra_#{customer}_#{supplier}_#{date}.pdf"
     end
@@ -137,8 +136,6 @@ class PdfPurchaseOrderService
   private
 
   def parameterize_title(title)
-    title.downcase.strip.gsub(/[^a-z0-9\s]/i, '').gsub(/[\s_]+/, '_')
+    title.downcase.strip.gsub(/[^a-z0-9\s]/i, "").gsub(/[\s_]+/, "_")
   end
-
-
 end

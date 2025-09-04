@@ -28,5 +28,4 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     redirect_to root_path, alert: "Você não tem permissão para acessar este recurso."
   end
-
 end

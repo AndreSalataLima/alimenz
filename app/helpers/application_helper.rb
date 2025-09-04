@@ -12,10 +12,10 @@ module ApplicationHelper
   end
 
   def pagy_tailwind_nav(pagy)
-    html = +''
+    html = +""
 
-    link_classes = 'px-3 py-1 mx-1 rounded border border-gray-300 hover:bg-gray-100 transition text-sm'
-    active_classes = 'bg-[#615F4A] text-white border-[#615F4A]'
+    link_classes = "px-3 py-1 mx-1 rounded border border-gray-300 hover:bg-gray-100 transition text-sm"
+    active_classes = "bg-[#615F4A] text-white border-[#615F4A]"
 
     pagy.series.each do |item|
       case item
@@ -39,7 +39,4 @@ module ApplicationHelper
 
     %(<nav class="flex justify-center mt-6">#{html}</nav>).html_safe
   end
-
-
-
 end

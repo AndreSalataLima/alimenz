@@ -48,11 +48,11 @@ gem "pundit"
 gem "prawn", "~> 2.4"
 gem "prawn-table"
 
-gem 'combine_pdf'
+gem "combine_pdf"
 
 gem "inline_svg"
 
-gem 'pagy'
+gem "pagy"
 
 
 
@@ -61,7 +61,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", "~> 7.0.2"
+  gem "brakeman", "~> 7.1", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false

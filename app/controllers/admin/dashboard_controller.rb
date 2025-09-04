@@ -5,7 +5,7 @@ class Admin::DashboardController < ApplicationController
   def index
     @cotacoes_abertas = Quotation.where(status: :aberta)
     @cotacoes_proximas_do_vencimento = Quotation
-      .where(status: [:aberta, :resposta_recebida, :resposta_aprovada, :respostas_encerradas])
+      .where(status: [ :aberta, :resposta_recebida, :resposta_aprovada, :respostas_encerradas ])
       .where(expiration_date: Date.today..3.days.from_now)
 
     @cotacoes_arquivadas_7d = Quotation.where(status: :arquivada)

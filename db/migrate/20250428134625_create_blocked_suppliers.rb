@@ -6,6 +6,6 @@ class CreateBlockedSuppliers < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :blocked_suppliers, [:customer_id, :supplier_id], unique: true, name: "index_blocked_on_customer_and_supplier"
+    add_index :blocked_suppliers, [ :customer_id, :supplier_id ], unique: true, name: "index_blocked_on_customer_and_supplier"
   end
 end
