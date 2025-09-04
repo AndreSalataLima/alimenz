@@ -7,10 +7,10 @@ class PurchaseOrder < ApplicationRecord
 
   accepts_nested_attributes_for :purchase_order_items, allow_destroy: true
 
-  after_commit :criar_commissao, on: [:update], if: :status_confirmada?
+  after_commit :criar_commissao, on: [ :update ], if: :status_confirmada?
 
   def status_confirmada?
-    saved_change_to_status? && status == 'confirmada'
+    saved_change_to_status? && status == "confirmada"
   end
 
   def criar_commissao
@@ -24,8 +24,8 @@ class PurchaseOrder < ApplicationRecord
   end
 
   enum :status, {
-    aberta: 'aberta',
-    confirmada: 'confirmada',
-    arquivada: 'arquivada',
+    aberta: "aberta",
+    confirmada: "confirmada",
+    arquivada: "arquivada"
   }
 end

@@ -7,11 +7,11 @@ Rails.application.routes.draw do
     end
     get "commissions/index"
     get "commissions/show"
-    resources :users, only: [:new, :create, ]
+    resources :users, only: [ :new, :create ]
     resources :customers, only: [ :index, :show, :edit, :update ]
     resources :suppliers, only: [ :index, :show, :edit, :update ]
     resources :dashboard, only: [ :index ]
-    resources :categories, only: [:index, :new, :create, :edit, :update]
+    resources :categories, only: [ :index, :new, :create, :edit, :update ]
     resources :products
 
     resources :quotations, only: [ :index, :show ] do
@@ -30,20 +30,20 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :purchase_orders, only: [:index, :show] do
+    resources :purchase_orders, only: [ :index, :show ] do
       member do
         patch :confirmar
         patch :desconsiderar
       end
     end
 
-    resources :commissions, only: [:index, :show] do
+    resources :commissions, only: [ :index, :show ] do
       member do
         patch :mark_paid_full
         patch :unmark_paid_full
       end
 
-      resources :commission_payments, module: :commissions, only: [:create, :edit, :update, :destroy]
+      resources :commission_payments, module: :commissions, only: [ :create, :edit, :update, :destroy ]
     end
 
 
@@ -84,7 +84,7 @@ Rails.application.routes.draw do
 
   scope :validar do
     get  "/",                 to: "signature_validations#new",   as: :new_signature_validation
-    post "/",                 to: "signature_validations#create",as: :signature_validations
+    post "/",                 to: "signature_validations#create", as: :signature_validations
     get  "/:tracking_id",     to: "signature_validations#show",  as: :signature_validation
     get  "/:tracking_id/pdf", to: "signature_validations#pdf",   as: :signature_validation_pdf
   end

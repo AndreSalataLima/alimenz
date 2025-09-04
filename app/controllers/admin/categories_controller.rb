@@ -2,7 +2,7 @@ module Admin
   class CategoriesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_category, only: [:edit, :update]
+    before_action :set_category, only: [ :edit, :update ]
 
     def index
       @categories = Category.all.order(:name)

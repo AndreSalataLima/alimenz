@@ -41,9 +41,8 @@ class Admin::UsersController < ApplicationController
       redirect_to admin_user_path(@user), notice: "User updated successfully."
     else
       Rails.logger.debug "ERROS: #{@user.errors.full_messages}"
-      render :edit, status: :unprocessable_entity, formats: [:html]
+      render :edit, status: :unprocessable_entity, formats: [ :html ]
     end
-
   end
 
 

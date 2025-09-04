@@ -19,19 +19,18 @@ class Quotation < ApplicationRecord
   # attribute :status, :string, default: "aberta"
 
   enum :status, {
-    aberta: 'aberta',
-    resposta_recebida: 'resposta_recebida',
-    respostas_encerradas: 'respostas_encerradas',
-    expirada: 'expirada',
-    concluida: 'concluida',
-    arquivada: 'arquivada'
+    aberta: "aberta",
+    resposta_recebida: "resposta_recebida",
+    respostas_encerradas: "respostas_encerradas",
+    expirada: "expirada",
+    concluida: "concluida",
+    arquivada: "arquivada"
   }
 
   def self.expire_expired_quotations
-    where(status: [:aberta, :resposta_recebida])
+    where(status: [ :aberta, :resposta_recebida ])
       .where("expiration_date < ?", Date.today)
       .find_each do |quotation|
-
       quotation.transaction do
         quotation.update!(status: "expirada")
       end
@@ -87,7 +86,7 @@ class Quotation < ApplicationRecord
 
   def capture_customer_snapshot
     self.customer_snapshot = customer.slice(
-      'name', 'email', 'address', 'phone', 'cnpj', 'responsible', 'trade_name'
+      "name", "email", "address", "phone", "cnpj", "responsible", "trade_name"
     )
   end
 
@@ -99,6 +98,4 @@ class Quotation < ApplicationRecord
       errors.add(:response_expiration_date, "deve ser futura")
     end
   end
-
-
 end

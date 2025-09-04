@@ -2,7 +2,7 @@ module Admin
   class QuotationsController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_quotation, only: [:show, :encerrar_respostas, :arquivar]
+    before_action :set_quotation, only: [ :show, :encerrar_respostas, :arquivar ]
 
 
     def index
@@ -47,7 +47,7 @@ module Admin
                   .where(status: "resposta_aprovada")
                   .update_all(status: "concluida")
         @quotation.quotation_responses
-                  .where.not(status: ["resposta_aprovada", "concluida", "arquivada"])
+                  .where.not(status: [ "resposta_aprovada", "concluida", "arquivada" ])
                   .update_all(status: "arquivada")
       end
 
@@ -64,6 +64,5 @@ module Admin
     def verify_admin
       redirect_to root_path, alert: "Acesso negado." unless current_user.role == "admin"
     end
-
   end
 end

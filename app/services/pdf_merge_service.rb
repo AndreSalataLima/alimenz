@@ -13,7 +13,7 @@ class PdfMergeService
       elsif uploaded_file.content_type.start_with?("image/")
         # Cria um PDF com a imagem usando Prawn
         prawn_pdf = Prawn::Document.new(page_size: "A4", margin: 0)
-        prawn_pdf.image uploaded_file.tempfile.path, at: [0, prawn_pdf.bounds.top], width: prawn_pdf.bounds.width, height: prawn_pdf.bounds.height
+        prawn_pdf.image uploaded_file.tempfile.path, at: [ 0, prawn_pdf.bounds.top ], width: prawn_pdf.bounds.width, height: prawn_pdf.bounds.height
         temp_io = StringIO.new(prawn_pdf.render)
         temp_io.rewind
         temp_combined = CombinePDF.parse(temp_io.read)

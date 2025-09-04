@@ -25,7 +25,7 @@ module Alimenz
     # config.eager_load_paths << Rails.root.join("extras")
     config.autoload_paths << Rails.root.join("app/services")
 
-    config.time_zone = 'America/Sao_Paulo'
+    config.time_zone = "America/Sao_Paulo"
     config.active_record.default_timezone = :utc
   end
 end

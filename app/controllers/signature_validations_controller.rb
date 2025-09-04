@@ -1,5 +1,5 @@
 class SignatureValidationsController < ApplicationController
-  #skip_before_action :authenticate_user!
+  # skip_before_action :authenticate_user!
 
   def new
   end
@@ -20,7 +20,7 @@ class SignatureValidationsController < ApplicationController
   end
 
   def show
-    @response = QuotationResponse.includes(:quotation, :quotation_response_items => :quotation_item)
+    @response = QuotationResponse.includes(:quotation, quotation_response_items: :quotation_item)
                                  .find_by(signature_tracking_id: params[:tracking_id])
 
     return redirect_to(new_signature_validation_path, alert: "Código inválido. Tente novamente.") unless @response

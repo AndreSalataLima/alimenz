@@ -12,7 +12,7 @@ class SupplierCategory < ApplicationRecord
     # Busca TODAS as categorias atuais do fornecedor
     supplier_category_ids = supplier.supplier_categories.pluck(:category_id)
 
-    Quotation.where(status: [:aberta, :resposta_recebida, :expirada]).find_each do |quotation|
+    Quotation.where(status: [ :aberta, :resposta_recebida, :expirada ]).find_each do |quotation|
       next if quotation.customer.blocked_supplier_ids.include?(supplier_id)
 
       # Verifica se a cotação tem pelo menos 1 item de qualquer categoria do fornecedor
@@ -42,9 +42,8 @@ class SupplierCategory < ApplicationRecord
   def mark_response_items_unavailable_for_removed_category
     Quotation.joins(:quotation_items)
       .where("quotation_items.product_id IN (?)", Product.where(category_id: category_id).select(:id))
-      .where(status: [:aberta, :resposta_recebida, :expirada])
+      .where(status: [ :aberta, :resposta_recebida, :expirada ])
       .find_each do |quotation|
-
       response = quotation.quotation_responses.find_by(supplier: supplier)
       next if response.nil?
 
@@ -54,5 +53,4 @@ class SupplierCategory < ApplicationRecord
         .update_all(available: false)
     end
   end
-  
 end

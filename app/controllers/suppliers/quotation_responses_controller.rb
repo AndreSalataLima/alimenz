@@ -2,7 +2,7 @@ module Suppliers
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_supplier
-    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :upload_document, :confirm_upload, :sign, :digital_signature_form, :submit_digital_signature]
+    before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :upload_document, :confirm_upload, :sign, :digital_signature_form, :submit_digital_signature ]
     # before_action :set_and_authorize_quotation_response, only: [ :show, :edit, :update, :pdf, :upload_document, :confirm_upload, :sign ]
 
 
@@ -142,9 +142,9 @@ module Suppliers
   end
 
   def digital_signature_form
-    unless ["aguardando_assinatura", "revisao_fornecedor"].include?(@quotation_response.status)
+    unless [ "aguardando_assinatura", "revisao_fornecedor" ].include?(@quotation_response.status)
       redirect_to supplier_home_path, alert: "Esta cotação não está disponível para assinatura digital."
-      return
+      nil
     end
   end
 
@@ -194,6 +194,5 @@ module Suppliers
       redirect_to root_path, alert: "Acesso negado."
     end
   end
-
   end
 end

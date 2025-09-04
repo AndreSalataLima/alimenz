@@ -32,7 +32,7 @@ class PdfGeneratorService
 
     y_position = pdf.cursor
 
-    pdf.bounding_box([0, y_position], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ 0, y_position ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Entidade Participante:", style: :bold, size: 10
       pdf.text "Nome: #{customer_data[:name]}", size: 9
       pdf.text "Nome Fantasia: #{customer_data[:trade_name]}", size: 9 if customer_data[:trade_name].present?
@@ -41,7 +41,7 @@ class PdfGeneratorService
       pdf.text "Telefone: #{customer_data[:phone]}", size: 9
     end
 
-    pdf.bounding_box([pdf.bounds.width / 2 + 10, y_position], width: pdf.bounds.width / 2 - 10) do
+    pdf.bounding_box([ pdf.bounds.width / 2 + 10, y_position ], width: pdf.bounds.width / 2 - 10) do
       pdf.text "Empresa Proponente:", style: :bold, size: 10
       pdf.text "Nome: #{supplier_data[:name]}", size: 9
       pdf.text "Nome Fantasia: #{supplier_data[:trade_name]}", size: 9 if supplier_data[:trade_name].present?
@@ -55,7 +55,7 @@ class PdfGeneratorService
     pdf.stroke_horizontal_rule
     pdf.move_down 20
 
-    table_data = [["ITEM", "DESCRIÇÃO", "QUANT", "UNID", "PREÇO UNI (R$)", "TOTAL (R$)"]]
+    table_data = [ [ "ITEM", "DESCRIÇÃO", "QUANT", "UNID", "PREÇO UNI (R$)", "TOTAL (R$)" ] ]
     item_index = 1
 
     @response.quotation_response_items.includes(:quotation_item).each do |item|
@@ -124,6 +124,11 @@ class PdfGeneratorService
       pdf.text @response.supplier.responsible, align: :center, size: 10
     end
 
+    pdf.number_pages "<page>/<total>",
+                    at: [ pdf.bounds.right - 30, -10 ], # -10 joga um pouco abaixo da margem
+                    align: :right,
+                    size: 9,
+                    start_count_at: 1
 
     pdf.render
   end
@@ -134,8 +139,8 @@ class PdfGeneratorService
     if title.present?
       "cotacao_#{parameterize_title(title)}.pdf"
     else
-      customer = @response.quotation.customer.name.parameterize(separator: '_')
-      supplier = @response.supplier.name.parameterize(separator: '_')
+      customer = @response.quotation.customer.name.parameterize(separator: "_")
+      supplier = @response.supplier.name.parameterize(separator: "_")
       date = I18n.l(@response.created_at.to_date, format: "%d.%m")
       "cotacao_#{customer}_#{supplier}_#{date}.pdf"
     end
@@ -145,7 +150,6 @@ class PdfGeneratorService
   private
 
   def parameterize_title(title)
-    title.downcase.strip.gsub(/[^a-z0-9\s]/i, '').gsub(/[\s_]+/, '_')
+    title.downcase.strip.gsub(/[^a-z0-9\s]/i, "").gsub(/[\s_]+/, "_")
   end
-
 end

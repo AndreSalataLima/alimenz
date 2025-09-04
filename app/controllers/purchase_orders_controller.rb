@@ -1,7 +1,7 @@
 class PurchaseOrdersController < ApplicationController
   before_action :authenticate_user!
   # before_action :set_and_authorize_purchase_order, only: [:show, :pdf]
-  before_action :set_and_authorize_purchase_order, only: [:show]
+  before_action :set_and_authorize_purchase_order, only: [ :show ]
 
   def index
     if current_user.role == "supplier"

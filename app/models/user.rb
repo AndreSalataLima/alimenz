@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :customized_products, foreign_key: :customer_id, dependent: :destroy
 
   has_many :blocked_supplier_relationships,
-           class_name: 'BlockedSupplier',
+           class_name: "BlockedSupplier",
            foreign_key: :customer_id,
            dependent: :destroy
   has_many :blocked_suppliers,
@@ -16,7 +16,7 @@ class User < ApplicationRecord
            source: :supplier
 
   has_many :blocked_by_relationships,
-           class_name: 'BlockedSupplier',
+           class_name: "BlockedSupplier",
            foreign_key: :supplier_id,
            dependent: :destroy
   has_many :blocker_customers,

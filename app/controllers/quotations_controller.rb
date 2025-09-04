@@ -72,12 +72,12 @@ class QuotationsController < ApplicationController
     @items = @quotation.quotation_items.includes(:product)
 
     approved_responses_scope = @quotation.quotation_responses
-                                        .where(status: ["resposta_aprovada", "concluida"])
+                                        .where(status: [ "resposta_aprovada", "concluida" ])
                                         .where(analysis_status: "aprovado")
                                         .includes(:supplier, quotation_response_items: :quotation_item)
 
     supplier_ids = @quotation.quotation_responses
-      .where(status: ["resposta_aprovada", "concluida"])
+      .where(status: [ "resposta_aprovada", "concluida" ])
       .where(analysis_status: "aprovado")
       .pluck(:supplier_id)
       .uniq

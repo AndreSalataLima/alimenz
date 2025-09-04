@@ -2,7 +2,7 @@ module Admin
   class QuotationResponsesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_response, only: [:show, :approve, :reject]
+    before_action :set_response, only: [ :show, :approve, :reject ]
 
     def index
       @quotation_responses = QuotationResponse.includes(:quotation, :supplier).order(created_at: :desc)

@@ -2,7 +2,7 @@ module Admin
   class ProductsController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_product, only: [:show, :edit, :update, :destroy]
+    before_action :set_product, only: [ :show, :edit, :update, :destroy ]
 
     def index
       @products = Product.all.order(:generic_name)

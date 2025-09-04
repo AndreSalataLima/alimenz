@@ -4,17 +4,17 @@ module Admin
       before_action :authenticate_user!
       before_action :verify_admin
       before_action :set_commission
-      before_action :set_payment, only: [:edit, :update, :destroy]
+      before_action :set_payment, only: [ :edit, :update, :destroy ]
 
       def create
         @commission_payment = @commission.commission_payments.new(commission_payment_params)
 
         if @commission_payment.save
-          redirect_to admin_commission_path(@commission), notice: 'Pagamento adicionado com sucesso.'
+          redirect_to admin_commission_path(@commission), notice: "Pagamento adicionado com sucesso."
         else
           @purchase_order = @commission.purchase_order
           @payments = @commission.commission_payments.order(payment_date: :asc)
-          render 'admin/commissions/show', status: :unprocessable_entity
+          render "admin/commissions/show", status: :unprocessable_entity
         end
       end
 
@@ -25,7 +25,7 @@ module Admin
 
       def update
         if @commission_payment.update(commission_payment_params)
-          redirect_to admin_commission_path(@commission), notice: 'Pagamento atualizado com sucesso.'
+          redirect_to admin_commission_path(@commission), notice: "Pagamento atualizado com sucesso."
         else
           render :edit, status: :unprocessable_entity
         end
@@ -33,7 +33,7 @@ module Admin
 
       def destroy
         @commission_payment.destroy
-        redirect_to admin_commission_path(@commission), notice: 'Pagamento excluído com sucesso.'
+        redirect_to admin_commission_path(@commission), notice: "Pagamento excluído com sucesso."
       end
 
       private

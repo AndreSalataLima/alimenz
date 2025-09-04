@@ -26,7 +26,7 @@ module Admin
       if @supplier.update(supplier_params.except(:category_ids))
         redirect_to admin_supplier_path(@supplier), notice: "Fornecedor atualizado com sucesso."
       else
-        render :edit, status: :unprocessable_entity, formats: [:html]
+        render :edit, status: :unprocessable_entity, formats: [ :html ]
       end
     end
 
@@ -41,7 +41,7 @@ module Admin
     def supplier_params
       params.require(:user).permit(
         :name, :email, :cnpj, :responsible, :address, :logo, :phone, :trade_name,
-        signature_attributes: [:id, :signature_image, :stamp_image, :_destroy],
+        signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],
         category_ids: []
       )    end
 
