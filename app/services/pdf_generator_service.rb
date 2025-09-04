@@ -124,6 +124,11 @@ class PdfGeneratorService
       pdf.text @response.supplier.responsible, align: :center, size: 10
     end
 
+    pdf.number_pages "<page>/<total>",
+                    at: [pdf.bounds.right - 30, -10], # -10 joga um pouco abaixo da margem
+                    align: :right,
+                    size: 9,
+                    start_count_at: 1
 
     pdf.render
   end

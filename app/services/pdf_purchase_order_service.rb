@@ -112,6 +112,13 @@ class PdfPurchaseOrderService
     pdf.stroke_horizontal_rule
     pdf.move_down 30
 
+    pdf.number_pages "<page>/<total>",
+                 at: [pdf.bounds.right - 50, 0],
+                 width: 50,
+                 align: :right,
+                 size: 9,
+                 start_count_at: 1
+
     pdf.render
   end
 
