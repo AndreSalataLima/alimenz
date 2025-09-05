@@ -3,9 +3,9 @@
     "app_path": "/home/andre/code/alimenz",
     "rails_version": "8.0.1",
     "security_warnings": 1,
-    "start_time": "2025-09-04 13:32:46 +0200",
-    "end_time": "2025-09-04 13:32:48 +0200",
-    "duration": 1.372503535,
+    "start_time": "2025-09-05 14:35:49 +0200",
+    "end_time": "2025-09-05 14:35:51 +0200",
+    "duration": 1.804503471,
     "checks_performed": [
       "BasicAuth",
       "BasicAuthTimingAttack",
@@ -86,9 +86,9 @@
       "XMLDoS",
       "YAMLParsing"
     ],
-    "number_of_controllers": 21,
-    "number_of_models": 16,
-    "number_of_templates": 70,
+    "number_of_controllers": 24,
+    "number_of_models": 19,
+    "number_of_templates": 79,
     "ruby_version": "3.2.2",
     "brakeman_version": "7.1.0"
   },
@@ -96,13 +96,13 @@
     {
       "warning_type": "Mass Assignment",
       "warning_code": 105,
-      "fingerprint": "fe94212a0e364180eb20a5948276482762442c55edbda220e7761ce84f387509",
+      "fingerprint": "22f82b8eabe34d928b011310d00ccd69e3bbbf141819a7394df7c690536e2985",
       "check_name": "PermitAttributes",
       "message": "Potentially dangerous key allowed for mass assignment",
       "file": "app/controllers/admin/users_controller.rb",
-      "line": 63,
+      "line": 68,
       "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
-      "code": "params.require(:user).permit(:name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation, :trade_name, :role, :signature_attributes => ([:id, :signature_image, :stamp_image, :_destroy]), :category_ids => ([]))",
+      "code": "params.require(:user).permit(:name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation, :trade_name, :role, :city_id, :signature_attributes => ([:id, :signature_image, :stamp_image, :_destroy]), :category_ids => ([]), :service_city_ids => ([]))",
       "render_path": null,
       "location": {
         "type": "method",
@@ -118,5 +118,7 @@
   ],
   "ignored_warnings": [],
   "errors": [],
-  "obsolete": []
+  "obsolete": [
+    "fe94212a0e364180eb20a5948276482762442c55edbda220e7761ce84f387509"
+  ]
 }

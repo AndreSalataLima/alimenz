@@ -2,7 +2,7 @@ module Admin
   class StatesController < ApplicationController
     before_action :authenticate_user!
     before_action :verify_admin
-    before_action :set_state, only: [:edit, :update, :destroy]
+    before_action :set_state, only: [ :edit, :update, :destroy ]
 
     def index
       @states = State.order(:code)

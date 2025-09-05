@@ -46,7 +46,7 @@ class Admin::UsersController < ApplicationController
       redirect_to admin_user_path(@user), notice: "User updated successfully."
     else
       Rails.logger.debug "ERROS: #{@user.errors.full_messages}"
-      render :edit, status: :unprocessable_entity, formats: [:html]
+      render :edit, status: :unprocessable_entity, formats: [ :html ]
     end
   end
 
@@ -66,7 +66,7 @@ class Admin::UsersController < ApplicationController
     params.require(:user).permit(
       :name, :email, :cnpj, :responsible, :address, :logo, :phone,
       :password, :password_confirmation, :trade_name, :role, :city_id,
-      signature_attributes: [:id, :signature_image, :stamp_image, :_destroy],
+      signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],
       category_ids: [],
       service_city_ids: []
     )

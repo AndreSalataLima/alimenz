@@ -7,7 +7,7 @@ class CreateSupplierServedCities < ActiveRecord::Migration[8.0]
     end
 
     add_index :supplier_served_cities,
-              [:supplier_id, :city_id],
+              [ :supplier_id, :city_id ],
               unique: true,
               name: "index_unique_supplier_city"
   end

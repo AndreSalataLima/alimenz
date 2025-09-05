@@ -31,7 +31,7 @@ module Admin
       if @supplier.update(supplier_params.except(:category_ids, :service_city_ids))
         redirect_to admin_supplier_path(@supplier), notice: "Fornecedor atualizado com sucesso."
       else
-        render :edit, status: :unprocessable_entity, formats: [:html]
+        render :edit, status: :unprocessable_entity, formats: [ :html ]
       end
     end
 
