@@ -24,43 +24,60 @@
         <!-- Responsável -->
         <div>
           <%= f.label :responsible, "Nome do Responsável", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.text_field :responsible, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
-        <!-- Razão Social (usa o campo :name) -->
+        <!-- Razão Social -->
         <div>
           <%= f.label :name, "Razão Social da Empresa", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- Nome Fantasia -->
         <div>
           <%= f.label :trade_name, "Nome Fantasia", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :trade_name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.text_field :trade_name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- CNPJ -->
         <div>
           <%= f.label :cnpj, "CNPJ", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.text_field :cnpj, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- Telefone -->
         <div>
           <%= f.label :phone, "Telefone", class: "block font-semibold text-gray-700" %>
-          <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.text_field :phone, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- Endereço -->
         <div>
           <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
-          <%= f.text_area :address, rows: 2, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <p class="text-sm text-gray-500 mb-2">Rua/Avenida, número, complemento, bairro, CEP</p>
+          <%= f.text_area :address, rows: 2, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
+        </div>
+
+        <!-- Estado -->
+        <div>
+          <%= f.label :state_id, "Estado", class: "block font-semibold text-gray-700" %>
+          <%= f.collection_select :state_id, State.order(:code), :id, :name,
+                { prompt: "Selecione um Estado" },
+                { class: "w-full mt-1 px-3 py-2 border rounded-lg bg-white" } %>
+        </div>
+
+        <!-- Cidade -->
+        <div>
+          <%= f.label :city_id, "Cidade", class: "block font-semibold text-gray-700" %>
+          <%= f.collection_select :city_id, City.order(:name), :id, :name,
+                { prompt: "Selecione uma Cidade" },
+                { class: "w-full mt-1 px-3 py-2 border rounded-lg bg-white" } %>
         </div>
 
         <!-- Logo -->
         <div>
           <%= f.label :logo, "Logo da Empresa", class: "block font-semibold text-gray-700" %>
-          <%= f.file_field :logo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.file_field :logo, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
       </div>
 
@@ -71,13 +88,13 @@
         <!-- Email -->
         <div>
           <%= f.label :email, "Email", class: "block font-semibold text-gray-700" %>
-          <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.email_field :email, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- Senha -->
         <div>
           <%= f.label :password, "Senha", class: "block font-semibold text-gray-700" %>
-          <%= f.password_field :password, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+          <%= f.password_field :password, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
         </div>
 
         <!-- Papel -->
@@ -86,14 +103,14 @@
           <%= f.select :role,
                 [['Administrador', 'admin'], ['Cliente', 'customer'], ['Fornecedor', 'supplier']],
                 { prompt: "Selecione um papel" },
-                class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm bg-white focus:ring focus:ring-indigo-200 focus:border-indigo-500" %>
+                class: "w-full mt-1 px-3 py-2 border rounded-lg bg-white" %>
         </div>
       </div>
 
       <!-- Botões -->
       <div class="flex justify-between mt-6">
-        <%= link_to "Cancelar", admin_dashboard_index_path, class: "px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400" %>
-        <%= f.submit "Criar Usuário", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
+        <%= link_to "Cancelar", admin_dashboard_index_path, class: "px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow" %>
+        <%= f.submit "Criar Usuário", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow" %>
       </div>
     <% end %>
   </div>

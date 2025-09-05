@@ -17,6 +17,23 @@
       </ul>
     </div>
 
+
+    <!-- Localização -->
+    <li><strong>Cidade:</strong> <%= @supplier.city ? "#{@supplier.state.code} - #{@supplier.city.name}" : "Não informado" %></li>
+
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Cidades atendidas</h2>
+      <% if @supplier.service_cities.any? %>
+        <ul class="list-disc list-inside text-gray-700">
+          <% @supplier.service_cities.includes(:state).order("states.code asc, cities.name asc").each do |c| %>
+            <li><%= "#{c.state.code} - #{c.name}" %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-gray-500">Nenhuma cidade definida.</p>
+      <% end %>
+    </div>
+
     <!-- Bloco de categorias -->
     <div class="bg-white shadow-md rounded-xl p-6">
       <h2 class="text-xl font-bold text-gray-800 mb-4">Categorias</h2>
@@ -41,7 +58,7 @@
       <% end %>
     </div>
     -->
-    
+
     <!-- Bloco de carimbo
     <div class="bg-white shadow-md rounded-xl p-6">
       <h2 class="text-xl font-bold text-gray-800 mb-4">Carimbo</h2>

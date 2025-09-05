@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_05_082133) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "cities", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "state_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["state_id", "name"], name: "index_cities_on_state_id_and_name", unique: true
+    t.index ["state_id"], name: "index_cities_on_state_id"
   end
 
   create_table "commission_payments", force: :cascade do |t|
@@ -188,6 +197,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
     t.index ["user_id"], name: "index_signatures_on_user_id"
   end
 
+  create_table "states", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_states_on_code", unique: true
+  end
+
   create_table "supplier_categories", force: :cascade do |t|
     t.bigint "supplier_id", null: false
     t.bigint "category_id", null: false
@@ -195,6 +212,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_supplier_categories_on_category_id"
     t.index ["supplier_id"], name: "index_supplier_categories_on_supplier_id"
+  end
+
+  create_table "supplier_served_cities", force: :cascade do |t|
+    t.bigint "supplier_id", null: false
+    t.bigint "city_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["city_id"], name: "index_supplier_served_cities_on_city_id"
+    t.index ["supplier_id", "city_id"], name: "index_unique_supplier_city", unique: true
+    t.index ["supplier_id"], name: "index_supplier_served_cities_on_supplier_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -212,6 +239,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "trade_name"
+    t.bigint "city_id"
+    t.index ["city_id"], name: "index_users_on_city_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -220,6 +249,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "blocked_suppliers", "users", column: "customer_id"
   add_foreign_key "blocked_suppliers", "users", column: "supplier_id"
+  add_foreign_key "cities", "states"
   add_foreign_key "commission_payments", "commissions"
   add_foreign_key "commissions", "purchase_orders"
   add_foreign_key "customized_products", "products"
@@ -240,4 +270,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_11_185545) do
   add_foreign_key "signatures", "users"
   add_foreign_key "supplier_categories", "categories"
   add_foreign_key "supplier_categories", "users", column: "supplier_id"
+  add_foreign_key "supplier_served_cities", "cities"
+  add_foreign_key "supplier_served_cities", "users", column: "supplier_id"
+  add_foreign_key "users", "cities"
 end

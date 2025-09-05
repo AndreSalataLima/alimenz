@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     resources :dashboard, only: [ :index ]
     resources :categories, only: [ :index, :new, :create, :edit, :update ]
     resources :products
+    resources :states
+    resources :cities
 
     resources :quotations, only: [ :index, :show ] do
       member do
@@ -94,7 +96,7 @@ Rails.application.routes.draw do
   get "/suppliers/quotation_responses/secure/:signed_id/document", to: "suppliers/quotation_responses#secure_document", as: :secure_document_suppliers_quotation_response
   get "/purchase_orders/secure/:signed_id/pdf", to: "purchase_orders#secure_pdf", as: :secure_purchase_order_pdf
 
+  get "/locations/cities", to: "locations#cities"
 
-  # Defines the root path route ("/")
   root to: redirect("/users/sign_in")
 end

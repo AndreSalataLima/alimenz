@@ -1,0 +1,26 @@
+<%= form_with model: [:admin, @state], local: true, class: "space-y-4" do |f| %>
+  <% if @state.errors.any? %>
+    <div class="bg-red-100 text-red-700 p-3 rounded-lg">
+      <strong>Erros:</strong>
+      <ul class="mt-2 text-sm">
+        <% @state.errors.full_messages.each do |msg| %><li>- <%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :code, "UF (ex.: SP)", class: "block font-semibold text-gray-700" %>
+    <%= f.text_field :code, class: "w-full mt-1 px-3 py-2 border rounded-lg" %>
+  </div>
+
+  <div>
+    <%= f.label :name, "Nome do Estado", class: "block font-semibold text-gray-700" %>
+    <%= f.text_field :name, class: "w-full mt-1 px-3 py-2 border rounded-lg" %>
+  </div>
+
+  <div class="flex justify-between mt-6">
+    <%= link_to "Cancelar", admin_states_path, class: "px-4 py-2 bg-gray-300 rounded-lg" %>
+    <%= f.submit(@state.new_record? ? "Criar Estado" : "Atualizar Estado",
+                 class: "px-4 py-2 bg-blue-600 text-white rounded-lg") %>
+  </div>
+<% end %>

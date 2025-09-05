@@ -31,13 +31,18 @@ class Admin::UsersController < ApplicationController
   def update
     new_params = user_params.merge(role: params[:user][:role])
 
-    # Remove valores vazios e atualiza categorias manualmente para evitar duplicações
     if params[:user][:category_ids]
       @user.category_ids = params[:user][:category_ids].reject(&:blank?)
     end
 
-    # Faz o update com os demais atributos, exceto category_ids
-    if @user.update(new_params.except(:category_ids))
+    if @user.role == "supplier" && params[:user][:service_city_ids]
+      @user.supplier_served_cities.destroy_all
+      params[:user][:service_city_ids].reject(&:blank?).each do |city_id|
+        @user.supplier_served_cities.find_or_create_by!(city_id: city_id)
+      end
+    end
+
+    if @user.update(new_params.except(:category_ids, :service_city_ids))
       redirect_to admin_user_path(@user), notice: "User updated successfully."
     else
       Rails.logger.debug "ERROS: #{@user.errors.full_messages}"
@@ -58,11 +63,12 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    # Verificar se devo retirar o :role do params
     params.require(:user).permit(
-      :name, :email, :cnpj, :responsible, :address, :logo, :phone, :password, :password_confirmation, :trade_name, :role,
+      :name, :email, :cnpj, :responsible, :address, :logo, :phone,
+      :password, :password_confirmation, :trade_name, :role, :city_id,
       signature_attributes: [ :id, :signature_image, :stamp_image, :_destroy ],
-      category_ids: []
+      category_ids: [],
+      service_city_ids: []
     )
   end
 
