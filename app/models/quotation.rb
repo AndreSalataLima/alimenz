@@ -61,11 +61,22 @@ class Quotation < ApplicationRecord
 
   def generate_quotation_responses
     category_ids = quotation_items.map { |item| item.product.category_id }.uniq
+    city_id      = customer.city_id
 
-    suppliers = User.joins(:supplier_categories)
-                    .where(role: "supplier", supplier_categories: { category_id: category_ids })
-                    .where.not(id: customer.blocked_supplier_ids)
-                    .distinct
+    if city_id.blank?
+      Rails.logger.warn("[Quotation##{id}] Cliente sem city_id; nenhuma resposta será gerada.")
+      return
+    end
+
+    suppliers = User
+                  .joins(:supplier_categories, :supplier_served_cities)
+                  .where(
+                    role: "supplier",
+                    supplier_categories: { category_id: category_ids },
+                    supplier_served_cities: { city_id: city_id }
+                  )
+                  .where.not(id: customer.blocked_supplier_ids)
+                  .distinct
 
     suppliers.each do |supplier|
       begin
