@@ -2,7 +2,14 @@
 
 <div class="container mx-auto py-6 px-4">
   <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6">
-      <%= form_with model: [:admin, @supplier], scope: :user, local: true, multipart: true, url: admin_supplier_path(@supplier), method: :patch, class: "space-y-4" do |f| %>
+
+    <%= form_with model: [:admin, @supplier],
+                  scope: :user,
+                  local: true,
+                  multipart: true,
+                  url: admin_supplier_path(@supplier),
+                  method: :patch,
+                  class: "space-y-4" do |f| %>
 
       <!-- Dados gerais -->
       <div>
@@ -27,8 +34,13 @@
 
       <div>
         <%= f.label :address, "Endereço", class: "block font-semibold text-gray-700" %>
+        <p class="text-sm text-gray-500 mb-2">
+          Rua/Avenida, número, complemento, bairro, cidade-estado, CEP
+        </p>
         <%= f.text_area :address, rows: 3, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
+
+      <!-- Logo (opcional, comentado) -->
       <!--
       <div>
         <%= f.label :logo, "Logo (URL ou caminho)", class: "block font-semibold text-gray-700" %>
@@ -46,26 +58,49 @@
         <%= f.text_field :trade_name, class: "w-full mt-1 px-3 py-2 border rounded-lg shadow-sm" %>
       </div>
 
+      <!-- Estado/Cidade do fornecedor -->
+      <% @selected_state_id = @supplier.city&.state_id %>
+      <% @cities_for_state = @selected_state_id ? City.where(state_id: @selected_state_id).order(:name) : [] %>
+      <%= render "shared/state_city_fields", f: f %>
+
+      <!-- Cidades atendidas -->
+      <div>
+        <label class="block font-semibold text-gray-700">Cidades atendidas</label>
+        <p class="text-sm text-gray-500 mb-2">
+          Selecione múltiplas cidades (CTRL + clique)
+        </p>
+        <%= hidden_field_tag "user[service_city_ids][]", nil %>
+        <%= select_tag "user[service_city_ids][]",
+                       options_from_collection_for_select(
+                         City.includes(:state).order("states.code asc, cities.name asc"),
+                         :id,
+                         ->(c) { "#{c.state.code} - #{c.name}" },
+                         @supplier.service_cities.pluck(:id)
+                       ),
+                       multiple: true,
+                       class: "w-full mt-1 px-3 py-2 border rounded-lg bg-white h-64" %>
+      </div>
+
       <!-- Categorias -->
       <div>
         <%= f.label :category_ids, "Categorias", class: "block font-semibold text-gray-700" %>
         <div class="grid grid-cols-2 gap-2 mt-2">
-          <!-- Garante envio de array vazio se nada for selecionado -->
           <%= hidden_field_tag "user[category_ids][]", nil %>
 
           <% Category.all.each do |category| %>
             <label class="inline-flex items-center">
-              <%= check_box_tag "user[category_ids][]", category.id, @supplier.category_ids.include?(category.id), class: "mr-2" %>
+              <%= check_box_tag "user[category_ids][]",
+                                category.id,
+                                @supplier.category_ids.include?(category.id),
+                                class: "mr-2" %>
               <span><%= category.name %></span>
             </label>
           <% end %>
         </div>
       </div>
 
-
-
-      <!-- Assinatura e Carimbo -->
-        <!--
+      <!-- Assinatura e Carimbo (comentado) -->
+      <!--
       <div>
         <% signature = @supplier.signature || @supplier.build_signature %>
 
@@ -99,12 +134,14 @@
           </div>
         <% end %>
       </div>
-       -->
+      -->
 
       <!-- Botões -->
       <div class="flex justify-between mt-6">
-        <%= link_to "Cancelar", admin_supplier_path(@supplier), class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
-        <%= f.submit "Atualizar Fornecedor", class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
+        <%= link_to "Cancelar", admin_supplier_path(@supplier),
+                    class: "px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500" %>
+        <%= f.submit "Atualizar Fornecedor",
+                     class: "px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700" %>
       </div>
     <% end %>
   </div>

@@ -23,6 +23,15 @@ class User < ApplicationRecord
            through: :blocked_by_relationships,
            source: :customer
 
+  belongs_to :city, optional: true
+
+  has_many :supplier_served_cities, foreign_key: :supplier_id, dependent: :destroy
+  has_many :service_cities, through: :supplier_served_cities, source: :city
+
+  def state
+    city&.state
+  end
+
   accepts_nested_attributes_for :signature
 
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable

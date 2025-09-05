@@ -1,0 +1,44 @@
+<div>
+  <label class="block font-semibold text-gray-700">Estado</label>
+  <select id="state_select" class="w-full mt-1 px-3 py-2 border rounded-lg bg-white">
+    <option value="">Selecione um estado</option>
+    <% State.order(:code).each do |st| %>
+      <option value="<%= st.id %>" <%= "selected" if @selected_state_id == st.id %>><%= "#{st.code} - #{st.name}" %></option>
+    <% end %>
+  </select>
+</div>
+
+<div>
+  <%= f.label :city_id, "Cidade", class: "block font-semibold text-gray-700" %>
+  <%= f.select :city_id,
+        (@cities_for_state || []).map { |c| [c.name, c.id] },
+        { prompt: "Selecione uma cidade" },
+        class: "w-full mt-1 px-3 py-2 border rounded-lg bg-white", id: "city_select" %>
+</div>
+
+<script>
+document.addEventListener("turbo:load", attachStateCityLoader);
+document.addEventListener("turbo:frame-load", attachStateCityLoader);
+function attachStateCityLoader() {
+  var stateSel = document.getElementById("state_select");
+  var citySel  = document.getElementById("city_select");
+  if (!stateSel || !citySel) return;
+
+  stateSel.addEventListener("change", function() {
+    var stateId = this.value;
+    citySel.innerHTML = '<option value="">Carregando...</option>';
+    if (!stateId) { citySel.innerHTML = '<option value="">Selecione uma cidade</option>'; return; }
+
+    fetch("/locations/cities?state_id=" + stateId)
+      .then(r => r.json())
+      .then(data => {
+        citySel.innerHTML = '<option value="">Selecione uma cidade</option>';
+        data.forEach(function(city){
+          var opt = document.createElement("option");
+          opt.value = city.id; opt.textContent = city.name;
+          citySel.appendChild(opt);
+        });
+      });
+  });
+}
+</script>

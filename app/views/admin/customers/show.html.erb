@@ -11,6 +11,7 @@
       <li><strong>CNPJ:</strong> <%= @customer.cnpj.presence || "Não informado" %></li>
       <li><strong>Responsável:</strong> <%= @customer.responsible.presence || "Não informado" %></li>
       <li><strong>Endereço:</strong> <%= @customer.address.presence || "Não informado" %></li>
+      <li><strong>Cidade:</strong> <%= @customer.city ? "#{@customer.state.code} - #{@customer.city.name}" : "Não informado" %></li>
     </ul>
 
     <!-- Fornecedores Bloqueados -->

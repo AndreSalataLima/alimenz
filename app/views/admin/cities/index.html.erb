@@ -1,0 +1,18 @@
+<%= render 'admin/shared/navbar', titulo: "Cidades" %>
+<div class="container mx-auto py-6 px-4">
+  <%= link_to "Nova Cidade", new_admin_city_path, class: "px-3 py-2 bg-blue-600 text-white rounded" %>
+  <table class="min-w-full mt-4">
+    <thead><tr><th>Estado</th><th>Cidade</th><th></th></tr></thead>
+    <tbody>
+      <% @cities.each do |c| %>
+        <tr>
+          <td><%= c.state.code %></td><td><%= c.name %></td>
+          <td>
+            <%= link_to "Editar", edit_admin_city_path(c), class: "text-blue-600" %> |
+            <%= link_to "Apagar", admin_city_path(c), data: { turbo_method: :delete, turbo_confirm: "Confirmar?" }, class: "text-red-600" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
