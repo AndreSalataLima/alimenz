@@ -8,6 +8,7 @@ class QuotationResponse < ApplicationRecord
 
   before_update :capture_supplier_snapshot, if: :freezing_state?
   after_save :update_quotation_status_to_resposta_recebida
+  after_commit :schedule_notification_reminders, on: :create
 
   accepts_nested_attributes_for :quotation_response_items, allow_destroy: true
 
@@ -55,5 +56,11 @@ class QuotationResponse < ApplicationRecord
 
   def generate_signature_tracking_id
     self.signature_tracking_id ||= SecureRandom.uuid
+  end
+
+  def schedule_notification_reminders
+    Notifications::Quotations::ReminderScheduler.new(record: self).schedule_all
+  rescue StandardError => error
+    Rails.logger.error("[QuotationResponse##{id}] Falha ao agendar lembretes: #{error.message}")
   end
 end

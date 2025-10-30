@@ -54,6 +54,8 @@ gem "inline_svg"
 
 gem "pagy"
 
+gem "sidekiq", path: "vendor/gems/sidekiq"
+
 
 
 group :development, :test do

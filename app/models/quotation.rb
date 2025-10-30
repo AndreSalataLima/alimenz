@@ -15,6 +15,7 @@ class Quotation < ApplicationRecord
 
   before_create :capture_customer_snapshot
   after_create :generate_quotation_responses
+  after_commit :schedule_notification_reminders, on: :create
 
   # attribute :status, :string, default: "aberta"
 
@@ -92,6 +93,12 @@ class Quotation < ApplicationRecord
         raise
       end
     end
+  end
+
+  def schedule_notification_reminders
+    Notifications::Quotations::ReminderScheduler.new(record: self).schedule_all
+  rescue StandardError => error
+    Rails.logger.error("[Quotation##{id}] Falha ao agendar lembretes: #{error.message}")
   end
 
 
