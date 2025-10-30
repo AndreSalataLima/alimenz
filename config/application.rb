@@ -27,5 +27,6 @@ module Alimenz
 
     config.time_zone = "America/Sao_Paulo"
     config.active_record.default_timezone = :utc
+    config.active_job.queue_adapter = :sidekiq
   end
 end
