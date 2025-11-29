@@ -21,6 +21,7 @@ Rails.application.routes.draw do
         patch :encerrar_respostas
         patch :arquivar
         patch :concluir
+        post  :notify
       end
     end
 
@@ -97,6 +98,10 @@ Rails.application.routes.draw do
   get "/purchase_orders/secure/:signed_id/pdf", to: "purchase_orders#secure_pdf", as: :secure_purchase_order_pdf
 
   get "/locations/cities", to: "locations#cities"
+
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
 
   root to: redirect("/users/sign_in")
 end

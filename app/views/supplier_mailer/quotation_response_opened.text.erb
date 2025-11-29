@@ -1,0 +1,6 @@
+Você tem uma nova cotação disponível na Alimenz.
+
+Atenção ao prazo para resposta: <%= (@qr.expiration_date || @quotation.response_expiration_date).strftime("%d/%m/%Y") %>
+
+Acesse para enviar sua proposta:
+<%= edit_suppliers_quotation_response_url(@qr) %>

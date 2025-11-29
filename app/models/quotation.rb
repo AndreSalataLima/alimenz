@@ -18,6 +18,8 @@ class Quotation < ApplicationRecord
 
   # attribute :status, :string, default: "aberta"
 
+  after_commit :notify_ong_async, on: :create
+
   enum :status, {
     aberta: "aberta",
     resposta_recebida: "resposta_recebida",
@@ -108,5 +110,9 @@ class Quotation < ApplicationRecord
     if response_expiration_date && response_expiration_date <= Date.today
       errors.add(:response_expiration_date, "deve ser futura")
     end
+  end
+
+  def notify_ong_async
+    QuotationCreatedNotificationJob.perform_later(id)
   end
 end

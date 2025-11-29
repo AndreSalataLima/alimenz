@@ -1,0 +1,30 @@
+<h1>Lembrete de resposta de cotação</h1>
+
+<p>Olá, <strong><%= @supplier.name %></strong>!</p>
+
+<p>
+  A cotação <strong>#<%= @quotation.id %> — <%= @quotation.title %></strong>
+  ainda está aguardando sua resposta.
+</p>
+
+<ul>
+  <% if @prazo.present? %>
+    <li><strong>Prazo:</strong> <%= @prazo.strftime("%d/%m/%Y") %></li>
+  <% end %>
+  <li><strong>ONG:</strong> <%= @ong.trade_name.presence || @ong.name %> — <%= @ong.email %> / <%= @ong.phone %></li>
+</ul>
+
+<p>
+  Responda agora pelo link:
+  <a href="<%= edit_suppliers_quotation_response_url(@qr) %>">Formulário de resposta</a>
+</p>
+
+<% if @type == :after_2_days %>
+  <p>(Este é um lembrete enviado 2 dias após o lançamento da cotação.)</p>
+<% elsif @type == :one_day_before %>
+  <p>(Falta 1 dia para o prazo.)</p>
+<% elsif @type == :on_due_day %>
+  <p>(A cotação vence hoje.)</p>
+<% end %>
+
+<p>— Equipe Alimenz</p>

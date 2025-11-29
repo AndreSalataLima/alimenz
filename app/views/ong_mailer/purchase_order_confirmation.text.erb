@@ -1,0 +1,20 @@
+Seu perdido de compra foi criado com sucesso!
+
+Vencimento do pedido de compra:
+<% if @po.expiration_date.present? %>
+<%= @po.expiration_date.strftime("%d/%m/%Y") %>
+<% else %>
+Não informado.
+<% end %>
+
+Fornecedor:
+<%= @supplier.trade_name.presence || @supplier.name %> — <%= @supplier.email %> / <%= @supplier.phone %>
+
+Valor total:
+R$ <%= number_with_precision(@po.total_value, precision: 2) %>
+
+Você pode acompanhar a cotação em:
+<%= quotation_url(@quotation) %>
+
+PDF do pedido de compra:
+<%= @pdf_url %>

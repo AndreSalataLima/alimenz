@@ -8,6 +8,7 @@ class PurchaseOrder < ApplicationRecord
   accepts_nested_attributes_for :purchase_order_items, allow_destroy: true
 
   after_commit :criar_commissao, on: [ :update ], if: :status_confirmada?
+  after_commit :notify_creation_async, on: :create
 
   def status_confirmada?
     saved_change_to_status? && status == "confirmada"
@@ -28,4 +29,10 @@ class PurchaseOrder < ApplicationRecord
     confirmada: "confirmada",
     arquivada: "arquivada"
   }
+
+  private
+
+  def notify_creation_async
+    PurchaseOrderCreatedJob.perform_later(id)
+  end
 end

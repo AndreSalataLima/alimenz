@@ -1,0 +1,7 @@
+Um novo pedido de compra está disponível na Alimenz.
+
+Vencimento: <%= @po.expiration_date.present? ? @po.expiration_date.strftime("%d/%m/%Y") : "-" %>
+Valor total do pedido: R$ <%= number_with_precision(@po.total_value, precision: 2) %>
+
+Você pode conferir todos os detalhes e o documento em PDF no link abaixo:
+<%= @pdf_url %>

@@ -1,0 +1,19 @@
+<p>
+  Sua cotação "<%= @quotation.title %>" foi criada com sucesso.
+</p>
+
+<ul>
+  <li>
+    <strong>Prazo de resposta dos fornecedores:</strong>
+    <%= @quotation.response_expiration_date.strftime("%d/%m/%Y") %>
+  </li>
+  <li>
+    <strong>Prazo final para a compra:</strong>
+    <%= @quotation.expiration_date.strftime("%d/%m/%Y") %>
+  </li>
+</ul>
+
+<p>
+  Você pode acompanhar os detalhes da cotação clicando
+  <a href="<%= quotation_url(@quotation) %>">aqui</a>.
+</p>
