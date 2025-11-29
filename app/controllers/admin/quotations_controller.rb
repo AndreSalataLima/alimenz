@@ -54,6 +54,13 @@ module Admin
       redirect_to admin_quotation_path(@quotation), notice: "Cotação marcada como concluída com sucesso."
     end
 
+    def notify
+      NotificationService.admin_notify_available_quotations(@quotation)
+      redirect_to admin_quotation_path(@quotation), notice: "ONG notificada com sucesso."
+    rescue => e
+      Rails.logger.error("[Admin::Quotations#notify] quotation_id=#{@quotation.id} error=#{e.class} #{e.message}")
+      redirect_to admin_quotation_path(@quotation), alert: "Falha ao notificar a ONG."
+    end
 
     private
 

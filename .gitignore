@@ -39,3 +39,5 @@
 /.kamal/secrets
 
 /coverage/
+
+/config/credentials/production.key

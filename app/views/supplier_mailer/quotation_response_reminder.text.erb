@@ -1,0 +1,20 @@
+Olá, <%= @supplier.name %>!
+
+A cotação #<%= @quotation.id %> — <%= @quotation.title %> ainda está aguardando sua resposta.
+
+<% if @prazo.present? %>
+Prazo: <%= @prazo.strftime("%d/%m/%Y") %>
+<% end %>
+ONG: <%= @ong.trade_name.presence || @ong.name %> — <%= @ong.email %> / <%= @ong.phone %>
+
+Responda agora: <%= edit_suppliers_quotation_response_url(@qr) %>
+
+<% if @type == :after_2_days %>
+(2 dias após o lançamento)
+<% elsif @type == :one_day_before %>
+(Falta 1 dia para o prazo)
+<% elsif @type == :on_due_day %>
+(Vence hoje)
+<% end %>
+
+— Equipe Alimenz

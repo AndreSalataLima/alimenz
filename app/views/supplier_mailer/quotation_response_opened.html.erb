@@ -1,0 +1,15 @@
+<p>Olá,</p>
+
+<p>Uma nova cotação está disponível para você responder na plataforma.</p>
+
+<ul>
+  <li>
+    <strong>Prazo para resposta:</strong>
+    <%= (@qr.expiration_date || @quotation.response_expiration_date).strftime("%d/%m/%Y") %>
+  </li>
+</ul>
+
+<p>
+  Para ver os detalhes e enviar sua proposta, acesse:
+  <a href="<%= edit_suppliers_quotation_response_url(@qr) %>">Responder cotação</a>
+</p>

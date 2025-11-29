@@ -1,0 +1,8 @@
+Sua cotação foi criada na Alimenz: <%= @quotation.title %>
+
+Prazo de resposta dos fornecedores: <%= @quotation.response_expiration_date.strftime("%d/%m/%Y") %>
+Prazo final para a compra: <%= @quotation.expiration_date.strftime("%d/%m/%Y") %>
+
+
+Você pode acompanhar os detalhes da cotação em:
+<%= quotation_url(@quotation) %>

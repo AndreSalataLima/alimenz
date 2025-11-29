@@ -1,0 +1,26 @@
+<p>Olá,</p>
+
+<p>
+  Você recebeu um pedido de compra na Alimenz.
+</p>
+
+<ul>
+  <% if @po.expiration_date.present? %>
+    <li>
+      <strong>Vencimento:</strong>
+      <%= @po.expiration_date.strftime("%d/%m/%Y") %>
+    </li>
+  <% end %>
+  <li>
+    <strong>Valor total do pedido:</strong>
+    R$ <%= number_with_precision(@po.total_value, precision: 2) %>
+  </li>
+</ul>
+
+<p>
+  Confira todos os detalhes pelo no link abaixo ou acesse através do seu acesso na Alimenz:
+</p>
+
+<p>
+  <a href="<%= @pdf_url %>">Acessar pedido de compra (PDF)</a>
+</p>

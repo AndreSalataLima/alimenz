@@ -9,6 +9,9 @@ class QuotationResponse < ApplicationRecord
   before_update :capture_supplier_snapshot, if: :freezing_state?
   after_save :update_quotation_status_to_resposta_recebida
 
+  after_commit :notify_supplier_async, on: :create
+
+
   accepts_nested_attributes_for :quotation_response_items, allow_destroy: true
 
   has_one_attached :signed_document
@@ -55,5 +58,9 @@ class QuotationResponse < ApplicationRecord
 
   def generate_signature_tracking_id
     self.signature_tracking_id ||= SecureRandom.uuid
+  end
+
+  def notify_supplier_async
+    QuotationResponseCreatedNotificationJob.perform_later(id)
   end
 end

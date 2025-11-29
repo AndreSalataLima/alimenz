@@ -1,0 +1,31 @@
+<p>
+  Seu pedido de compra foi realizado com sucesso!
+</p>
+
+<ul>
+  <% if @po.expiration_date.present? %>
+    <li>
+      <strong>Vencimento do pedido de compra:</strong>
+      <%= @po.expiration_date.strftime("%d/%m/%Y") %>
+    </li>
+  <% end %>
+  <li>
+    <strong>Fornecedor:</strong>
+    <%= @supplier.trade_name.presence || @supplier.name %> —
+    <%= @supplier.email %> / <%= @supplier.phone %>
+  </li>
+  <li>
+    <strong>Valor total:</strong>
+    R$ <%= number_with_precision(@po.total_value, precision: 2) %>
+  </li>
+</ul>
+
+<p>
+  Você pode acompanhar a cotação em:
+  <a href="<%= quotation_url(@quotation) %>"><%= @quotation.title %></a>
+</p>
+
+<p>
+  PDF do pedido de compra:
+  <a href="<%= @pdf_url %>">Acessar pedido de compra</a>
+</p>
