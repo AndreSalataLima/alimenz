@@ -1,0 +1,23 @@
+version: "3.9"
+
+x-app-image: &app_image ${APP_IMAGE:-alimenz:latest}
+
+services:
+  web:
+    image: *app_image
+    build:
+      context: .
+    command: ["./bin/thrust", "./bin/rails", "server"]
+    env_file:
+      - .env.production
+    restart: always
+    # Exponha portas apenas se precisar acessar diretamente (ex.: para debug local).
+    # ports:
+    #   - "3000:80"
+
+  jobs:
+    image: *app_image
+    command: ["./bin/thrust", "./bin/jobs", "start", "--config", "config/queue.yml"]
+    env_file:
+      - .env.production
+    restart: always
