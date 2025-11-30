@@ -1,25 +1,38 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
-  <<: *default
-  database: alimenz_development
+  primary:
+    <<: *default
+    database: alimenz_development
+  queue:
+    <<: *default
+    database: alimenz_development
 
 test:
-  <<: *default
-  database: alimenz_test
-
+  primary:
+    <<: *default
+    database: alimenz_test
+  queue:
+    <<: *default
+    database: alimenz_test
 
 production:
-  <<: *default
-  adapter: postgresql
-  encoding: unicode
-  database: alimenz_production
-  username: postgres
-  password: <%= ENV["POSTGRES_PASSWORD"] %>
-  host: <%= ENV.fetch("DATABASE_HOST", "alimenz-db") %>
-  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  primary:
+    <<: *default
+    adapter: postgresql
+    encoding: unicode
+    database: alimenz_production
+    username: postgres
+    password: <%= ENV["POSTGRES_PASSWORD"] %>
+    host: <%= ENV.fetch("DATABASE_HOST", "alimenz-db") %>
+    port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  queue:
+    <<: *default
+    database: alimenz_production
+    username: postgres
+    password: <%= ENV["POSTGRES_PASSWORD"] %>
+    host: <%= ENV.fetch("DATABASE_HOST", "alimenz-db") %>
+    port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
