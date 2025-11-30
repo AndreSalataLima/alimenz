@@ -1,45 +1,52 @@
 #!/bin/bash
 # Example hook called after a successful Kamal deploy.
 # Copy to `.kamal/hooks/post-deploy`, make it executable, and adjust if needed.
-# It recreates the Solid Queue worker container using the same image/env as the web.
+# It recreates the Solid Queue worker container on the remote host(s)
+# using the same image/env/network as the web container.
 
 set -euo pipefail
 
-# Pattern to match the web container name (Kamal usually names it like alimenz-web-<tag>)
+# Remote SSH user and hosts (space-separated). Defaults match config/deploy.yml.
+REMOTE_USER="${REMOTE_USER:-root}"
+HOSTS="${HOSTS:-49.12.36.132}"
+
+# Pattern to match the web container name (Kamal names it like alimenz-web-<tag>)
 WEB_NAME_PATTERN="${WEB_NAME_PATTERN:-alimenz-web}"
 # Name for the jobs container
 JOBS_CONTAINER_NAME="${JOBS_CONTAINER_NAME:-alimenz-jobs}"
 
-# Find the current web container name based on pattern
-WEB_CONTAINER_NAME=$(docker ps --filter "name=${WEB_NAME_PATTERN}" --format '{{.Names}}' | head -n1)
-if [ -z "$WEB_CONTAINER_NAME" ]; then
-  echo "Could not find web container matching pattern: ${WEB_NAME_PATTERN}"
-  exit 1
-fi
+for HOST in $HOSTS; do
+  echo "==> Processing host: ${HOST}"
 
-# Determine image and network from the web container
-IMAGE=$(docker inspect -f '{{.Config.Image}}' "${WEB_CONTAINER_NAME}")
-NETWORK=$(docker inspect -f '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}' "${WEB_CONTAINER_NAME}")
+  WEB_CONTAINER_NAME=$(ssh "${REMOTE_USER}@${HOST}" "docker ps --filter \"name=${WEB_NAME_PATTERN}\" --format '{{.Names}}' | head -n1")
+  if [ -z "$WEB_CONTAINER_NAME" ]; then
+    echo "Could not find web container matching pattern '${WEB_NAME_PATTERN}' on host ${HOST}"
+    exit 1
+  fi
 
-echo "Web container: ${WEB_CONTAINER_NAME}"
-echo "Image: ${IMAGE}"
-echo "Network: ${NETWORK}"
+  IMAGE=$(ssh "${REMOTE_USER}@${HOST}" "docker inspect -f '{{.Config.Image}}' \"${WEB_CONTAINER_NAME}\"")
+  NETWORK=$(ssh "${REMOTE_USER}@${HOST}" "docker inspect -f '{{range \$k,\$v := .NetworkSettings.Networks}}{{\$k}}{{end}}' \"${WEB_CONTAINER_NAME}\"")
 
-# Extract env vars from web container (excluding PATH) to a temp file
-ENV_TMP=$(mktemp)
-trap 'rm -f "$ENV_TMP"' EXIT
-docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "${WEB_CONTAINER_NAME}" | grep -v '^PATH=' > "$ENV_TMP"
+  echo "Web container: ${WEB_CONTAINER_NAME}"
+  echo "Image: ${IMAGE}"
+  echo "Network: ${NETWORK}"
 
-echo "Recreating ${JOBS_CONTAINER_NAME}..."
-docker rm -f "${JOBS_CONTAINER_NAME}" >/dev/null 2>&1 || true
+  ENV_TMP=$(ssh "${REMOTE_USER}@${HOST}" "mktemp")
+  ssh "${REMOTE_USER}@${HOST}" "docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' \"${WEB_CONTAINER_NAME}\" | grep -v '^PATH=' > \"${ENV_TMP}\""
 
-docker run -d \
-  --name "${JOBS_CONTAINER_NAME}" \
-  --restart always \
-  --network "${NETWORK}" \
-  --env-file "$ENV_TMP" \
-  -e RAILS_ENV=production \
-  "${IMAGE}" \
-  ./bin/thrust ./bin/jobs start
+  echo "Recreating ${JOBS_CONTAINER_NAME} on ${HOST}..."
+  ssh "${REMOTE_USER}@${HOST}" "docker rm -f \"${JOBS_CONTAINER_NAME}\" >/dev/null 2>&1 || true"
 
-echo "Jobs container ${JOBS_CONTAINER_NAME} recreated."
+  ssh "${REMOTE_USER}@${HOST}" "docker run -d \
+    --name \"${JOBS_CONTAINER_NAME}\" \
+    --restart always \
+    --network \"${NETWORK}\" \
+    --env-file \"${ENV_TMP}\" \
+    -e RAILS_ENV=production \
+    \"${IMAGE}\" \
+    ./bin/thrust ./bin/jobs start"
+
+  ssh "${REMOTE_USER}@${HOST}" "rm -f \"${ENV_TMP}\""
+
+  echo "Jobs container ${JOBS_CONTAINER_NAME} recreated on ${HOST}."
+done
